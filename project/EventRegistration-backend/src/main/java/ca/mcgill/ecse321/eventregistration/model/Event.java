@@ -4,33 +4,47 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 
 @Entity
 public class Event {
-
     @Id
     @GeneratedValue
     private int id;
     private String title;
     private String description;
-    private ZonedDateTime startDateTime;
-    private ZonedDateTime endDateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private int maxParticipants;
 
     protected Event() {
 
     }
 
-    public Event(int id, String title, String description,
-                 ZonedDateTime startDateTime, ZonedDateTime endDateTime,
+    public Event(String title, String description,
+                 LocalDateTime startDateTime, LocalDateTime endDateTime,
                  int maxParticipants) {
-        this.id = id;
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxParticipants = maxParticipants;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getMaxParticipants() {
+        return maxParticipants;
     }
 }

@@ -18,9 +18,7 @@ public class Event {
     private LocalDateTime endDateTime;
     private int maxParticipants;
 
-    protected Event() {
-
-    }
+    protected Event() {}
 
     public Event(String title, String description,
                  LocalDateTime startDateTime, LocalDateTime endDateTime,

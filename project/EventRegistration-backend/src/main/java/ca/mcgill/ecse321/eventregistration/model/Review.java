@@ -18,10 +18,13 @@ public class Review {
 
     @ManyToOne
     private Person author;
+    @ManyToOne
+    private BoardGame boardGame;
 
     protected Review() {}
 
-    public Review(int stars, String comment, LocalTime timeStamp, Person author) {
+    public Review(int stars, String comment, LocalTime timeStamp,
+                  Person author, BoardGame boardGame) {
         //Validate that stars is between 0 and 5
         if (stars < 0 || stars > 5) {
             throw new IllegalArgumentException("A review must have between 0 " +
@@ -33,6 +36,7 @@ public class Review {
         this.comment = comment;
         this.timeStamp = timeStamp;
         this.author = author;
+        this.boardGame = boardGame;
     }
 
     public int getId() {
@@ -53,5 +57,9 @@ public class Review {
 
     public Person getAuthor() {
         return author;
+    }
+
+    public BoardGame getBoardGame() {
+        return boardGame;
     }
 }

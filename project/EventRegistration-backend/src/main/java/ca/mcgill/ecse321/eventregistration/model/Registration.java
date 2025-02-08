@@ -1,11 +1,11 @@
 package ca.mcgill.ecse321.eventregistration.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.repository.query.QueryLookupStrategy;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
 public class Registration {
     @EmbeddedId
     private Key key;

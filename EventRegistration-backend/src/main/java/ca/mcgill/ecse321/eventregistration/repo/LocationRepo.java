@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.eventregistration.model.Location;
 
 
-public class LocationRepo extends CrudRepository<Location, Integer> {
+public interface LocationRepo extends CrudRepository<Location, Integer> {
     
 }

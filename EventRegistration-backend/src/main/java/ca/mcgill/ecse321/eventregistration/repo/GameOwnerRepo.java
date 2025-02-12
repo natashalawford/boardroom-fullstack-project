@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.eventregistration.model.GameOwner;
 
 
-public class GameOwnerRepo extends CrudRepository<GameOwner, Integer> {
+public interface GameOwnerRepo extends CrudRepository<GameOwner, Integer> {
     
 }

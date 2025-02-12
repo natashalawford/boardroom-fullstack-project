@@ -1,6 +1,10 @@
 package ca.mcgill.ecse321.eventregistration.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
+@Entity
 public class GameOwner {
 
     @Id
@@ -13,7 +17,7 @@ public class GameOwner {
         this.person = person;
     }
 
-    public person getPerson(){
+    public Person getPerson(){
         return this.person;
     }
 

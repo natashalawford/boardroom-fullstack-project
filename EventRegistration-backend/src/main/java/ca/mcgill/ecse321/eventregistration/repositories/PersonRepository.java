@@ -1,5 +1,4 @@
-package main.java.ca.mcgill.ecse321.eventregistration.repo;
-
+package ca.mcgill.ecse321.eventregistration.repositories;
 import org.springframework.data.repository.CrudRepository;
 
 import ca.mcgill.ecse321.eventregistration.model.Person;

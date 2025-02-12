@@ -62,4 +62,9 @@ public class Review {
     public BoardGame getBoardGame() {
         return boardGame;
     }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 }

@@ -65,4 +65,12 @@ public class BorrowRequest {
     public Person getPendingLoaner() {
         return pendingLoaner;
     }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
+    }
+
+    public void setAcceptedLoaner(Person acceptedLoaner) {
+        this.acceptedLoaner = acceptedLoaner;
+    }
 }

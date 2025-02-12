@@ -48,4 +48,12 @@ public class SpecificBoardGame {
     public BoardGame getBoardGame() {
         return boardGame;
     }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
+    }
 }

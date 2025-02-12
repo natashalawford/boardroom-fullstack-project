@@ -3,7 +3,19 @@ package ca.mcgill.ecse321.eventregistration.model;
 
 
 public class GameOwner {
-    //This id points to the same id as the superclass - the primary key is
-    // also a foreign key
-    private int id;
+    
+    @Id
+    @OneToOne
+    private Person person;
+
+    protected GameOwner() {}
+
+    public GameOwner(Person person){
+        this.person = person;
+    }
+
+    public person getPerson(){
+        return this.person;
+    }
+
 }

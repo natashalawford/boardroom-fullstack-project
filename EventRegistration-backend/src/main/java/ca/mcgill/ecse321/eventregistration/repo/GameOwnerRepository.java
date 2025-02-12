@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.eventregistration.model.GameOwner;
 
 
-public interface GameOwnerRepo extends CrudRepository<GameOwner, Integer> {
-    
+public interface GameOwnerRepository extends CrudRepository<GameOwner, Integer> {
+    public Person findGameOwnerByPerson(Person person); //could be int for person Id
 }

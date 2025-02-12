@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.eventregistration.model.BoardGame;
 
 
-public interface BoardGameRepo extends CrudRepository<BoardGame, Integer> {
-    
+public interface BoardGameRepository extends CrudRepository<BoardGame, String> {
+    public Person findBoardGameByTitle(String title);
 }

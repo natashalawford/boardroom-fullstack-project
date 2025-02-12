@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.eventregistration.model.Registration;
 
 
-public interface RegistrationRepo extends CrudRepository<Registration, Integer> {
-    
+public interface RegistrationRepository extends CrudRepository<Registration, Registration.key> {
+    public Person findRegistrationByKey(Registration.key key);
 }

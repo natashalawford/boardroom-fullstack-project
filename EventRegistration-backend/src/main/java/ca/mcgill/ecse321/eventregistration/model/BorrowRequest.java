@@ -25,6 +25,8 @@ public class BorrowRequest {
     private Person borrower;
 
     // TODO: Below are not Person but GameOwner
+    // TODO: Perhaps remove pendingLoaner, since we can just get all game
+    //  owners with a certain game
     @ManyToOne
     private Person acceptedLoaner;
     @ManyToOne

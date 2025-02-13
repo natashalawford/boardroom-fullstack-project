@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.boardroom.repositories;
 import org.springframework.boot.test.context.SpringBootTest;
-import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
 import static org.junit.jupiter.api.Assertions.*;

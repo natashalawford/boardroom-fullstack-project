@@ -59,14 +59,14 @@ public class EventRepositoryTests {
 
 		// Assert
         assertNotNull(eventFromDB);
-        assertEquals(eventFromDB.getId(), event.getId());
-        assertEquals(eventFromDB.getTitle(), event.getTitle());
-        assertEquals(eventFromDB.getDescription(), event.getDescription());
-        assertEquals(eventFromDB.getStartDateTime(), event.getStartDateTime());
-        assertEquals(eventFromDB.getEndDateTime(), event.getEndDateTime());
-        assertEquals(eventFromDB.getMaxParticipants(), event.getMaxParticipants());
-        assertEquals(eventFromDB.getLocation().getId(), event.getLocation().getId());
-        assertEquals(eventFromDB.getEventHost().getId(), event.getEventHost().getId());
-        assertEquals(eventFromDB.getBoardGame().getTitle(), event.getBoardGame().getTitle());
+        assertEquals(event.getId(), eventFromDB.getId());
+        assertEquals(event.getTitle(), eventFromDB.getTitle());
+        assertEquals(event.getDescription(), eventFromDB.getDescription());
+        assertEquals(event.getStartDateTime(), eventFromDB.getStartDateTime());
+        assertEquals(event.getEndDateTime(), eventFromDB.getEndDateTime());
+        assertEquals(event.getMaxParticipants(), eventFromDB.getMaxParticipants());
+        assertEquals(event.getLocation().getId(), eventFromDB.getLocation().getId());
+        assertEquals(event.getEventHost().getId(), eventFromDB.getEventHost().getId());
+        assertEquals(event.getBoardGame().getTitle(), eventFromDB.getBoardGame().getTitle());
     }
 }

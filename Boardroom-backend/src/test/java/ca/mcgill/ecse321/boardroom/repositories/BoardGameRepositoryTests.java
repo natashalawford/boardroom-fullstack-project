@@ -1,8 +1,9 @@
 package ca.mcgill.ecse321.boardroom.repositories;
 import org.springframework.boot.test.context.SpringBootTest;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
-import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -24,24 +25,18 @@ public class BoardGameRepositoryTests {
 	public void testCreateAndReadBoardGame() {
 		// Arrange
         
-		// Date today = Date.valueOf("2025-02-03");
-		// Person peteMikeJoe = new Person(
-		// 		"Pete Mike Joe",
-		// 		"pete.mike.joe@mail.mcgill.ca",
-		// 		"petemjdabest",
-		// 		today);
-		// peteMikeJoe = repo.save(peteMikeJoe); //copy of peteMikeJoe with id set
+		BoardGame boardGame = new BoardGame("boardGameName", "boardGameDescription", 1, 2);
+		boardGame = repo.save(boardGame);
 
 		// Act
-		// Person peteMikeJoeFromDb = repo.findPersonById(peteMikeJoe.getId());
+		BoardGame boardGameFromDb = repo.findBoardGameByTitle(boardGame.getTitle());
 
 		// Assert
-		// assertNotNull(peteMikeJoeFromDb);
-		// assertEquals(peteMikeJoe.getId(), peteMikeJoeFromDb.getId()); //first is the expected value, second is the actual value
-		// assertEquals(peteMikeJoe.getName(), peteMikeJoeFromDb.getName());
-		// assertEquals(peteMikeJoe.getEmailAddress(), peteMikeJoeFromDb.getEmailAddress());
-		// assertEquals(peteMikeJoe.getPassword(), peteMikeJoeFromDb.getPassword());
-		// assertEquals(peteMikeJoe.getCreationDate(), peteMikeJoeFromDb.getCreationDate());
+		assertNotNull(boardGameFromDb);
+		assertEquals(boardGame.getTitle(), boardGameFromDb.getTitle());
+		assertEquals(boardGame.getDescription(), boardGameFromDb.getDescription());
+		assertEquals(boardGame.getPlayersNeeded(), boardGameFromDb.getPlayersNeeded());
+		assertEquals(boardGame.getPicture(), boardGameFromDb.getPicture());
 	}
 }
 

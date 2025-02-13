@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.boardroom.repositories;
 import org.springframework.boot.test.context.SpringBootTest;
-import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +23,6 @@ public class BoardGameRepositoryTests {
 	@Test
 	public void testCreateAndReadBoardGame() {
 		// Arrange
-        
 		BoardGame boardGame = new BoardGame("boardGameName", "boardGameDescription", 1, 2);
 		boardGame = repo.save(boardGame);
 

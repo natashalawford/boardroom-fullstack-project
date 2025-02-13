@@ -14,7 +14,6 @@ import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Location;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Event;
-import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 
 @SpringBootTest
 public class EventRepositoryTests {

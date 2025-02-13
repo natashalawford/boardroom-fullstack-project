@@ -34,9 +34,9 @@ public class LocationRepositoryTests {
 
 		// Assert
 		assertNotNull(cafeFromDB);
-		assertEquals(cafeFromDB.getId(), montrealCafe.getId());
-		assertEquals(cafeFromDB.getAddress(), montrealCafe.getAddress());
-		assertEquals(cafeFromDB.getCity(), montrealCafe.getCity());
-		assertEquals(cafeFromDB.getProvince(), montrealCafe.getProvince());
+		assertEquals(montrealCafe.getId(), cafeFromDB.getId());
+		assertEquals(montrealCafe.getAddress(), cafeFromDB.getAddress());
+		assertEquals(montrealCafe.getCity(), cafeFromDB.getCity());
+		assertEquals(montrealCafe.getProvince(), cafeFromDB.getProvince());
 	}
 }

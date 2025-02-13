@@ -14,34 +14,27 @@ public class BorrowRequest {
     @GeneratedValue
     private int id;
     private RequestStatus status;
-    private LocalDateTime requestDate;
+    private LocalDateTime requestStartDate;
+    private LocalDateTime requestEndDate;
 
-    /*
-    The associations are a bit weird with this one, but let's say you want to get
-    all the accepted requests of a certain person, you'd search the review table
-    and get all reviews with acceptedLoaner of id that you're looking for.
-     */
     @ManyToOne
-    private Person borrower;
+    private Person person;
 
-    // TODO: Below are not Person but GameOwner
-    // TODO: Perhaps remove pendingLoaner, since we can just get all game
-    //  owners with a certain game
     @ManyToOne
-    private Person acceptedLoaner;
-    @ManyToOne
-    private Person pendingLoaner;
+    private SpecificBoardGame specificBoardGame;
 
     protected BorrowRequest() {}
 
-    public BorrowRequest(RequestStatus status, LocalDateTime requestDate,
-                         Person borrower, Person acceptedLoaner,
-                         Person pendingLoaner) {
+    public BorrowRequest(int id, RequestStatus status,
+                         LocalDateTime requestStartDate,
+                         LocalDateTime requestEndDate, Person person,
+                         SpecificBoardGame specificBoardGame) {
+        this.id = id;
         this.status = status;
-        this.requestDate = requestDate;
-        this.borrower = borrower;
-        this.acceptedLoaner = acceptedLoaner;
-        this.pendingLoaner = pendingLoaner;
+        this.requestStartDate = requestStartDate;
+        this.requestEndDate = requestEndDate;
+        this.person = person;
+        this.specificBoardGame = specificBoardGame;
     }
 
     public int getId() {
@@ -52,27 +45,23 @@ public class BorrowRequest {
         return status;
     }
 
-    public LocalDateTime getRequestDate() {
-        return requestDate;
+    public LocalDateTime getRequestStartDate() {
+        return requestStartDate;
     }
 
-    public Person getBorrower() {
-        return borrower;
+    public LocalDateTime getRequestEndDate() {
+        return requestEndDate;
     }
 
-    public Person getAcceptedLoaner() {
-        return acceptedLoaner;
+    public Person getPerson() {
+        return person;
     }
 
-    public Person getPendingLoaner() {
-        return pendingLoaner;
+    public SpecificBoardGame getSpecificBoardGame() {
+        return specificBoardGame;
     }
 
     public void setStatus(RequestStatus status) {
         this.status = status;
-    }
-
-    public void setAcceptedLoaner(Person acceptedLoaner) {
-        this.acceptedLoaner = acceptedLoaner;
     }
 }

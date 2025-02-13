@@ -18,15 +18,19 @@ public class SpecificBoardGame {
 
     @ManyToOne
     private BoardGame boardGame;
+    @ManyToOne
+    private Person owner;
 
     protected SpecificBoardGame() {}
 
     public SpecificBoardGame(int picture, String description,
-                             GameStatus status, BoardGame boardGame) {
+                             GameStatus status, BoardGame boardGame,
+                             Person owner) {
         this.picture = picture;
         this.description = description;
         this.status = status;
         this.boardGame = boardGame;
+        this.owner = owner;
     }
 
     public int getId() {
@@ -51,6 +55,10 @@ public class SpecificBoardGame {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Person getOwner() {
+        return owner;
     }
 
     public void setStatus(GameStatus status) {

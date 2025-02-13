@@ -25,12 +25,6 @@ public class Review {
 
     public Review(int stars, String comment, LocalTime timeStamp,
                   Person author, BoardGame boardGame) {
-        //Validation will occur in the controller
-       //if (stars < 0 || stars > 5) {
-       //    throw new IllegalArgumentException("A review must have between 0 " +
-       //            "and " +
-       //            "5 stars");
-       //}
 
         this.stars = stars;
         this.comment = comment;

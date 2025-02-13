@@ -3,21 +3,28 @@ package ca.mcgill.ecse321.eventregistration.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 public class Registration {
     @EmbeddedId
     private Key key;
+    private LocalDateTime registrationDate;
 
     protected Registration() {}
 
-    public Registration(Key key) {
+    public Registration(Key key, LocalDateTime registrationDate) {
         this.key = key;
+        this.registrationDate = registrationDate;
     }
 
     public Key getKey() {
         return key;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
     }
 
     // Class for composite key of registration

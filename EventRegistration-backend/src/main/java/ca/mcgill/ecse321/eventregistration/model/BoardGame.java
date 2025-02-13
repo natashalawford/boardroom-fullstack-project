@@ -9,13 +9,16 @@ public class BoardGame {
     private String title;
     private String description;
     private int playersNeeded;
+    private int picture;
 
     protected BoardGame() {}
 
-    public BoardGame(String title, String description, int playersNeeded) {
+    public BoardGame(String title, String description, int playersNeeded,
+                     int picture) {
         this.title = title;
         this.description = description;
         this.playersNeeded = playersNeeded;
+        this.picture = picture;
     }
 
     public String getTitle() {
@@ -28,5 +31,9 @@ public class BoardGame {
 
     public int getPlayersNeeded() {
         return playersNeeded;
+    }
+
+    public int getPicture() {
+        return picture;
     }
 }

@@ -7,7 +7,6 @@ import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 
-
 @Entity
 public class Event {
     @Id
@@ -23,6 +22,8 @@ public class Event {
     private Location location;
     @ManyToOne
     private Person eventHost;
+    @ManyToOne
+    private BoardGame boardGame;
 
     protected Event() {}
 
@@ -60,5 +61,13 @@ public class Event {
 
     public Person getEventHost() {
         return eventHost;
+    }
+
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
+
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 }

@@ -12,13 +12,15 @@ public class Person {
     private String name;
     private String email;
     private String password;
+    private boolean owner;
 
     protected Person() {}
 
-    public Person(String name, String email, String password) {
+    public Person(String name, String email, String password, boolean owner) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.owner = owner;
     }
 
     public int getId() {
@@ -37,8 +39,15 @@ public class Person {
         return password;
     }
 
+    public boolean isOwner() {
+        return owner;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
+    public void setOwner(boolean owner) {
+        this.owner = owner;
+    }
 }

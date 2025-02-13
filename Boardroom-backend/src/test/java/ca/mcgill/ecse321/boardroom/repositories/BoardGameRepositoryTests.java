@@ -1,8 +1,10 @@
-package test.java.ca.mcgill.ecse321.boardroom.repositories;
+package ca.mcgill.ecse321.boardroom.repositories;
 import org.springframework.boot.test.context.SpringBootTest;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

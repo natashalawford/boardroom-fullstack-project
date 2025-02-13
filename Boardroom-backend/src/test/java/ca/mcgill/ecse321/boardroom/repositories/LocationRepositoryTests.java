@@ -1,4 +1,4 @@
-package test.java.ca.mcgill.ecse321.boardroom.repositories;
+package ca.mcgill.ecse321.boardroom.repositories;
 
 public class LocationRepositoryTests {
 	

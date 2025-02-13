@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringBootTest
 public class BoardGameRepositoryTests {
-
 	@Autowired
 	private BoardGameRepository repo;
 

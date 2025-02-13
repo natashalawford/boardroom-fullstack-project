@@ -1,4 +1,5 @@
 package ca.mcgill.ecse321.boardroom.repositories;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
@@ -8,11 +9,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @SpringBootTest
 public class BoardGameRepositoryTests {
 
-    @Autowired
+	@Autowired
 	private BoardGameRepository repo;
 
 	@AfterEach
@@ -37,5 +37,3 @@ public class BoardGameRepositoryTests {
 		assertEquals(boardGame.getPicture(), boardGameFromDb.getPicture());
 	}
 }
-
-

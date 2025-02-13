@@ -12,7 +12,7 @@ import ca.mcgill.ecse321.boardroom.model.Location;
 
 @SpringBootTest
 public class LocationRepositoryTests {
-    @Autowired
+	@Autowired
 	private LocationRepository repo;
 
 	@AfterEach
@@ -23,11 +23,11 @@ public class LocationRepositoryTests {
 	@Test
 	public void testCreateAndReadLocation() {
 		// Arrange
-        String address = "1234 Rue Sainte-Catherine";
-        String city = "Montreal";
-        String province = "Quebec";
-        Location montrealCafe = new Location(address, city, province);
-        montrealCafe = repo.save(montrealCafe);
+		String address = "1234 Rue Sainte-Catherine";
+		String city = "Montreal";
+		String province = "Quebec";
+		Location montrealCafe = new Location(address, city, province);
+		montrealCafe = repo.save(montrealCafe);
 
 		// Act
 		Location cafeFromDB = repo.findLocationById(montrealCafe.getId());

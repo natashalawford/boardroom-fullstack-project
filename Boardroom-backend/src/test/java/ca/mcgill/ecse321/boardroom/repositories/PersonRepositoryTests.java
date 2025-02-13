@@ -12,7 +12,7 @@ import ca.mcgill.ecse321.boardroom.model.Person;
 
 @SpringBootTest
 public class PersonRepositoryTests {
-    @Autowired
+	@Autowired
 	private PersonRepository repo;
 
 	@AfterEach

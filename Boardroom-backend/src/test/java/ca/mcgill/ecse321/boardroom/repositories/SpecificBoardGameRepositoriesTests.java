@@ -16,34 +16,35 @@ import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 @SpringBootTest
 public class SpecificBoardGameRepositoriesTests {
     @Autowired
-	private SpecificBoardGameRepository specificBoardGameRepo;
+    private SpecificBoardGameRepository specificBoardGameRepo;
     @Autowired
     private BoardGameRepository boardGameRepo;
-	@Autowired
+    @Autowired
     private PersonRepository personRepo;
 
-	@AfterEach
-	public void clearDatabase() {
-		specificBoardGameRepo.deleteAll();
+    @AfterEach
+    public void clearDatabase() {
+        specificBoardGameRepo.deleteAll();
         boardGameRepo.deleteAll();
         personRepo.deleteAll();
-	}
+    }
 
-	@Test
-	public void testCreateAndReadSpecificBoardGame() {
-		// Arrange
-		Person bob = new Person("Bob", "bob@mail.mcgill.ca", "1234", true);
-		bob = personRepo.save(bob);
+    @Test
+    public void testCreateAndReadSpecificBoardGame() {
+        // Arrange
+        Person bob = new Person("Bob", "bob@mail.mcgill.ca", "1234", true);
+        bob = personRepo.save(bob);
 
         BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
         boardGame = boardGameRepo.save(boardGame);
-		
-        SpecificBoardGame specificBoardGame = new SpecificBoardGame(1212, "Good quality, no rips", GameStatus.AVAILABLE, boardGame, bob);
+
+        SpecificBoardGame specificBoardGame = new SpecificBoardGame(1212, "Good quality, no rips", GameStatus.AVAILABLE,
+                boardGame, bob);
 
         // Act
-		SpecificBoardGame specificBoardGameFromDb = specificBoardGameRepo.save(specificBoardGame);
+        SpecificBoardGame specificBoardGameFromDb = specificBoardGameRepo.save(specificBoardGame);
 
-		// Assert
+        // Assert
         assertNotNull(specificBoardGame);
         assertEquals(specificBoardGame.getId(), specificBoardGameFromDb.getId());
         assertEquals(specificBoardGame.getPicture(), specificBoardGameFromDb.getPicture());
@@ -51,5 +52,5 @@ public class SpecificBoardGameRepositoriesTests {
         assertEquals(specificBoardGame.getStatus(), specificBoardGameFromDb.getStatus());
         assertEquals(specificBoardGame.getBoardGame().getTitle(), specificBoardGameFromDb.getBoardGame().getTitle());
         assertEquals(specificBoardGame.getOwner().getId(), specificBoardGameFromDb.getOwner().getId());
-	}
+    }
 }

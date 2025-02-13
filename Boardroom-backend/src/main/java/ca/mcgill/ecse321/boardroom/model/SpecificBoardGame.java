@@ -30,11 +30,7 @@ public class SpecificBoardGame {
         this.description = description;
         this.status = status;
         this.boardGame = boardGame;
-        if (owner.isOwner()) {
-            this.owner = owner;
-        } else {
-            throw new IllegalArgumentException("Person must be an owner");
-        }
+        this.owner = owner;
     }
 
     public int getId() {

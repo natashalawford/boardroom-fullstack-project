@@ -29,7 +29,7 @@ public class Event {
 
     public Event(String title, String description,
                  LocalDateTime startDateTime, LocalDateTime endDateTime,
-                 int maxParticipants, Location location, Person eventHost) {
+                 int maxParticipants, Location location, Person eventHost, BoardGame boardGame) {
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
@@ -37,6 +37,7 @@ public class Event {
         this.maxParticipants = maxParticipants;
         this.location = location;
         this.eventHost = eventHost;
+        this.boardGame = boardGame;
     }
 
     public int getId() {
@@ -61,6 +62,10 @@ public class Event {
 
     public Person getEventHost() {
         return eventHost;
+    }
+
+    public BoardGame getBoardGame() {
+        return boardGame;
     }
 
     public LocalDateTime getStartDateTime() {

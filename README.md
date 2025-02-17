@@ -32,7 +32,7 @@ The **BoardRoom: Board Game Enthusiasts' Hub** provides the following features:
 | Natasha Lawford | Developer                | 1          | Domain Model                   | 11                  |
 | Alison Quach    | Developer                | 1          | Domain Model                   | 11                  |
 | Malak Oualid    | Senior Testing Developer | 1          | Persistence Layer Testing      | 12                  |
-| Jason Rustom    | Senior Developer         | 1          | Persistence Layer              | 12                  |
+| Jason Rustom    | Senior Developer         | 1          | Persistence Layer, Domain Model| 12                  |
 | Nathan Reid     | Developer                | 1          | Persistence Layer              | 11                  |
 
 

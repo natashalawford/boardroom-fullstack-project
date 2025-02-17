@@ -29,6 +29,13 @@ The **BoardRoom: Board Game Enthusiasts' Hub** provides the following features:
 
 | Team Member     | Role                     | Deliverable| Description of Work            | Time Spent (hours)  |
 |-----------------|--------------------------|------------|--------------------------------|---------------------|
+| Gracie Diabo    | Developer                | 0.5        | Functional Requirements        | 3                   |
+| Janelle Tam     | Project Manager          | 0.5        | Use Case Diagram               | 4                   |
+| Natasha Lawford | Developer                | 0.5        | Functional Requirements        | 3                   |
+| Alison Quach    | Developer                | 0.5        | Use Case Diagram               | 3                   |
+| Malak Oualid    | Senior Testing Developer | 0.5        | Functional Requirements        | 3                   |
+| Jason Rustom    | Senior Developer         | 0.5        | Non-Functional Requirements    | 3                   |
+| Nathan Reid     | Developer                | 0.5        | Functional Requirements        | 4                   |
 | Gracie Diabo    | Developer                | 1          | Domain Model                   | 11                  |
 | Janelle Tam     | Project Manager          | 1          | Persistence Layer Testing      | 12                  |
 | Natasha Lawford | Developer                | 1          | Domain Model                   | 11                  |

@@ -43,11 +43,4 @@ public class Person {
         return owner;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setOwner(boolean owner) {
-        this.owner = owner;
-    }
 }

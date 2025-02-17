@@ -53,15 +53,8 @@ public class SpecificBoardGame {
         return boardGame;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Person getOwner() {
         return owner;
     }
 
-    public void setStatus(GameStatus status) {
-        this.status = status;
-    }
 }

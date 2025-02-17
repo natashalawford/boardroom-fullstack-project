@@ -61,7 +61,4 @@ public class BorrowRequest {
         return specificBoardGame;
     }
 
-    public void setStatus(RequestStatus status) {
-        this.status = status;
-    }
 }

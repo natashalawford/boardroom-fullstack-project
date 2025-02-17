@@ -26,6 +26,7 @@ The **BoardRoom: Board Game Enthusiasts' Hub** provides the following features:
   - Other users can register for these events if slots are available.
 
 ## Team Members & Contributions
+### Deliverable 0.5
 
 | Team Member     | Role                     | Deliverable| Description of Work            | Time Spent (hours)  |
 |-----------------|--------------------------|------------|--------------------------------|---------------------|
@@ -36,6 +37,11 @@ The **BoardRoom: Board Game Enthusiasts' Hub** provides the following features:
 | Malak Oualid    | Senior Testing Developer | 0.5        | Functional Requirements        | 3                   |
 | Jason Rustom    | Senior Developer         | 0.5        | Non-Functional Requirements    | 3                   |
 | Nathan Reid     | Developer                | 0.5        | Functional Requirements        | 4                   |
+
+### Deliverable 1
+
+| Team Member     | Role                     | Deliverable| Description of Work            | Time Spent (hours)  |
+|-----------------|--------------------------|------------|--------------------------------|---------------------|
 | Gracie Diabo    | Developer                | 1          | Domain Model                   | 11                  |
 | Janelle Tam     | Project Manager          | 1          | Persistence Layer Testing      | 12                  |
 | Natasha Lawford | Developer                | 1          | Domain Model                   | 11                  |

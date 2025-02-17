@@ -49,6 +49,9 @@ The **BoardRoom** provides the following features:
 | Jason Rustom    | Senior Developer         | 1          | Persistence Layer, Domain Model| 12                  |
 | Nathan Reid     | Developer                | 1          | Persistence Layer              | 11                  |
 
+## Testing Summary
+We created a persistence test for each model class in the application, such that the test would perform read and write access for the objects, attributes, and references.
+
 ## Testing Configuration
 Please follow these instructions to ensure the project tests runs on your local host.
 1. Update your Java version to version 23 (will need to update [path variables](https://www.happycoders.eu/java/how-to-switch-multiple-java-versions-windows/]))

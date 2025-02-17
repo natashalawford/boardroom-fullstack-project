@@ -6,7 +6,7 @@ We are Group 17, a group of 7 members working together on a Board Game Rental an
 - Janelle Tam - Software Engineering, U1
 - Malak Oualid - Software Engineering, U1
 - Natasha Lawford - Software Engineering, U1
-- Alison Quach - Software Engineering, U1
+- Alison Quach - Computer Engineering, U2
 - Nathan Reid - Computer Engineering, U2
 - Gracie Diabo - Software Engineering, U2
 - Jason Rustom - Software Engineering, U2

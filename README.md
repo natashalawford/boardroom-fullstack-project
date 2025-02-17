@@ -1,6 +1,6 @@
 # project-group-17
 # Project Name
-- BoardRoom -
+## - BoardRoom -
 
 ## Team Introduction
 We are Group 17, a group of 7 members working together on a Board Game Rental and Event Host Management System. Our team is comprised of:

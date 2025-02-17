@@ -18,7 +18,9 @@ The **BoardRoom: Board Game Enthusiasts' Hub** provides the following features:
 - **Account Types**:
   - **Players**: Can browse available games, review them, and register for events.
   - **Game Owners**: Can manage their game collection, receive borrowing requests, and track their lending history.
-- **Board Game Management**: A list of all available board games, allowing users to see who owns each game.
+- **Board Game Management**:
+  - **Players**: A list of all available board games, allowing users to see who owns each game.
+  - **Game Owners**: Ability to add,update and delete board games, as well as making them available for rent.
 - **Event Creation & Participation**:
   - Users can create board game events with a **date, time, location, description, max participants, and the game to be played**.
   - Other users can register for these events if slots are available.

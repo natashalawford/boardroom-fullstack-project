@@ -49,6 +49,21 @@ The **BoardRoom** provides the following features:
 | Jason Rustom    | Senior Developer         | 1          | Persistence Layer, Domain Model| 12                  |
 | Nathan Reid     | Developer                | 1          | Persistence Layer              | 11                  |
 
+## Testing Configuration
+Please follow these instructions to ensure the project tests runs on your local host.
+1. Update your Java version to version 23 (will need to update [path variables](https://www.happycoders.eu/java/how-to-switch-multiple-java-versions-windows/]))
+2. Change your local psql postgres user password to "group17" to make it consistent. You can use these commands
+```
+psql -U postgres
+\password postgres
+[enter 'group17' as the password]
+```
+3. Create a new database  called `boardroom`
+```
+psql -U postgres
+CREATE DATABASE boardroom;
+```
+4. Run `./gradlew build`
 
 ## Link to the Deliverable 1 Wiki:
 https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-1 

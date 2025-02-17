@@ -13,7 +13,7 @@ We are Group 17, a group of 7 members working together on a Board Game Rental an
 
 
 ## Project Scope
-The **BoardRoom: Board Game Enthusiasts' Hub** provides the following features:
+The **BoardRoom** provides the following features:
 - **User Authentication**: Users must log in to access any features.
 - **Account Types**:
   - **Players**: Can browse available games, review them, and register for events.

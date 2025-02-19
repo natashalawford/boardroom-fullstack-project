@@ -40,12 +40,13 @@ public class SpecificBoardGameRepositoriesTests {
 
         SpecificBoardGame specificBoardGame = new SpecificBoardGame(1212, "Good quality, no rips", GameStatus.AVAILABLE,
                 boardGame, bob);
+        specificBoardGame = specificBoardGameRepo.save(specificBoardGame);
 
         // Act
-        SpecificBoardGame specificBoardGameFromDb = specificBoardGameRepo.save(specificBoardGame);
+        SpecificBoardGame specificBoardGameFromDb = specificBoardGameRepo.findSpecificBoardGameById(specificBoardGame.getId());
 
         // Assert
-        assertNotNull(specificBoardGame);
+        assertNotNull(specificBoardGameFromDb);
         assertEquals(specificBoardGame.getId(), specificBoardGameFromDb.getId());
         assertEquals(specificBoardGame.getPicture(), specificBoardGameFromDb.getPicture());
         assertEquals(specificBoardGame.getDescription(), specificBoardGameFromDb.getDescription());

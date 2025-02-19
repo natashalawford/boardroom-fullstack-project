@@ -49,13 +49,14 @@ public class EventRepositoryTests {
         BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
         boardGame = boardGameRepo.save(boardGame);
 
-        LocalDateTime startDateTime = LocalDateTime.now();
-        LocalDateTime endDateTime = LocalDateTime.now().plusHours(2);
+        LocalDateTime startDateTime = LocalDateTime.parse("2025-02-13T00:00:00");
+        LocalDateTime endDateTime = LocalDateTime.parse("2025-02-14T00:00:00");
         Event event = new Event("Cafe Get-together", "Meet new friends", startDateTime, endDateTime, 10, montrealCafe,
                 bob, boardGame);
+        event = eventRepo.save(event);
 
         // Act
-        Event eventFromDB = eventRepo.save(event);
+        Event eventFromDB = eventRepo.findEventById(event.getId());
 
         // Assert
         assertNotNull(eventFromDB);

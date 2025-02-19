@@ -26,6 +26,7 @@ The **BoardRoom** provides the following features:
 
 ## Team Members & Contributions
 ### Deliverable 0.5
+(All members contributed equally)
 
 | Team Member     | Role                     | Deliverable| Description of Work            | Time Spent (hours)  |
 |-----------------|--------------------------|------------|--------------------------------|---------------------|
@@ -38,6 +39,7 @@ The **BoardRoom** provides the following features:
 | Nathan Reid     | Developer                | 0.5        | Functional Requirements        | 4                   |
 
 ### Deliverable 1
+(All members contributed equally)
 
 | Team Member     | Role                     | Deliverable| Description of Work            | Time Spent (hours)  |
 |-----------------|--------------------------|------------|--------------------------------|---------------------|

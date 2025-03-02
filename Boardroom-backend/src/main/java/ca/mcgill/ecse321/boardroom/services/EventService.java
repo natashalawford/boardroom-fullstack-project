@@ -1,19 +1,23 @@
-package ca.mcgill.ecse321.boardroom.service;
+package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.model.Person;
-import ca.mcgill.ecse321.boardroom.requests.CreateEventRequest;
-import java.sql.Timestamp;
+import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import jakarta.validation.Valid;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 
 @Service
+@Validated
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -24,9 +28,7 @@ public class EventService {
     }
 
     @Transactional
-    public Event createEvent(CreateEventRequest eventToCreate) {
-        if(eventToCreate.getDescription() == null)
-            throw ...
+    public Event createEvent(@Valid EventCreationDto eventToCreate) {
         validateEventTimes(eventToCreate.getStartDateTime(), eventToCreate.getEndDateTime());
 
         Event event = new Event(
@@ -36,7 +38,7 @@ public class EventService {
                 eventToCreate.getEndDateTime(),
                 eventToCreate.getMaxParticipants(),
                 eventToCreate.getLocation(),
-                eventToCreate.getEventHost(),
+                eventToCreate.getHost(),
                 eventToCreate.getBoardGame()
         );
 
@@ -45,7 +47,7 @@ public class EventService {
 
 
     private void validateEventTimes(LocalDateTime startTime, LocalDateTime endTime) {
-        LocalDateTime now = LocalDateTime.from(Instant.now());
+        LocalDateTime now = LocalDateTime.now();
 
         if (startTime.isBefore(now)) {
             throw new IllegalArgumentException(

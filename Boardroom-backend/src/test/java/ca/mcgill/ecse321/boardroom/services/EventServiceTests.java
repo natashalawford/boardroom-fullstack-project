@@ -13,17 +13,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -33,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 //@SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+public class EventServiceTests {
     @Mock
     private EventRepository repo;
     @InjectMocks

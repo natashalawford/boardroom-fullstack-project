@@ -2,10 +2,8 @@ package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.model.Event;
-import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import jakarta.validation.Valid;
 

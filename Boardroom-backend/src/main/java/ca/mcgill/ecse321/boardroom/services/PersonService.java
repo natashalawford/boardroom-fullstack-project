@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.boardroom.services;
 
+import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -26,9 +27,11 @@ public class PersonService {
     }
 
     @Transactional
-    public Person createPerson(String name, String email,
-                               String password, boolean owner) {
-        Person newPerson = new Person(name, email, password, owner);
+    public Person createPerson(PersonCreationDto personToCreate) {
+        Person newPerson = new Person(personToCreate.getName(),
+                personToCreate.getEmail(),
+                personToCreate.getPassword(),
+                personToCreate.isOwner());
 
         return personRepo.save(newPerson);
     }

@@ -34,7 +34,16 @@ public class PersonService {
     }
 
     @Transactional
-    public Person updatePerson(Person updatedPerson) {
+    public Person updatePerson(int id, String name, String email,
+                               String password, boolean owner) {
+        //First check if this person exists, if not throw error
+        if (!personRepo.existsById(id)) {
+           throw new BoardroomException(HttpStatus.NOT_FOUND, "a person with " +
+                   "this id does not exist");
+        }
+
+        Person updatedPerson = new Person(id, name, email, password, owner);
+
         return personRepo.save(updatedPerson);
     }
 

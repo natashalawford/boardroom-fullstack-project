@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,22 +46,38 @@ public class RegistrationServiceTests {
 
     private static final int PERSON_ID = 1;
     private static final int EVENT_ID = 100;
-    private static final LocalDateTime REGISTRATION_DATE = LocalDateTime.now();
 
     private static final String VALID_TITLE = "Board Game Night";
     private static final String VALID_DESCRIPTION = "A fun night of board games!";
     private static final LocalDateTime VALID_START_TIME = LocalDateTime.now().plusDays(1);
     private static final LocalDateTime VALID_END_TIME = LocalDateTime.now().plusDays(1).plusHours(2);
     private static final int VALID_MAX_PARTICIPANTS = 10;
-    private static final Person VALID_HOST = new Person("validUser", "valid@email.com", "password", false);
-    private static final Location VALID_LOCATION = new Location("McGill", "MTL", "QC");
-    private static final BoardGame VALID_BOARD_GAME = new BoardGame("Uno", "fun card game", 2, 12345);
-    private static final Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+    private static Location VALID_LOCATION;
+    private static Person VALID_HOST;
+    private static BoardGame VALID_BOARD_GAME;
+
+    private int locationId;
+    private int hostId;
+    private String boardGameName;
+
+    @BeforeEach
+    public void setup() {
+        VALID_LOCATION = new Location("McGill", "Montreal", "QC");
+        int locationId = VALID_LOCATION.getId();
+        VALID_HOST = new Person("Alice", "alice@mail.com", "securepass", false);
+        int hostId = VALID_HOST.getId();
+        VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
+        String boardGameName = VALID_BOARD_GAME.getTitle();
+
+        this.locationId = locationId;
+        this.hostId = hostId;
+        this.boardGameName = boardGameName;
+    }
 
     @Test
     public void testRegisterForEvent_PersonNotFound() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID, REGISTRATION_DATE);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
         when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.empty());
 
@@ -77,7 +94,7 @@ public class RegistrationServiceTests {
     @Test
     public void testRegisterForEvent_EventNotFound() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID, REGISTRATION_DATE);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
         when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
         when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.empty());
@@ -95,7 +112,8 @@ public class RegistrationServiceTests {
     @Test
     public void testRegisterForEvent_EventIsFull() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID, REGISTRATION_DATE);
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
         when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
         when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));

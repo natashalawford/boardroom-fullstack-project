@@ -10,7 +10,7 @@ public class EventRegistrationDto {
     public EventRegistrationDto() {
     }
 
-    public EventRegistrationDto(int personId, int eventId, LocalDateTime registrationDate) {
+    public EventRegistrationDto(int personId, int eventId) {
         this.personId = personId;
         this.eventId = eventId;
     }

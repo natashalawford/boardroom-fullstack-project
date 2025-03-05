@@ -12,6 +12,8 @@ import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,5 +57,11 @@ public class BorrowService {
                 () -> new BoardroomException(HttpStatus.NOT_FOUND, "A borrow request with this id does not exist"));
         borrowRequest.setStatus(status);
         return borrowRequestRepo.save(borrowRequest);
+    }
+
+    // Method to view all borrow requests of a specific boardgame
+    @Transactional
+    public List<BorrowRequest> viewBorrowRequestsByBoardgame(String specificBoardGameTitle) {
+        return borrowRequestRepo.findByBoardGameIdAndStatusIn(specificBoardGameTitle, List.of(RequestStatus.RETURNED.toString(), RequestStatus.ACCEPTED.toString()));
     }
 }

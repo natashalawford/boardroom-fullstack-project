@@ -8,6 +8,7 @@ import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.repositories.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,11 +17,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -49,9 +53,22 @@ public class BorrowServiceTests {
     private static final LocalDateTime VALID_START_DATE = LocalDateTime.now().plusDays(1);
     private static final LocalDateTime VALID_END_DATE = LocalDateTime.now().plusDays(2);
 
+    private SpecificBoardGame specificBoardGame;
+    private BorrowRequest borrowRequest1;
+    private BorrowRequest borrowRequest2;
+
+    @BeforeEach
+    public void setUp() {
+        Person person = new Person(VALID_PERSON_ID, "John Doe", "john.doe@gmail.com", "password", false);
+        BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
+        specificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_GAME_ID, "Good quality, no rips", GameStatus.AVAILABLE, boardGame, person);
+
+        borrowRequest1 = new BorrowRequest(1, RequestStatus.RETURNED, LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), person, specificBoardGame);
+        borrowRequest2 = new BorrowRequest(2, RequestStatus.ACCEPTED, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(2), person, specificBoardGame);
+    }
+
     @Test
     public void testCreateValidBorrowRequest() {
-
         //Arrange
         Person mockBorrower = new Person(VALID_PERSON_ID, "John Doe", "john.doe@gmail.com", "password", false);
         Person mockOwner = new Person(VALID_PERSON_ID, "John Dee", "john.dee@gmail.com", "password", true);
@@ -97,7 +114,6 @@ public class BorrowServiceTests {
         verify(borrowRequestRepo, never()).save(any());
     }
 
-    
     @Test
     public void testCreateBorrowRequestInvalidSpecificBoardGame() {
         // Arrange
@@ -154,4 +170,21 @@ public class BorrowServiceTests {
         verify(borrowRequestRepo, never()).save(any());
     }
 
+    @Test
+    public void testViewBorrowRequestsByBoardgame() {
+        // Arrange
+        when(borrowRequestRepo.findByBoardGameIdAndStatusIn(eq(specificBoardGame.getBoardGame().getTitle()), anyList()))
+                .thenReturn(List.of(borrowRequest1, borrowRequest2));
+
+        // Act
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGame.getBoardGame().getTitle());
+
+        // Assert
+        assertNotNull(borrowRequests);
+        assertEquals(2, borrowRequests.size());
+        assertTrue(borrowRequests.contains(borrowRequest1));
+        assertTrue(borrowRequests.contains(borrowRequest2));
+
+        verify(borrowRequestRepo, times(1)).findByBoardGameIdAndStatusIn(eq(specificBoardGame.getBoardGame().getTitle()), anyList());
+    }
 }

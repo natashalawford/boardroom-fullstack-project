@@ -1,10 +1,16 @@
 package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
+import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
+import ca.mcgill.ecse321.boardroom.model.BoardGame;
+import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Review;
+import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
+import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.ReviewRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -14,25 +20,27 @@ import java.time.LocalTime;
 @Service
 @Validated
 public class ReviewService {
-
-    private final ReviewRepository reviewRepository;
-
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository) {
-        this.reviewRepository = reviewRepository;
-    }
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private PersonRepository personRepository;
+    @Autowired
+    private BoardGameRepository boardGameRepository;
 
     @Transactional
     public Review createReview(@Valid ReviewCreationDto reviewToCreate) {
         LocalTime today = LocalTime.now();
         validateReview(reviewToCreate);
 
+        Person authorToFind = personRepository.findById(reviewToCreate.getAuthorId()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
+        BoardGame boardGameToFind = boardGameRepository.findById(reviewToCreate.getBoardGameName()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A board game with this name does not exist"));
+
         Review review = new Review(
                 reviewToCreate.getStars(),
                 reviewToCreate.getComment(),
                 today,
-                reviewToCreate.getAuthor(),
-                reviewToCreate.getBoardGame()
+                authorToFind,
+                boardGameToFind
         );
 
         return reviewRepository.save(review);

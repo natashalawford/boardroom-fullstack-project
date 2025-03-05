@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Validated
@@ -47,10 +49,20 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
+    @Transactional
+    public List<Review> getReviewsForBoardGame(String title) {
+        List<Review> reviews = new ArrayList<>();
+        for (Review review : reviewRepository.findAll()) {
+            if (review.getBoardGame().getTitle().equals(title)) {
+                reviews.add(review);
+            }
+        }
+        return reviews;
+    }
+
     private void validateReview(ReviewCreationDto review) {
         if (review.getStars() < 1 || review.getStars() > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5 stars.");
         }
     }
-
 }

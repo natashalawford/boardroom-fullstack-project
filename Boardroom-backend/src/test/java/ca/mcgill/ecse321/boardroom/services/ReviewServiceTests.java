@@ -15,9 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +43,7 @@ public class ReviewServiceTests {
     private static final String VALID_COMMENT = "Great game!";
     private static Person VALID_AUTHOR;
     private static BoardGame VALID_BOARD_GAME;
+    private static Review VALID_REVIEW;
     private int authorId;
     private String boardGameName;
 
@@ -48,9 +53,16 @@ public class ReviewServiceTests {
         int authorId = VALID_AUTHOR.getId();
         VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
         String boardGameName = VALID_BOARD_GAME.getTitle();
+        VALID_REVIEW = new Review(authorId, boardGameName, LocalTime.NOON, VALID_AUTHOR, VALID_BOARD_GAME);
 
         this.authorId = authorId;
         this.boardGameName = boardGameName;
+
+        lenient().when(reviewRepository.findAll()).thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
+                        ArrayList<Review> list = new ArrayList<Review>();
+                        list.add(VALID_REVIEW);
+                        return list;
+                });
     }
 
     @Test
@@ -131,5 +143,13 @@ public class ReviewServiceTests {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
 
         verify(reviewRepository, never()).save(any(Review.class));
+    }
+
+    @Test
+    public void testGetReviewsForBoardGame() {
+        List<Review> reviews = new ArrayList<Review>();
+        reviews = reviewService.getReviewsForBoardGame(VALID_BOARD_GAME.getTitle());
+        Review review = reviews.get(0);
+        assertNotNull(review);
     }
 }

@@ -51,4 +51,24 @@ public class PersonService {
         return personRepo.save(updatedPerson);
     }
 
+    @Transactional
+    public Person login(PersonLoginDto loginDto) {
+        if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "Email and password are required.");
+        }
+
+        // check for valid email, then password and throw error if invalid
+        Optional<Person> optionalPerson = personRepo.findByEmail(loginDto.getEmail());
+        if (optionalPerson.isEmpty()) {
+            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
+        }
+
+        Person person = optionalPerson.get();
+        if (!person.getPassword().equals(loginDto.getPassword())) {
+            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
+        }
+
+        return person; 
+    }
+
 }

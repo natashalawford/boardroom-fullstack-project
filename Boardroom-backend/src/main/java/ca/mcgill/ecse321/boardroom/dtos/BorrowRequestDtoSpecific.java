@@ -13,8 +13,7 @@ public class BorrowRequestDtoSpecific {
     private int personId;
     private int specificBoardGameId;
 
-
-    public BorrowRequestDtoSpecific(BorrowRequest borrowRequest){
+    public BorrowRequestDtoSpecific(BorrowRequest borrowRequest) {
         this.id = borrowRequest.getId();
         this.status = borrowRequest.getStatus();
         this.requestStartDate = borrowRequest.getRequestStartDate();
@@ -38,7 +37,7 @@ public class BorrowRequestDtoSpecific {
     public LocalDateTime getRequestStartDate() {
         return requestStartDate;
     }
-    
+
     public int getSpecificBoardGameId() {
         return specificBoardGameId;
     }

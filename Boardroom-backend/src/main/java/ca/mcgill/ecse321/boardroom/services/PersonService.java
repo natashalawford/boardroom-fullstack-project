@@ -7,18 +7,17 @@ import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class PersonService {
 
     @Autowired
     private PersonRepository personRepo;
-
 
     public Person findPersonById(int id) {
         Person person = personRepo.findPersonById(id);
@@ -41,10 +40,10 @@ public class PersonService {
 
     @Transactional
     public Person updatePerson(PersonUpdateDto personToUpdate) {
-        //First check if this person exists, if not throw error
+        // First check if this person exists, if not throw error
         if (!personRepo.existsById(personToUpdate.getId())) {
-           throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
-                   "this id does not exist");
+            throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
+                    "this id does not exist");
         }
 
         Person updatedPerson = new Person(personToUpdate.getId(),
@@ -71,7 +70,7 @@ public class PersonService {
             throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
-        return person; 
+        return person;
     }
 
 }

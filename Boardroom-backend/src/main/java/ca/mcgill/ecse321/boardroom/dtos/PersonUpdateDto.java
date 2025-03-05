@@ -1,19 +1,25 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
-public class PersonCreationDto {
+public class PersonUpdateDto {
+    private int id;
     private String name;
     private String email;
     private String password;
     private boolean owner;
 
-    private PersonCreationDto() {}
+    private PersonUpdateDto() {}
 
-    public PersonCreationDto(String name, String email, String password,
-                             boolean owner) {
+    public PersonUpdateDto(int id, String name, String email, String password
+            , boolean owner) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.owner = owner;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {

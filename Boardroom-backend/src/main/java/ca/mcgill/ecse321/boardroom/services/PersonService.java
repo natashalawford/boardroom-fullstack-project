@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonUpdateDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -37,15 +38,16 @@ public class PersonService {
     }
 
     @Transactional
-    public Person updatePerson(int id, String name, String email,
-                               String password, boolean owner) {
+    public Person updatePerson(PersonUpdateDto personToUpdate) {
         //First check if this person exists, if not throw error
-        if (!personRepo.existsById(id)) {
-           throw new BoardroomException(HttpStatus.NOT_FOUND, "a person with " +
+        if (!personRepo.existsById(personToUpdate.getId())) {
+           throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
                    "this id does not exist");
         }
 
-        Person updatedPerson = new Person(id, name, email, password, owner);
+        Person updatedPerson = new Person(personToUpdate.getId(),
+                personToUpdate.getName(), personToUpdate.getEmail(),
+                personToUpdate.getPassword(), personToUpdate.isOwner());
 
         return personRepo.save(updatedPerson);
     }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -57,14 +58,24 @@ public class GameOwnerServiceTests {
     private static final String VALID_EMAIL = "john.doe@gmail.com";
     private static final String VALID_PASSWORD = "1234";
     private static final boolean VALID_OWNER = true; 
+
+    //Object Instantiation
+    BoardGame VALID_BOARDGAME;
+    Person VALID_GAME_OWNER;
     
+    @BeforeEach
+    public void objectInstantiation() {
+        BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
+
+        Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER); 
+    }
     
     @Test
     public void testFindValidSpecificBoardGame() {
         //Arrange
-        BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
+        // BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
 
-        Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        // Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
 
         when(specificBoardGameRepo.findSpecificBoardGameById(1)).thenReturn(new SpecificBoardGame(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_BOARDGAME, VALID_GAME_OWNER));
 
@@ -92,10 +103,6 @@ public class GameOwnerServiceTests {
     public void testCreateValidSpecificBoardGame() {
         //Arrange
         SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_SPECIFIC_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS, VALID_TITLE, 1);
-
-        BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
-
-        Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
 
 
         when(personService.findPersonById(anyInt())).thenReturn(VALID_GAME_OWNER);
@@ -135,9 +142,6 @@ public class GameOwnerServiceTests {
     @Test
     public void testUpdateValidSpecificBoardGame() {
         //Arrange 
-        BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
-
-        Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER); 
 
         SpecificBoardGame existingSpecificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_BOARDGAME, VALID_GAME_OWNER);
 

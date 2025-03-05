@@ -20,6 +20,8 @@ import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.ReviewRepository;
 
+import java.util.List;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
@@ -38,14 +40,18 @@ public class ReviewIntegrationTests {
 
     private static Person VALID_AUTHOR;
     private static BoardGame VALID_BOARD_GAME;
+    private int authorId;
+    private String boardGameName;
 
     @BeforeEach
     public void setup() {
-        VALID_AUTHOR = new Person("Alice", "alice@mail.com", "securepass", false);
+        VALID_AUTHOR = new Person("validUser", "user@mail.com", "securepass", false);
         personRepository.save(VALID_AUTHOR);
+        authorId = VALID_AUTHOR.getId();
 
         VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
         boardGameRepository.save(VALID_BOARD_GAME);
+        boardGameName = VALID_BOARD_GAME.getTitle();
     }
 
     @AfterEach
@@ -63,7 +69,7 @@ public class ReviewIntegrationTests {
     public void testCreateValidReview() {
         // Arrange
         ReviewCreationDto body = new ReviewCreationDto(
-                5, "Great game, had a lot of fun!", VALID_AUTHOR, VALID_BOARD_GAME
+                5, "Great game, had a lot of fun!", authorId, boardGameName
         );
 
         // Act
@@ -77,11 +83,11 @@ public class ReviewIntegrationTests {
         assertEquals(body.getStars(), response.getBody().getStars());
         assertEquals(body.getComment(), response.getBody().getComment());
 
-        assertEquals(body.getAuthor().getEmail(), response.getBody().getAuthor().getEmail());
-        assertEquals(body.getAuthor().getName(), response.getBody().getAuthor().getName());
+        int responsePersonId = response.getBody().getAuthorId();
+        assertEquals(body.getAuthorId(), responsePersonId);
 
-        assertEquals(body.getBoardGame().getTitle(), response.getBody().getBoardGame().getTitle());
-        assertEquals(body.getBoardGame().getDescription(), response.getBody().getBoardGame().getDescription());
+        String responseGame = response.getBody().getBoardGameName();
+        assertEquals(body.getBoardGameName(), responseGame);
     }
 
     /**
@@ -92,33 +98,36 @@ public class ReviewIntegrationTests {
     public void testCreateReviewWithInvalidStars() {
         // Arrange
         ReviewCreationDto body = new ReviewCreationDto(
-                0, "This review should fail.", VALID_AUTHOR, VALID_BOARD_GAME
+                0, "This review should fail.", authorId, boardGameName
         );
 
         // Act
         ResponseEntity<ErrorDto> response = client.postForEntity("/reviews", body, ErrorDto.class);
 
         // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("Rating must be at least 1 star."),
+                response.getBody().getErrors());
     }
 
-    /**
-     * Test creating a review with a null comment.
-     */
     @Test
     @Order(2)
-    public void testCreateReviewWithNullComment() {
+    public void testCreateReviewWithInvalidFields() {
         // Arrange
         ReviewCreationDto body = new ReviewCreationDto(
-                4, null, VALID_AUTHOR, VALID_BOARD_GAME
+                4, "this should fail", authorId, "NonExistentGame"
         );
 
         // Act
         ResponseEntity<ErrorDto> response = client.postForEntity("/reviews", body, ErrorDto.class);
 
         // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("A board game with this name does not exist"),
+                response.getBody().getErrors());
     }
 }

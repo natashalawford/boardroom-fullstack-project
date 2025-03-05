@@ -25,12 +25,8 @@ public class ReviewController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewResponseDto createReview(@RequestBody ReviewCreationDto reviewToCreate) {
-        try {
-            Review createdReview = reviewService.createReview(reviewToCreate);
-            return new ReviewResponseDto(createdReview);
-        } catch (Exception e) {
-            throw new RuntimeException("Review creation failed", e);
-        }
+        Review createdReview = reviewService.createReview(reviewToCreate);
+        return new ReviewResponseDto(createdReview);
     }
 
 

@@ -23,6 +23,14 @@ public class Person {
         this.owner = owner;
     }
 
+    public Person(int id, String name, String email, String password, boolean owner) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.owner = owner;
+    }
+
     public int getId() {
         return id;
     }

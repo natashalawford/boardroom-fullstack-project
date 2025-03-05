@@ -25,12 +25,8 @@ public class EventController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventResponseDto createEvent(@RequestBody EventCreationDto eventToCreate) {
-        try {
-            Event createdEvent = eventService.createEvent(eventToCreate);
-            return new EventResponseDto(createdEvent);
-        } catch (Exception e) {
-            throw new RuntimeException("Event creation failed", e);
-        }
+        Event createdEvent = eventService.createEvent(eventToCreate);
+        return new EventResponseDto(createdEvent);
     }
 
 }

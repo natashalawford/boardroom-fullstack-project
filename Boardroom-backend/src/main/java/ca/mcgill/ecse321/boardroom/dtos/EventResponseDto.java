@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
 import ca.mcgill.ecse321.boardroom.model.Event;
-import ca.mcgill.ecse321.boardroom.model.Location;
-import ca.mcgill.ecse321.boardroom.model.Person;
-import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +11,9 @@ public class EventResponseDto {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private int maxParticipants;
-    private Location location;
-    private Person host;
-    private BoardGame boardGame;
+    private int locationId;
+    private int hostId;
+    private String boardGameName;
 
     @SuppressWarnings("unused")
     private EventResponseDto() { }
@@ -28,9 +25,9 @@ public class EventResponseDto {
         this.startDateTime = event.getStartDateTime();
         this.endDateTime = event.getEndDateTime();
         this.maxParticipants = event.getMaxParticipants();
-        this.location = event.getLocation();
-        this.host = event.getEventHost();
-        this.boardGame = event.getBoardGame();
+        this.locationId = event.getLocation().getId();
+        this.hostId = event.getEventHost().getId();
+        this.boardGameName = event.getBoardGame().getTitle();
     }
 
     public int getId() {
@@ -57,15 +54,15 @@ public class EventResponseDto {
         return maxParticipants;
     }
 
-    public Location getLocation() {
-        return location;
+    public int getLocationId() {
+        return locationId;
     }
 
-    public Person getHost() {
-        return host;
+    public int getHostId() {
+        return hostId;
     }
 
-    public BoardGame getBoardGame() {
-        return boardGame;
+    public String getBoardGameName() {
+        return boardGameName;
     }
 }

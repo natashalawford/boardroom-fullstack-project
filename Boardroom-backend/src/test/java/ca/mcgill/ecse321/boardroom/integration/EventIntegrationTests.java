@@ -35,7 +35,6 @@ public class EventIntegrationTests {
 
     @Autowired
     private LocationRepository locationRepository;
-
     @Autowired
     private PersonRepository personRepository;
     @Autowired
@@ -51,15 +50,22 @@ public class EventIntegrationTests {
     private static Location VALID_LOCATION;
     private static Person VALID_HOST;
     private static BoardGame VALID_BOARD_GAME;
-
+    private int locationId;
+    private int hostId;
+    private String boardGameName;
     @BeforeEach
     public void setup() {
         VALID_LOCATION = new Location("McGill", "Montreal", "QC");
         locationRepository.save(VALID_LOCATION);
+        locationId = VALID_LOCATION.getId();
+
         VALID_HOST = new Person("Name", "name@mail.com", "securepass", false);
         personRepository.save(VALID_HOST);
+        hostId = VALID_HOST.getId();
+
         VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
         boardGameRepository.save(VALID_BOARD_GAME);
+        boardGameName = VALID_BOARD_GAME.getTitle();
     }
 
     @AfterEach
@@ -70,14 +76,13 @@ public class EventIntegrationTests {
         boardGameRepository.deleteAll();
     }
 
-
     @Test
     @Order(0)
     public void testCreateValidEvent() {
         // Arrange
         EventCreationDto body = new EventCreationDto(
                 VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
-                VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME
+                VALID_MAX_PARTICIPANTS, locationId, hostId, boardGameName
         );
 
         // Act
@@ -94,20 +99,14 @@ public class EventIntegrationTests {
         assertEquals(body.getEndDateTime(), response.getBody().getEndDateTime());
         assertEquals(body.getMaxParticipants(), response.getBody().getMaxParticipants());
 
-        Location responseLocation = response.getBody().getLocation();
-        assertEquals(body.getLocation().getCity(), responseLocation.getCity());
-        assertEquals(body.getLocation().getAddress(), responseLocation.getAddress());
-        assertEquals(body.getLocation().getProvince(), responseLocation.getProvince());
+        int responseLocationId = response.getBody().getLocationId();
+        assertEquals(body.getLocationId(), responseLocationId);
 
-        Person responsePerson = response.getBody().getHost();
-        assertEquals(body.getHost().getEmail(), responsePerson.getEmail());
-        assertEquals(body.getHost().getName(), responsePerson.getName());
+        int responsePersonId = response.getBody().getHostId();
+        assertEquals(body.getHostId(), responsePersonId);
 
-        BoardGame responseGame = response.getBody().getBoardGame();
-        assertEquals(body.getBoardGame().getDescription(), responseGame.getDescription());
-        assertEquals(body.getBoardGame().getTitle(), responseGame.getTitle());
-        assertEquals(body.getBoardGame().getPlayersNeeded(), responseGame.getPlayersNeeded());
-        assertEquals(body.getBoardGame().getPicture(), responseGame.getPicture());
+        String responseGame = response.getBody().getBoardGameName();
+        assertEquals(body.getBoardGameName(), responseGame);
     }
 
     @Test
@@ -116,14 +115,39 @@ public class EventIntegrationTests {
         // Arrange
         EventCreationDto body = new EventCreationDto(
                 VALID_TITLE, VALID_DESCRIPTION, LocalDateTime.now().minusDays(1), VALID_END_TIME,
-                VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME
+                VALID_MAX_PARTICIPANTS, locationId, hostId, boardGameName
         );
 
         // Act
         ResponseEntity<ErrorDto> response = client.postForEntity("/events", body, ErrorDto.class);
 
         // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("End date and time must be in the future."),
+                response.getBody().getErrors());
+    }
+
+    @Test
+    @Order(2)
+    public void testCreateEventWithNonExistentLocation() {
+        // Arrange: Using an invalid location ID (non-existent)
+        int invalidLocationId = 99999;
+
+        EventCreationDto body = new EventCreationDto(
+                VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, invalidLocationId, hostId, boardGameName
+        );
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.postForEntity("/events", body, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("A location with this id does not exist"),
+                response.getBody().getErrors());
     }
 }

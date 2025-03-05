@@ -124,7 +124,7 @@ public class BoardGameServiceTests {
             // Arrange
             SpecificBoardGameCreationDtoJanelle newSpecificBoardGameDto = new SpecificBoardGameCreationDtoJanelle(
                             VALID_SPECIFIC_GAME_PICTURE, VALID_SPECIFIC_GAME_DESCRIPTION,
-                            VALID_GAME_STATUS.toString(), VALID_TITLE, VALID_OWNER.getId());
+                            VALID_GAME_STATUS, VALID_TITLE, VALID_OWNER.getId());
             SpecificBoardGame createdSpecificBoardGame = boardGameService
                             .createSpecificBoardGame(newSpecificBoardGameDto);
         

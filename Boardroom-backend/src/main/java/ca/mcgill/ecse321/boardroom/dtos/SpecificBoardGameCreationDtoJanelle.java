@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
+import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,7 +12,7 @@ public class SpecificBoardGameCreationDtoJanelle {
     private int picture;
 
     @NotNull(message = "A board game status is required")
-    private String gameStatus;
+    private GameStatus gameStatus;
 
     @NotNull(message = "A board game title is required")
     private String boardGameTitle;
@@ -20,7 +21,7 @@ public class SpecificBoardGameCreationDtoJanelle {
     private int personId;
 
     public SpecificBoardGameCreationDtoJanelle(int picture, String description,
-            String gameStatus, String boardGameTitle,
+            GameStatus gameStatus, String boardGameTitle,
             int personId) {
         this.picture = picture;
         this.description = description;
@@ -37,7 +38,7 @@ public class SpecificBoardGameCreationDtoJanelle {
         return picture;
     }
 
-    public String getGameStatus() {
+    public GameStatus getGameStatus() {
         return gameStatus;
     }
 

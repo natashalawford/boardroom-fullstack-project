@@ -46,7 +46,7 @@ public class BoardGameServiceJanelle {
         BoardGame boardGameToFind = getBoardGameByTitle(specificBoardGameToCreate.getBoardGameTitle());
 
         // Convert game status from dto (string) to enum
-        GameStatus status = GameStatus.valueOf(specificBoardGameToCreate.getGameStatus());
+        GameStatus status = specificBoardGameToCreate.getGameStatus();
 
         SpecificBoardGame specificBoardGame = new SpecificBoardGame(specificBoardGameToCreate.getPicture(),
                 specificBoardGameToCreate.getDescription(),

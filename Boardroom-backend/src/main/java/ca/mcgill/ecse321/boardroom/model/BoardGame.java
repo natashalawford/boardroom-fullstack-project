@@ -36,4 +36,9 @@ public class BoardGame {
     public int getPicture() {
         return picture;
     }
+
+    public BoardGame orElseThrow(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
+    }
 }

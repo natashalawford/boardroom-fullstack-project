@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
+import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoSpecific;

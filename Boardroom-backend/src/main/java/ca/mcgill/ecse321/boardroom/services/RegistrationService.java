@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.boardroom.model.Registration.Key;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
+import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,8 +33,9 @@ public class RegistrationService {
     }
 
     @Transactional
-    public Registration registerForEvent(int personId, int eventId) {
+    public Registration registerForEvent(EventRegistrationDto eventRegistrationDto) {
         // Get the user
+        int personId = eventRegistrationDto.getPersonId();
         Person person = personRepository.findById(personId).orElse(null);
 
         // Check if person exists, otherwise throw an exception
@@ -42,6 +44,7 @@ public class RegistrationService {
         }
 
         // Get the event
+        int eventId = eventRegistrationDto.getEventId();
         Event event = eventRepository.findById(eventId).orElse(null);
 
         // Check if event exists, otherwise throw an exception

@@ -42,11 +42,18 @@ public class BorrowService {
         Person personToFind = personRepo.findById(borrowRequestToCreate.getPersonId()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
         SpecificBoardGame specificBoardGameToFind = specificBoardGameRepo.findById(borrowRequestToCreate.getSpecificBoardGameId()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A specific board game with this id does not exist"));
 
-        BorrowRequest br = new BorrowRequest( borrowRequestToCreate.getStatus(), 
+        BorrowRequest borrowRequest = new BorrowRequest( borrowRequestToCreate.getStatus(), 
                                               borrowRequestToCreate.getRequestStartDate(), 
                                               borrowRequestToCreate.getRequestEndDate(), 
                                               personToFind, 
                                               specificBoardGameToFind);
-        return borrowRequestRepo.save(br);
+        return borrowRequestRepo.save(borrowRequest);
     }    
+
+    @Transactional
+    public BorrowRequest updateBorrowRequestStatus(int id, RequestStatus status){
+        BorrowRequest borrowRequest = borrowRequestRepo.findById(id).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A borrow request with this id does not exist"));
+        borrowRequest.setStatus(status);
+        return borrowRequestRepo.save(borrowRequest);
+    }
 }

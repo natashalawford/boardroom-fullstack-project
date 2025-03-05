@@ -117,4 +117,41 @@ public class BorrowServiceTests {
         verify(borrowRequestRepo, never()).save(any());
     }
 
+    @Test
+    public void testUpdateValidBorrowRequestStatus() {
+        // Arrange
+        Person mockBorrower = new Person(VALID_PERSON_ID, "John Doe", "john.doe@gmail.com", "password", false);
+        Person mockOwner = new Person(VALID_PERSON_ID, "John Dee", "john.dee@gmail.com", "password", true);
+        BoardGame mockBoardGame = new BoardGame("boardGameName", "boardGameDescription", 1, 2);
+        SpecificBoardGame mockSpecificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_GAME_ID, "A great board game", GameStatus.AVAILABLE, mockBoardGame, mockOwner);
+        BorrowRequest mockBorrowRequest = new BorrowRequest(VALID_BORROW_REQUEST_ID, VALID_STATUS, VALID_START_DATE, VALID_END_DATE, mockBorrower, mockSpecificBoardGame);
+
+        when(borrowRequestRepo.save(any(BorrowRequest.class))).thenReturn(mockBorrowRequest);
+        when(borrowRequestRepo.findById(VALID_BORROW_REQUEST_ID)).thenReturn(Optional.of(mockBorrowRequest));
+
+        // Act
+        BorrowRequest updatedRequest = borrowService.updateBorrowRequestStatus(VALID_BORROW_REQUEST_ID, UPDATED_STATUS);
+
+        // Assert
+        assertNotNull(updatedRequest);
+        assertEquals(UPDATED_STATUS, updatedRequest.getStatus());
+
+        verify(borrowRequestRepo, times(1)).findById(VALID_BORROW_REQUEST_ID);
+        verify(borrowRequestRepo, times(1)).save(any(BorrowRequest.class));
+    }
+
+    @Test
+    public void testUpdateInvalidBorrowRequestStatus() {
+        // Arrange
+        when(borrowRequestRepo.findById(VALID_BORROW_REQUEST_ID)).thenReturn(Optional.empty()); // No borrow request found
+
+        // Act & Assert
+        BoardroomException exception = assertThrows(BoardroomException.class, () -> borrowService.updateBorrowRequestStatus(VALID_BORROW_REQUEST_ID, UPDATED_STATUS));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("A borrow request with this id does not exist", exception.getMessage());
+
+        verify(borrowRequestRepo, times(1)).findById(VALID_BORROW_REQUEST_ID);
+        verify(borrowRequestRepo, never()).save(any());
+    }
+
 }

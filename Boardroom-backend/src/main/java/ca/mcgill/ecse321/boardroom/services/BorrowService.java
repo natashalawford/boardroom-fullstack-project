@@ -38,7 +38,7 @@ public class BorrowService {
 
 
     @Transactional
-    public BorrowRequest creatBorrowRequest(@Valid BorrowRequestDtoCreation borrowRequestToCreate){
+    public BorrowRequest createBorrowRequest(@Valid BorrowRequestDtoCreation borrowRequestToCreate){
         //Check if person and specific board game exist
         Person personToFind = personRepo.findById(borrowRequestToCreate.getPersonId()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
         SpecificBoardGame specificBoardGameToFind = specificBoardGameRepo.findById(borrowRequestToCreate.getSpecificBoardGameId()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A specific board game with this id does not exist"));

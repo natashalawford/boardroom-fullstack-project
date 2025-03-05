@@ -8,6 +8,7 @@ import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

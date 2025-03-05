@@ -25,6 +25,17 @@ public class BorrowRequest {
 
     protected BorrowRequest() {}
 
+    public BorrowRequest(RequestStatus status,
+                         LocalDateTime requestStartDate,
+                         LocalDateTime requestEndDate, Person person,
+                         SpecificBoardGame specificBoardGame) {
+        this.status = status;
+        this.requestStartDate = requestStartDate;
+        this.requestEndDate = requestEndDate;
+        this.person = person;
+        this.specificBoardGame = specificBoardGame;
+    }
+
     public BorrowRequest(int id, RequestStatus status,
                          LocalDateTime requestStartDate,
                          LocalDateTime requestEndDate, Person person,

@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.boardroom.services;
 
 import java.util.*;
 
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;

@@ -31,7 +31,7 @@ public class EventCreationDto {
     @NotNull(message = "Host is required")
     private Integer hostId;
 
-    @NotNull(message = "specific board game is required")
+    @NotNull(message = "Board game is required")
     private String boardGameName;
 
     public EventCreationDto(String title, String description,

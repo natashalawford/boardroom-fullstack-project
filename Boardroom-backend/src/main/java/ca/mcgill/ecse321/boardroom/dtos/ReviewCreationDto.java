@@ -17,17 +17,17 @@ public class ReviewCreationDto {
     @NotBlank(message = "Comment is required.")
     private String comment;
 
-    @NotNull(message = "Author is required.")
-    private Person author;
+    @NotNull(message = "Author is required")
+    private Integer authorId;
 
-    @NotNull(message = "Board game is required.")
-    private BoardGame boardGame;
+    @NotNull(message = "Board game is required")
+    private String boardGameName;
 
-    public ReviewCreationDto(int stars, String comment, Person author, BoardGame boardGame) {
+    public ReviewCreationDto(int stars, String comment, int authorId, String boardGameName) {
         this.stars = stars;
         this.comment = comment;
-        this.author = author;
-        this.boardGame = boardGame;
+        this.authorId = authorId;
+        this.boardGameName = boardGameName;
     }
 
     public int getStars() {
@@ -38,11 +38,11 @@ public class ReviewCreationDto {
         return comment;
     }
 
-    public Person getAuthor() {
-        return author;
+    public int getAuthorId() {
+        return authorId;
     }
 
-    public BoardGame getBoardGame() {
-        return boardGame;
+    public String getBoardGameName() {
+        return boardGameName;
     }
 }

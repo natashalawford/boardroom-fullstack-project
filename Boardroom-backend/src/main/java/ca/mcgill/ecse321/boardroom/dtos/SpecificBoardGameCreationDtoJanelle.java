@@ -19,11 +19,11 @@ public class SpecificBoardGameCreationDtoJanelle {
     @NotNull(message = "A board game owner is required")
     private int personId;
 
-    public SpecificBoardGameCreationDtoJanelle(String description, int picture,
-                                        String gameStatus, String boardGameTitle,
-                                        int personId) {
-        this.description = description;
+    public SpecificBoardGameCreationDtoJanelle(int picture, String description,
+            String gameStatus, String boardGameTitle,
+            int personId) {
         this.picture = picture;
+        this.description = description;
         this.gameStatus = gameStatus;
         this.boardGameTitle = boardGameTitle;
         this.personId = personId;

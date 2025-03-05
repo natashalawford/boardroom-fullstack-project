@@ -6,10 +6,11 @@ public class PersonCreationDto {
     private String password;
     private boolean owner;
 
-    private PersonCreationDto() {}
+    private PersonCreationDto() {
+    }
 
     public PersonCreationDto(String name, String email, String password,
-                             boolean owner) {
+            boolean owner) {
         this.name = name;
         this.email = email;
         this.password = password;

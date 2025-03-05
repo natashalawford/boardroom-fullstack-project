@@ -15,44 +15,50 @@ import ca.mcgill.ecse321.boardroom.repositories.*;
 import jakarta.validation.Valid;
 
 public class BoardGameServiceJanelle {
-    @Autowired 
+    @Autowired
     private PersonRepository personRepo;
 
-    @Autowired 
+    @Autowired
     private BoardGameRepository boardGameRepo;
 
-    @Autowired 
+    @Autowired
     private SpecificBoardGameRepository specificBoardGameRepo;
 
     @Transactional
-    public BoardGame createBoardGame(@Valid BoardGameCreationDtoJanelle boardGameToCreate){
-        BoardGame boardGame = new BoardGame(boardGameToCreate.getTitle(), 
-                                              boardGameToCreate.getDescription(), 
-                                              boardGameToCreate.getPlayersNeeded(),
-                                              boardGameToCreate.getPicture());
+    public BoardGame createBoardGame(@Valid BoardGameCreationDtoJanelle boardGameToCreate) {
+        BoardGame boardGame = new BoardGame(boardGameToCreate.getTitle(),
+                boardGameToCreate.getDescription(),
+                boardGameToCreate.getPlayersNeeded(),
+                boardGameToCreate.getPicture());
         return boardGameRepo.save(boardGame);
-    } 
-    
+    }
+
     @Transactional
-    public SpecificBoardGame createSpecificBoardGame(@Valid SpecificBoardGameCreationDtoJanelle specificBoardGameToCreate){
+    public SpecificBoardGame createSpecificBoardGame(
+            @Valid SpecificBoardGameCreationDtoJanelle specificBoardGameToCreate) {
         // Check if person and specific board game exist
-        Person personToFind = personRepo.findById(specificBoardGameToCreate.getPersonId()).orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
+        Person personToFind = personRepo.findById(specificBoardGameToCreate.getPersonId())
+                .orElseThrow(() -> new BoardroomException(HttpStatus.NOT_FOUND,
+                        "A person with this id does not exist"));
+        if (!personToFind.isOwner()) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person is not a game owner");
+        }
         BoardGame boardGameToFind = getBoardGameByTitle(specificBoardGameToCreate.getBoardGameTitle());
-    
+
         // Convert game status from dto (string) to enum
         GameStatus status = GameStatus.valueOf(specificBoardGameToCreate.getGameStatus());
 
-        SpecificBoardGame specificBoardGame = new SpecificBoardGame(specificBoardGameToCreate.getPicture(),                                                                     
-                                                                    specificBoardGameToCreate.getDescription(), 
-                                                                    status,
-                                                                    boardGameToFind, 
-                                                                    personToFind);
+        SpecificBoardGame specificBoardGame = new SpecificBoardGame(specificBoardGameToCreate.getPicture(),
+                specificBoardGameToCreate.getDescription(),
+                status,
+                boardGameToFind,
+                personToFind);
         return specificBoardGameRepo.save(specificBoardGame);
     }
 
     @Transactional
     public List<BoardGame> getAllBoardGames() {
-		return toList(boardGameRepo.findAll());
+        return toList(boardGameRepo.findAll());
     }
 
     @Transactional
@@ -66,8 +72,8 @@ public class BoardGameServiceJanelle {
     }
 
     @Transactional
-    public List<SpecificBoardGame> getAllSpecificBoardGames(){
-		return toList(specificBoardGameRepo.findAll());
+    public List<SpecificBoardGame> getAllSpecificBoardGames() {
+        return toList(specificBoardGameRepo.findAll());
     }
 
     @Transactional
@@ -80,11 +86,11 @@ public class BoardGameServiceJanelle {
         return specificBoardGameRepo.findSpecificBoardGameById(id);
     }
 
-    private <T> List<T> toList(Iterable<T> iterable){
-		List<T> resultList = new ArrayList<T>();
-		for (T t : iterable) {
-			resultList.add(t);
-		}
-		return resultList;
-	}
+    private <T> List<T> toList(Iterable<T> iterable) {
+        List<T> resultList = new ArrayList<T>();
+        for (T t : iterable) {
+            resultList.add(t);
+        }
+        return resultList;
+    }
 }

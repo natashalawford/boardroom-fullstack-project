@@ -17,7 +17,7 @@ public class BoardGameCreationDtoJanelle {
     private int picture;
 
     public BoardGameCreationDtoJanelle(String title, String description,
-                            int playersNeeded, int picture) {
+            int playersNeeded, int picture) {
         this.title = title;
         this.description = description;
         this.playersNeeded = playersNeeded;
@@ -28,8 +28,8 @@ public class BoardGameCreationDtoJanelle {
         return title;
     }
 
-    public String getDescription() { 
-        return description; 
+    public String getDescription() {
+        return description;
     }
 
     public int getPlayersNeeded() {

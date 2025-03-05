@@ -21,7 +21,6 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepo;
 
-
     public Person findPersonById(int id) {
         Person person = personRepo.findPersonById(id);
         if (person == null) {
@@ -43,10 +42,10 @@ public class PersonService {
 
     @Transactional
     public Person updatePerson(PersonUpdateDto personToUpdate) {
-        //First check if this person exists, if not throw error
+        // First check if this person exists, if not throw error
         if (!personRepo.existsById(personToUpdate.getId())) {
-           throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
-                   "this id does not exist");
+            throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
+                    "this id does not exist");
         }
 
         Person updatedPerson = new Person(personToUpdate.getId(),
@@ -73,7 +72,7 @@ public class PersonService {
             throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
-        return person; 
+        return person;
     }
 
 }

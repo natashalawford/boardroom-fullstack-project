@@ -35,8 +35,8 @@ public class EventCreationDto {
     private String boardGameName;
 
     public EventCreationDto(String title, String description,
-                            LocalDateTime startDateTime, LocalDateTime endDateTime,
-                            int maxParticipants, int locationId, int hostId, String boardGameName) {
+            LocalDateTime startDateTime, LocalDateTime endDateTime,
+            int maxParticipants, int locationId, int hostId, String boardGameName) {
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
@@ -47,12 +47,13 @@ public class EventCreationDto {
         this.boardGameName = boardGameName;
     }
 
-
     public String getTitle() {
         return title;
     }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
     public int getMaxParticipants() {
         return maxParticipants;
@@ -61,7 +62,10 @@ public class EventCreationDto {
     public int getLocationId() {
         return locationId;
     }
-    public int getHostId() {return hostId;}
+
+    public int getHostId() {
+        return hostId;
+    }
 
     public String getBoardGameName() {
         return boardGameName;

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameUpdateDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
@@ -74,7 +75,20 @@ public class GameOwnerService {
 
 
     //update information about a board game in owner's collection
-    // public SpecificBoardGame updateSpecificBoardGame(SpecificBoardGameDto specificBoardGameToUpdate) {
+    public SpecificBoardGame updateSpecificBoardGame(SpecificBoardGameUpdateDto specificBoardGameToUpdate) {
 
-    // }
+        //Make sure this specific board game exists
+        SpecificBoardGame existingSpecificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(specificBoardGameToUpdate.getId());
+
+        if (null == existingSpecificBoardGame) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND, "This specific board game does not exist, cannot update it");
+        }
+
+        //IMPORTANT: assuming we cannot update owner or board game
+
+        //Construct new specific board game with updating attributes
+        SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(specificBoardGameToUpdate.getId(), specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());
+
+        return updatedSpecificBoardGame;
+    }
 }

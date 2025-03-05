@@ -75,13 +75,13 @@ public class BoardGameServiceTests {
                                         }
                                 });
 
-                lenient().when(boardGameRepo.findAll()).thenAnswer((InvocationOnMock invocation) -> {
+                lenient().when(boardGameRepo.findAll()).thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
                         ArrayList<BoardGame> list = new ArrayList<BoardGame>();
                         list.add(VALID_BOARD_GAME);
                         return list;
                 });
 
-                lenient().when(specificBoardGameRepo.findAll()).thenAnswer((InvocationOnMock invocation) -> {
+                lenient().when(specificBoardGameRepo.findAll()).thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
                         ArrayList<SpecificBoardGame> list = new ArrayList<SpecificBoardGame>();
                         list.add(VALID_SPECIFIC_BOARD_GAME);
                         return list;

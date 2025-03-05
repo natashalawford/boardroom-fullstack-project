@@ -8,11 +8,8 @@ import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
-import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoSpecific;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;

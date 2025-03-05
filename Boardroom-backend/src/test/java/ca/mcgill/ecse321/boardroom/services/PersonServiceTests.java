@@ -6,8 +6,6 @@ import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,8 +19,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
-import java.util.Optional;
 
 @SpringBootTest
 @MockitoSettings

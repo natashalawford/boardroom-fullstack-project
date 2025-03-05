@@ -173,18 +173,17 @@ public class BorrowServiceTests {
     @Test
     public void testViewBorrowRequestsByBoardgame() {
         // Arrange
-        when(borrowRequestRepo.findByBoardGameIdAndStatusIn(eq(specificBoardGame.getBoardGame().getTitle()), anyList()))
+        when(borrowRequestRepo.findBySpecificBoardGame(specificBoardGame))
                 .thenReturn(List.of(borrowRequest1, borrowRequest2));
 
         // Act
-        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGame.getBoardGame().getTitle());
-
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsBySpecificBoardgame(specificBoardGame);
         // Assert
         assertNotNull(borrowRequests);
         assertEquals(2, borrowRequests.size());
         assertTrue(borrowRequests.contains(borrowRequest1));
         assertTrue(borrowRequests.contains(borrowRequest2));
 
-        verify(borrowRequestRepo, times(1)).findByBoardGameIdAndStatusIn(eq(specificBoardGame.getBoardGame().getTitle()), anyList());
+        verify(borrowRequestRepo, times(1)).findBySpecificBoardGame(specificBoardGame);
     }
 }

@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
+import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 
 public interface BorrowRequestRepository extends CrudRepository<BorrowRequest, Integer> {
     public BorrowRequest findBorrowRequestById(int id);
 
-    public List<BorrowRequest> findByBoardGameIdAndStatusIn(String specificBoardGameTitle,
-            List<String> acceptedStatuses);
+    public List<BorrowRequest> findBySpecificBoardGame(SpecificBoardGame specificBoardGame);
 }

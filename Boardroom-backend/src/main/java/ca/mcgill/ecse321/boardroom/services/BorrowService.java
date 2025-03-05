@@ -61,7 +61,7 @@ public class BorrowService {
 
     // Method to view all borrow requests of a specific boardgame
     @Transactional
-    public List<BorrowRequest> viewBorrowRequestsByBoardgame(String specificBoardGameTitle) {
-        return borrowRequestRepo.findByBoardGameIdAndStatusIn(specificBoardGameTitle, List.of(RequestStatus.RETURNED.toString(), RequestStatus.ACCEPTED.toString()));
+    public List<BorrowRequest> viewBorrowRequestsBySpecificBoardgame(SpecificBoardGame specificBoardGame) {
+        return borrowRequestRepo.findBySpecificBoardGame(specificBoardGame);
     }
 }

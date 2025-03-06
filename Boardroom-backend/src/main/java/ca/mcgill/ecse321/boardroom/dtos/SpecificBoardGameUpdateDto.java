@@ -7,19 +7,14 @@ public class SpecificBoardGameUpdateDto {
     private String description;
     private int picture;
     private GameStatus status;
-    private String boardGameTitle;
-    private int ownerId;
 
     private SpecificBoardGameUpdateDto() {}
 
-    public SpecificBoardGameUpdateDto(int id, String description, int picture, GameStatus status, String boardGameTitle,
-            int ownerId) {
+    public SpecificBoardGameUpdateDto(int id, String description, int picture, GameStatus status) {
         this.id = id;
         this.description = description;
         this.picture = picture;
         this.status = status;
-        this.boardGameTitle = boardGameTitle;
-        this.ownerId = ownerId;
     }
 
     public int getId() {
@@ -36,13 +31,5 @@ public class SpecificBoardGameUpdateDto {
 
     public GameStatus getStatus() {
         return status;
-    }
-
-    public String getBoardGameTitle() {
-        return boardGameTitle;
-    }
-
-    public int getOwnerId() {
-        return ownerId;
-    }
+    } 
 }

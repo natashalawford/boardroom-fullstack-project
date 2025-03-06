@@ -13,16 +13,7 @@ import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 
 @Service
-public class GameOwnerService {
-
-    /*
-     * a specific board game must belong to an owner (so owner must exist) and be linked to an existing board game (so board game must exist), maybe this belongs in GameOwnerService,
-     * 
-     * The controller will take in:
-     * for create: id of person and id of board game, then in request body all the extra info
-     * service for create should just take in the info (if dto has ids for board game and owner, then find those first), then create and return the object
-     * service for delete 
-     */
+public class GameOwnerService { 
    
     @Autowired
     private SpecificBoardGameRepository specificBoardGameRepo;
@@ -87,8 +78,8 @@ public class GameOwnerService {
         //IMPORTANT: assuming we cannot update owner or board game
 
         //Construct new specific board game with updating attributes
-        SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(specificBoardGameToUpdate.getId(), specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());
+        SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(specificBoardGameToUpdate.getId(), specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getPicture(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());
 
-        return updatedSpecificBoardGame;
+        return specificBoardGameRepo.save(updatedSpecificBoardGame);
     }
 }

@@ -29,7 +29,7 @@ public class BoardGameServiceTests {
         private BoardGameRepository boardGameRepo;
         @Mock
         private SpecificBoardGameRepository specificBoardGameRepo;
-        @Mock
+        @InjectMocks
         private GameOwnerService gameOwnerService;
         @InjectMocks
         private BoardGameService boardGameService;

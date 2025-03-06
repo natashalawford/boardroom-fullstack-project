@@ -11,7 +11,6 @@ import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
-import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 import jakarta.transaction.Transactional;

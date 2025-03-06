@@ -14,10 +14,15 @@ import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 
 @Service
 public class GameOwnerService { 
+
+    @Autowired
+    private PersonService personService;
+    
+    @Autowired
+    private BoardGameService boardGameService;
 
     @Autowired
     private BoardGameRepository boardGameRepo;
@@ -25,24 +30,8 @@ public class GameOwnerService {
     @Autowired
     private SpecificBoardGameRepository specificBoardGameRepo;
 
-    @Autowired
-    private PersonService personService;
-
-    @Autowired
-    private BoardGameService boardGameService;
-
-    public SpecificBoardGame findSpecificBoardGameById(int id)  {
-        SpecificBoardGame specificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(id);        
-        
-        if (specificBoardGame == null) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("No specific board game has id %s", id));
-        }
-
-        return specificBoardGame;
-    }
-
     @Transactional
-    public BoardGame createBoardGame(@Valid BoardGameCreationDto boardGameToCreate) {
+    public BoardGame createBoardGame(BoardGameCreationDto boardGameToCreate) {
         BoardGame boardGame = new BoardGame(boardGameToCreate.getTitle(),
                 boardGameToCreate.getDescription(),
                 boardGameToCreate.getPlayersNeeded(),
@@ -50,7 +39,6 @@ public class GameOwnerService {
         return boardGameRepo.save(boardGame);
     }
 
-    //Add a board game to owner's collection
     @Transactional
     public SpecificBoardGame createSpecificBoardGame(SpecificBoardGameCreationDto specificBoardGameToCreate) {
         //Make sure owner exists
@@ -61,10 +49,6 @@ public class GameOwnerService {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person is not a game owner");
         }
 
-        // In case we need this later
-        // Convert game status from dto (string) to enum
-        // GameStatus status = specificBoardGameToCreate.getGameStatus();
-
         //Make sure board game exists
         BoardGame boardGame = boardGameService.getBoardGameByTitle(specificBoardGameToCreate.getBoardGameTitle());
 
@@ -74,7 +58,6 @@ public class GameOwnerService {
         return specificBoardGameRepo.save(newSpecificBoardGame);
     }
 
-    //Remove board game from owner's collection
     public void deleteSpecificBoardGame(int id) {
         //Get board game to delete
         SpecificBoardGame specificBoardGameToDelete = specificBoardGameRepo.findSpecificBoardGameById(id);
@@ -88,19 +71,13 @@ public class GameOwnerService {
         specificBoardGameRepo.delete(specificBoardGameToDelete); 
     }
 
-
-
-    //update information about a board game in owner's collection
     public SpecificBoardGame updateSpecificBoardGame(SpecificBoardGameUpdateDto specificBoardGameToUpdate) {
-
         //Make sure this specific board game exists
         SpecificBoardGame existingSpecificBoardGame = boardGameService.getSpecificBoardGameById(specificBoardGameToUpdate.getId());
 
         if (null == existingSpecificBoardGame) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "This specific board game does not exist, cannot update it");
         }
-
-        //IMPORTANT: assuming we cannot update owner or board game
 
         //Construct new specific board game with updating attributes
         SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(specificBoardGameToUpdate.getId(), specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getPicture(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());

@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.boardroom.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.junit.jupiter.api.AfterEach;

@@ -1,9 +1,5 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
-import ca.mcgill.ecse321.boardroom.model.BoardGame;
-import ca.mcgill.ecse321.boardroom.model.Location;
-import ca.mcgill.ecse321.boardroom.model.Person;
-
 import java.time.LocalDateTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,45 +25,50 @@ public class EventCreationDto {
     @Min(value = 1, message = "Maximum participants must be at least 1.")
     private int maxParticipants;
 
-    @NotNull(message = "Location is required.")
-    private Location location;
+    @NotNull(message = "Location is required")
+    private Integer locationId;
 
-    @NotNull(message = "Host is required.")
-    private Person host;
-    @NotNull(message = "Board game selection is required.")
-    private BoardGame boardGame;
+    @NotNull(message = "Host is required")
+    private Integer hostId;
+
+    @NotNull(message = "Board game is required")
+    private String boardGameName;
 
     public EventCreationDto(String title, String description,
-                            LocalDateTime startDateTime, LocalDateTime endDateTime,
-                            int maxParticipants, Location location, Person host, BoardGame boardGame) {
+            LocalDateTime startDateTime, LocalDateTime endDateTime,
+            int maxParticipants, int locationId, int hostId, String boardGameName) {
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxParticipants = maxParticipants;
-        this.location = location;
-        this.host = host;
-        this.boardGame = boardGame;
+        this.locationId = locationId;
+        this.hostId = hostId;
+        this.boardGameName = boardGameName;
     }
-
 
     public String getTitle() {
         return title;
     }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
     public int getMaxParticipants() {
         return maxParticipants;
     }
 
-    public Location getLocation() {
-        return location;
+    public int getLocationId() {
+        return locationId;
     }
-    public Person getHost() {return host;}
 
-    public BoardGame getBoardGame() {
-        return boardGame;
+    public int getHostId() {
+        return hostId;
+    }
+
+    public String getBoardGameName() {
+        return boardGameName;
     }
 
     public LocalDateTime getStartDateTime() {

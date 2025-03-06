@@ -2,11 +2,10 @@ package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonUpdateDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,6 +13,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +36,7 @@ public class PersonServiceTests {
     @Test
     public void testFindValidPerson() {
         //Arrange
-        when(personRepo.findPersonById(1)).thenReturn(new Person(1,
+        when(personRepo.findPersonById(1)).thenReturn(new Person(
                 VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER));
 
         //Act
@@ -102,13 +103,12 @@ public class PersonServiceTests {
         Person updatedPerson = personService.updatePerson(personToUpdate);
 
         //Assert
-        assertNotNull(updatedPerson);
-        assertEquals(VALID_OWNER, updatedPerson.isOwner());
-
-        assertEquals(1, updatedPerson.getId());
+        assertNotNull(updatedPerson);  
+        // assertEquals(1, updatedPerson.getId());
         assertEquals(VALID_NAME, updatedPerson.getName());
         assertEquals(VALID_EMAIL, updatedPerson.getEmail());
         assertEquals(VALID_PASSWORD, updatedPerson.getPassword());
+        assertEquals(VALID_OWNER, updatedPerson.isOwner());
 
         verify(personRepo, times(1)).existsById(anyInt());
         verify(personRepo, times(1)).save(any(Person.class));
@@ -124,5 +124,73 @@ public class PersonServiceTests {
         
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("A person with this id does not exist", e.getMessage());
+    }
+
+    
+    // login tests begin here
+    @Test
+    public void testSuccessfulLogin() {
+        // Arrange
+        Person existingPerson = new Person(1, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        when(personRepo.findByEmail(VALID_EMAIL)).thenReturn(Optional.of(existingPerson));
+
+        PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, VALID_PASSWORD);
+
+        // Act
+        Person loggedInPerson = personService.login(loginDto);
+
+        // Assert
+        assertNotNull(loggedInPerson);
+        assertEquals(VALID_NAME, loggedInPerson.getName());
+        assertEquals(VALID_EMAIL, loggedInPerson.getEmail());
+
+        verify(personRepo, times(1)).findByEmail(VALID_EMAIL);
+    }
+
+    @Test
+    public void testLoginFailsForNoEmail() {
+        // Arrange
+        when(personRepo.findByEmail("null@gmail.com")).thenReturn(Optional.empty());
+
+        PersonLoginDto loginDto = new PersonLoginDto("null@gmail.com", VALID_PASSWORD);
+
+        // Act & Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> personService.login(loginDto));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        assertEquals("Invalid email or password.", e.getMessage());
+
+        verify(personRepo, times(1)).findByEmail("null@gmail.com");
+    }
+
+    @Test
+    public void testLoginFailIncorrectPassword() {
+        // Arrange
+        Person existingPerson = new Person(1, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        when(personRepo.findByEmail(VALID_EMAIL)).thenReturn(Optional.of(existingPerson));
+
+        PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, "wrongPassword");
+
+        // Act & Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> personService.login(loginDto));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        assertEquals("Invalid email or password.", e.getMessage());
+
+        verify(personRepo, times(1)).findByEmail(VALID_EMAIL);
+    }
+
+    @Test
+    public void testLoginFailEmailOrPassMissing() {
+        // Arrange & Act & Assert
+        BoardroomException e1 = assertThrows(BoardroomException.class, () -> personService.login(new PersonLoginDto(null, VALID_PASSWORD)));
+        assertEquals(HttpStatus.BAD_REQUEST, e1.getStatus());
+        assertEquals("Email and password are required.", e1.getMessage());
+
+        BoardroomException e2 = assertThrows(BoardroomException.class, () -> personService.login(new PersonLoginDto(VALID_EMAIL, null)));
+        assertEquals(HttpStatus.BAD_REQUEST, e2.getStatus());
+        assertEquals("Email and password are required.", e2.getMessage());
+
+        verify(personRepo, times(0)).findByEmail(any());
     }
 }

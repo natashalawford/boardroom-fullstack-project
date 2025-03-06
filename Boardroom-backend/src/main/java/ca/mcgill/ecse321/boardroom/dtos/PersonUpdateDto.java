@@ -7,10 +7,7 @@ public class PersonUpdateDto {
     private String password;
     private boolean owner;
 
-    private PersonUpdateDto() {}
-
-    public PersonUpdateDto(int id, String name, String email, String password
-            , boolean owner) {
+    public PersonUpdateDto(int id, String name, String email, String password, boolean owner) {
         this.id = id;
         this.name = name;
         this.email = email;

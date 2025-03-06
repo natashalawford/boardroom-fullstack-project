@@ -2,13 +2,8 @@ package ca.mcgill.ecse321.boardroom.dtos;
 
 import java.time.LocalDateTime;
 
-import ca.mcgill.ecse321.boardroom.model.BoardGame;
-import ca.mcgill.ecse321.boardroom.model.Person;
-import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
-import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
-
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 public class BorrowRequestDtoCreation {
@@ -30,11 +25,10 @@ public class BorrowRequestDtoCreation {
     @NotNull(message = "specific board game is required")
     private Integer specificBoardGameId;
 
-
     public BorrowRequestDtoCreation(RequestStatus status,
-                         LocalDateTime requestStartDate,
-                         LocalDateTime requestEndDate, int personId,
-                         int specificBoardGameId){
+            LocalDateTime requestStartDate,
+            LocalDateTime requestEndDate, int personId,
+            int specificBoardGameId) {
         this.status = status;
         this.requestStartDate = requestStartDate;
         this.requestEndDate = requestEndDate;
@@ -53,7 +47,7 @@ public class BorrowRequestDtoCreation {
     public LocalDateTime getRequestStartDate() {
         return requestStartDate;
     }
-    
+
     public int getSpecificBoardGameId() {
         return specificBoardGameId;
     }

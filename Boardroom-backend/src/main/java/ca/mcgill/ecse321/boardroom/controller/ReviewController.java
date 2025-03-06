@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.ReviewResponseDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.ReviewResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Review;
 import ca.mcgill.ecse321.boardroom.services.ReviewService;
 

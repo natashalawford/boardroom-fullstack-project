@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
 import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.EventResponseDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.EventResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Location;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;

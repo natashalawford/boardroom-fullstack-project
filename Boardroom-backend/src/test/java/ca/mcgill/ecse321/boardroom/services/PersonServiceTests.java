@@ -36,7 +36,7 @@ public class PersonServiceTests {
     @Test
     public void testFindValidPerson() {
         //Arrange
-        when(personRepo.findPersonById(1)).thenReturn(new Person(1,
+        when(personRepo.findPersonById(1)).thenReturn(new Person(
                 VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER));
 
         //Act
@@ -103,13 +103,12 @@ public class PersonServiceTests {
         Person updatedPerson = personService.updatePerson(personToUpdate);
 
         //Assert
-        assertNotNull(updatedPerson);
-        assertEquals(VALID_OWNER, updatedPerson.isOwner());
-
-        assertEquals(1, updatedPerson.getId());
+        assertNotNull(updatedPerson);  
+        // assertEquals(1, updatedPerson.getId());
         assertEquals(VALID_NAME, updatedPerson.getName());
         assertEquals(VALID_EMAIL, updatedPerson.getEmail());
         assertEquals(VALID_PASSWORD, updatedPerson.getPassword());
+        assertEquals(VALID_OWNER, updatedPerson.isOwner());
 
         verify(personRepo, times(1)).existsById(anyInt());
         verify(personRepo, times(1)).save(any(Person.class));

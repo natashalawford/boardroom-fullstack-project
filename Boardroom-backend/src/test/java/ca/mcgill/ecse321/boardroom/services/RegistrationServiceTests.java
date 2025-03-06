@@ -11,6 +11,7 @@ import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
 import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,9 +45,9 @@ public class RegistrationServiceTests {
     @InjectMocks
     private RegistrationService registrationService;
 
-    private static final int PERSON_ID = 1;
     private static final int EVENT_ID = 100;
 
+    
     private static final String VALID_TITLE = "Board Game Night";
     private static final String VALID_DESCRIPTION = "A fun night of board games!";
     private static final LocalDateTime VALID_START_TIME = LocalDateTime.now().plusDays(1);
@@ -55,23 +56,19 @@ public class RegistrationServiceTests {
     private static Location VALID_LOCATION;
     private static Person VALID_HOST;
     private static BoardGame VALID_BOARD_GAME;
+    private static Person PERSON;
 
-    private int locationId;
-    private int hostId;
-    private String boardGameName;
+    private int PERSON_ID;
 
     @BeforeEach
     public void setup() {
         VALID_LOCATION = new Location("McGill", "Montreal", "QC");
-        int locationId = VALID_LOCATION.getId();
         VALID_HOST = new Person("Alice", "alice@mail.com", "securepass", false);
-        int hostId = VALID_HOST.getId();
         VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
-        String boardGameName = VALID_BOARD_GAME.getTitle();
-
-        this.locationId = locationId;
-        this.hostId = hostId;
-        this.boardGameName = boardGameName;
+        PERSON = new Person("Person", "person@mail.com", "pass12", false);
+        int PERSON_ID = PERSON.getId();
+        
+        this.PERSON_ID = PERSON_ID;
     }
 
     @Test
@@ -96,7 +93,7 @@ public class RegistrationServiceTests {
         // Arrange
         EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
-        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
         when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.empty());
 
         // Act & Assert
@@ -115,7 +112,7 @@ public class RegistrationServiceTests {
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
         EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
-        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
         when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
         when(registrationRepository.countByKeyEvent(VALID_EVENT)).thenReturn(10L); // Event full
 
@@ -135,9 +132,9 @@ public class RegistrationServiceTests {
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
         EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
-        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
         when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
-        when(registrationRepository.existsByKeyPersonAndKeyEvent(VALID_HOST, VALID_EVENT)).thenReturn(true);
+        when(registrationRepository.existsByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(true);
 
         // Act & Assert
         IllegalStateException exception = assertThrows(
@@ -155,19 +152,63 @@ public class RegistrationServiceTests {
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
         EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
-        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
         when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
         when(registrationRepository.countByKeyEvent(VALID_EVENT)).thenReturn(5L); // Event not full
-        when(registrationRepository.existsByKeyPersonAndKeyEvent(VALID_HOST, VALID_EVENT)).thenReturn(false);
+        when(registrationRepository.existsByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(false);
 
         // Act
         Registration registration = registrationService.registerForEvent(eventRegistrationDto);
         
         // Assert
         assertNotNull(registration);
-        assertEquals(VALID_HOST, registration.getKey().getPerson());
+        assertEquals(PERSON, registration.getKey().getPerson());
         assertEquals(VALID_EVENT, registration.getKey().getEvent());
         verify(registrationRepository, times(1)).save(any(Registration.class));
+    }
+
+    @Test
+    public void testRegisterForEvent_OverlappingRegisteredEvent() {
+        // Arrange
+        // Register first to an event that will overlap with the second event
+        Person otherHost = new Person("Natasha", "natas@mail.com", "pass123", false);
+        Event otherEvent = new Event("Other Event", VALID_DESCRIPTION, VALID_START_TIME.plusHours(1), VALID_END_TIME.plusHours(1), VALID_MAX_PARTICIPANTS, VALID_LOCATION, otherHost, VALID_BOARD_GAME);
+        int otherEventId = 101;
+    
+        EventRegistrationDto otherEventRegistrationDto = new EventRegistrationDto(PERSON_ID, otherEventId);
+    
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
+        when(eventRepository.findById(otherEventId)).thenReturn(java.util.Optional.of(otherEvent));
+        when(registrationRepository.countByKeyEvent(otherEvent)).thenReturn(5L); // Event not full
+        when(registrationRepository.existsByKeyPersonAndKeyEvent(PERSON, otherEvent)).thenReturn(false);
+    
+        Registration otherRegistration = registrationService.registerForEvent(otherEventRegistrationDto);
+    
+        assertNotNull(otherRegistration);
+        assertEquals(PERSON, otherRegistration.getKey().getPerson());
+        assertEquals(otherEvent, otherRegistration.getKey().getEvent());
+        verify(registrationRepository, times(1)).save(any(Registration.class));
+    
+        List<Registration> existingRegistrations = List.of(otherRegistration);
+        when(registrationRepository.findByKeyPerson(PERSON)).thenReturn(existingRegistrations);
+
+        // Now register to an event that will overlap with the first event
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+    
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.countByKeyEvent(VALID_EVENT)).thenReturn(5L); // Event not full
+        when(registrationRepository.existsByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(false);
+    
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> registrationService.registerForEvent(eventRegistrationDto)
+        );
+        assertEquals("User has a timing conflict with another registered event: " + otherEvent.getTitle(), exception.getMessage());
+        
+        //verify the overlapping registration was not saved
+        verify(registrationRepository, never()).save(argThat(reg -> reg.getKey().getEvent().equals(VALID_EVENT)));
     }
 
 }

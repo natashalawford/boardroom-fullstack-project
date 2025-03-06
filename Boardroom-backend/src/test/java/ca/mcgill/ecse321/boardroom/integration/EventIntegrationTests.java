@@ -1,16 +1,153 @@
 package ca.mcgill.ecse321.boardroom.integration;
 
-import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
+import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
+import ca.mcgill.ecse321.boardroom.repositories.LocationRepository;
+import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import static org.junit.jupiter.api.Assertions.*;
 
+import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
+import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.EventResponseDto;
+import ca.mcgill.ecse321.boardroom.model.Location;
+import ca.mcgill.ecse321.boardroom.model.Person;
+import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(Lifecycle.PER_CLASS)
 public class EventIntegrationTests {
+    @Autowired
+    private TestRestTemplate client;
+    private int createdEventId;
 
+    @Autowired
+    private LocationRepository locationRepository;
+    @Autowired
+    private PersonRepository personRepository;
+    @Autowired
+    private BoardGameRepository boardGameRepository;
+    @Autowired
+    private EventRepository eventRepository;
+
+    private static final String VALID_TITLE = "Board Game Night";
+    private static final String VALID_DESCRIPTION = "A fun night with friends!";
+    private static final LocalDateTime VALID_START_TIME = LocalDateTime.now().plusDays(1);
+    private static final LocalDateTime VALID_END_TIME = LocalDateTime.now().plusDays(1).plusHours(2);
+    private static final int VALID_MAX_PARTICIPANTS = 10;
+    private static Location VALID_LOCATION;
+    private static Person VALID_HOST;
+    private static BoardGame VALID_BOARD_GAME;
+    private int locationId;
+    private int hostId;
+    private String boardGameName;
+    @BeforeEach
+    public void setup() {
+        VALID_LOCATION = new Location("McGill", "Montreal", "QC");
+        locationRepository.save(VALID_LOCATION);
+        locationId = VALID_LOCATION.getId();
+
+        VALID_HOST = new Person("Name", "name@mail.com", "securepass", false);
+        personRepository.save(VALID_HOST);
+        hostId = VALID_HOST.getId();
+
+        VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
+        boardGameRepository.save(VALID_BOARD_GAME);
+        boardGameName = VALID_BOARD_GAME.getTitle();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        eventRepository.deleteAll();
+        locationRepository.deleteAll();
+        personRepository.deleteAll();
+        boardGameRepository.deleteAll();
+    }
+
+    @Test
+    @Order(0)
+    public void testCreateValidEvent() {
+        // Arrange
+        EventCreationDto body = new EventCreationDto(
+                VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, locationId, hostId, boardGameName
+        );
+
+        // Act
+        ResponseEntity<EventResponseDto> response = client.postForEntity("/events", body, EventResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getId() > 0, "The ID should be a positive integer");
+        this.createdEventId = response.getBody().getId();
+        assertEquals(body.getTitle(), response.getBody().getTitle());
+        assertEquals(body.getDescription(), response.getBody().getDescription());
+        assertEquals(body.getStartDateTime(), response.getBody().getStartDateTime());
+        assertEquals(body.getEndDateTime(), response.getBody().getEndDateTime());
+        assertEquals(body.getMaxParticipants(), response.getBody().getMaxParticipants());
+
+        int responseLocationId = response.getBody().getLocationId();
+        assertEquals(body.getLocationId(), responseLocationId);
+
+        int responsePersonId = response.getBody().getHostId();
+        assertEquals(body.getHostId(), responsePersonId);
+
+        String responseGame = response.getBody().getBoardGameName();
+        assertEquals(body.getBoardGameName(), responseGame);
+    }
+
+    @Test
+    @Order(1)
+    public void testCreateEventWithPastStartTime() {
+        // Arrange
+        EventCreationDto body = new EventCreationDto(
+                VALID_TITLE, VALID_DESCRIPTION, LocalDateTime.now().minusDays(1), VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, locationId, hostId, boardGameName
+        );
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.postForEntity("/events", body, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("End date and time must be in the future."),
+                response.getBody().getErrors());
+    }
+
+    @Test
+    @Order(2)
+    public void testCreateEventWithNonExistentLocation() {
+        // Arrange: Using an invalid location ID (non-existent)
+        int invalidLocationId = 99999;
+
+        EventCreationDto body = new EventCreationDto(
+                VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, invalidLocationId, hostId, boardGameName
+        );
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.postForEntity("/events", body, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("A location with this id does not exist"),
+                response.getBody().getErrors());
+    }
 }

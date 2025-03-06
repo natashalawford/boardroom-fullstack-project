@@ -1,7 +1,5 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
-import java.time.LocalDateTime;
-
 public class EventRegistrationDto {
     private int personId;
     private int eventId;

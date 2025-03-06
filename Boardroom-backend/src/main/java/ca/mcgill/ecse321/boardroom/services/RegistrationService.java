@@ -10,7 +10,6 @@ import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
 import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;

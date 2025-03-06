@@ -129,4 +129,45 @@ public class RegistrationServiceTests {
         verify(registrationRepository, never()).save(any(Registration.class));
     }
 
+    @Test
+    public void testRegisterForEvent_UserAlreadyRegistered() {
+        // Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.existsByKeyPersonAndKeyEvent(VALID_HOST, VALID_EVENT)).thenReturn(true);
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> registrationService.registerForEvent(eventRegistrationDto)
+        );
+
+        assertEquals("User is already registered for this event", exception.getMessage());
+        verify(registrationRepository, never()).save(any(Registration.class));
+    }
+
+    @Test
+    public void testRegisterForEvent_Success() {
+        // Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(VALID_HOST));
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.countByKeyEvent(VALID_EVENT)).thenReturn(5L); // Event not full
+        when(registrationRepository.existsByKeyPersonAndKeyEvent(VALID_HOST, VALID_EVENT)).thenReturn(false);
+
+        // Act
+        Registration registration = registrationService.registerForEvent(eventRegistrationDto);
+        
+        // Assert
+        assertNotNull(registration);
+        assertEquals(VALID_HOST, registration.getKey().getPerson());
+        assertEquals(VALID_EVENT, registration.getKey().getEvent());
+        verify(registrationRepository, times(1)).save(any(Registration.class));
+    }
+
 }

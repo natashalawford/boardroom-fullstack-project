@@ -186,4 +186,23 @@ public class BorrowServiceTests {
 
         verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED));
     }
+
+    @Test
+    public void testViewPendingBorrowRequests() {
+        // Arrange
+        borrowRequest1.setStatus(RequestStatus.PENDING);
+        borrowRequest2.setStatus(RequestStatus.ACCEPTED);
+        when(borrowRequestRepo.findByStatus(RequestStatus.PENDING)).thenReturn(List.of(borrowRequest1));
+
+        // Act
+        List<BorrowRequest> borrowRequests = borrowService.viewPendingBorrowRequests();
+
+        // Assert
+        assertNotNull(borrowRequests);
+        assertEquals(1, borrowRequests.size());
+        assertTrue(borrowRequests.contains(borrowRequest1));
+        assertFalse(borrowRequests.contains(borrowRequest2));
+
+        verify(borrowRequestRepo, times(1)).findByStatus(RequestStatus.PENDING);
+    }
 }       

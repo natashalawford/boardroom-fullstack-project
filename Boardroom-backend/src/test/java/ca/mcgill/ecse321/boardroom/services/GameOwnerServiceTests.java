@@ -11,11 +11,9 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,8 +25,8 @@ import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 
-
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@MockitoSettings
 public class GameOwnerServiceTests {
     @Mock
     private SpecificBoardGameRepository specificBoardGameRepo;

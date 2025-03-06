@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.boardroom.services;
 import ca.mcgill.ecse321.boardroom.model.*;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import ca.mcgill.ecse321.boardroom.repositories.*;
-import ca.mcgill.ecse321.boardroom.dtos.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -104,41 +103,6 @@ public class BoardGameServiceTests {
 		lenient().when(specificBoardGameRepo.save(any(SpecificBoardGame.class))).thenAnswer(returnParameterAsAnswer);
                 lenient().when(boardGameRepo.save(any(BoardGame.class))).thenAnswer(returnParameterAsAnswer);
         }
-
-        // @Test
-        // public void testCreateValidGame() {
-        //         // Arrange
-        //         BoardGameCreationDto newBoardGameDto = new BoardGameCreationDto(
-        //                         VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_GAME_PICTURE);
-        //         BoardGame createdBoardGame = gameOwnerService.createBoardGame(newBoardGameDto);
-
-        //         // Assert
-        //         assertNotNull(createdBoardGame);
-        //         assertEquals(VALID_TITLE, createdBoardGame.getTitle());
-        //         assertEquals(VALID_DESCRIPTION, createdBoardGame.getDescription());
-        //         assertEquals(VALID_PLAYERS_NEEDED, createdBoardGame.getPlayersNeeded());
-        //         assertEquals(VALID_GAME_PICTURE, createdBoardGame.getPicture());
-        //         verify(boardGameRepo, times(1)).save(any(BoardGame.class));
-        // }
-
-        // @Test
-        // public void testCreateValidSpecificGame() {
-        //     // Arrange
-        //     SpecificBoardGameCreationDto newSpecificBoardGameDto = new SpecificBoardGameCreationDto(
-        //                     VALID_SPECIFIC_GAME_PICTURE, VALID_SPECIFIC_GAME_DESCRIPTION,
-        //                     VALID_GAME_STATUS, VALID_TITLE, VALID_OWNER.getId());
-        //     SpecificBoardGame createdSpecificBoardGame = gameOwnerService
-        //                     .createSpecificBoardGame(newSpecificBoardGameDto);
-        
-        //     // Assert
-        //     assertNotNull(createdSpecificBoardGame);
-        //     assertEquals(VALID_SPECIFIC_GAME_PICTURE, createdSpecificBoardGame.getPicture());
-        //     assertEquals(VALID_SPECIFIC_GAME_DESCRIPTION, createdSpecificBoardGame.getDescription());
-        //     assertEquals(VALID_GAME_STATUS, createdSpecificBoardGame.getStatus());
-        //     assertEquals(VALID_TITLE, createdSpecificBoardGame.getBoardGame().getTitle());
-        //     assertEquals(VALID_OWNER, createdSpecificBoardGame.getOwner());
-        //     verify(specificBoardGameRepo, times(1)).save(any(SpecificBoardGame.class));
-        // }
 
         @Test
         public void testGetBoardGameByTitle() {

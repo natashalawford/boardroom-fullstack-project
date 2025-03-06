@@ -23,7 +23,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -173,17 +172,18 @@ public class BorrowServiceTests {
     @Test
     public void testViewBorrowRequestsByBoardgame() {
         // Arrange
-        when(borrowRequestRepo.findBySpecificBoardGame(specificBoardGame))
-                .thenReturn(List.of(borrowRequest1, borrowRequest2));
+        when(borrowRequestRepo.findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED)))
+                .thenReturn(List.of(borrowRequest1));
 
         // Act
-        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsBySpecificBoardgame(specificBoardGame);
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGame);
+
         // Assert
         assertNotNull(borrowRequests);
-        assertEquals(2, borrowRequests.size());
+        assertEquals(1, borrowRequests.size());
         assertTrue(borrowRequests.contains(borrowRequest1));
-        assertTrue(borrowRequests.contains(borrowRequest2));
+        assertFalse(borrowRequests.contains(borrowRequest2));
 
-        verify(borrowRequestRepo, times(1)).findBySpecificBoardGame(specificBoardGame);
+        verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED));
     }
-}
+}       

@@ -3,7 +3,7 @@ package ca.mcgill.ecse321.boardroom.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Min;
 
-public class BoardGameCreationDtoJanelle {
+public class BoardGameCreationDto {
     @NotBlank(message = "Title is required")
     private String title;
 
@@ -16,7 +16,7 @@ public class BoardGameCreationDtoJanelle {
     @NotBlank(message = "A photo of the board game is required")
     private int picture;
 
-    public BoardGameCreationDtoJanelle(String title, String description,
+    public BoardGameCreationDto(String title, String description,
             int playersNeeded, int picture) {
         this.title = title;
         this.description = description;

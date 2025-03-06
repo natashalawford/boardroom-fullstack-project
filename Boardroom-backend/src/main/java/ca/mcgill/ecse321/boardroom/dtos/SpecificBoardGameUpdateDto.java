@@ -8,8 +8,6 @@ public class SpecificBoardGameUpdateDto {
     private int picture;
     private GameStatus status;
 
-    private SpecificBoardGameUpdateDto() {}
-
     public SpecificBoardGameUpdateDto(int id, String description, int picture, GameStatus status) {
         this.id = id;
         this.description = description;

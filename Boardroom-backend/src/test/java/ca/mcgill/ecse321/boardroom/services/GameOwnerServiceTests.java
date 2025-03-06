@@ -80,7 +80,7 @@ public class GameOwnerServiceTests {
         when(specificBoardGameRepo.findSpecificBoardGameById(1)).thenReturn(new SpecificBoardGame(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_BOARDGAME, VALID_GAME_OWNER));
 
         //Act
-        SpecificBoardGame specificBoardGame = gameOwnerService.findSpecificBoardGameById(1);
+        SpecificBoardGame specificBoardGame = boardGameService.getSpecificBoardGameById(1);
 
         //Assert
         assertNotNull(specificBoardGame);
@@ -102,12 +102,12 @@ public class GameOwnerServiceTests {
     @Test
     public void testCreateValidSpecificBoardGame() {
         //Arrange
-        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_SPECIFIC_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS, VALID_TITLE, 1);
+        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_TITLE, 1);
 
 
         when(personService.findPersonById(anyInt())).thenReturn(VALID_GAME_OWNER);
         
-        when(boardGameService.findBoardGameByTitle(anyString())).thenReturn(VALID_BOARDGAME);
+        when(boardGameService.getBoardGameByTitle(anyString())).thenReturn(VALID_BOARDGAME);
         
         when(specificBoardGameRepo.save(any(SpecificBoardGame.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
@@ -124,7 +124,7 @@ public class GameOwnerServiceTests {
         assertEquals(VALID_GAME_OWNER, createdSpecificBoardGame.getOwner()); 
 
         verify(personService, times(1)).findPersonById(anyInt());
-        verify(boardGameService, times(1)).findBoardGameByTitle(anyString());
+        verify(boardGameService, times(1)).getBoardGameByTitle(anyString());
         verify(specificBoardGameRepo, times(1)).save(any(SpecificBoardGame.class));
 
     }

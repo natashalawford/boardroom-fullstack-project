@@ -4,16 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import ca.mcgill.ecse321.boardroom.dtos.BoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameUpdateDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
+import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
+import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 @Service
 public class GameOwnerService { 
+
+    @Autowired
+    private BoardGameRepository boardGameRepo;
    
     @Autowired
     private SpecificBoardGameRepository specificBoardGameRepo;
@@ -24,27 +32,45 @@ public class GameOwnerService {
     @Autowired
     private BoardGameService boardGameService;
 
-    public SpecificBoardGame findSpecificBoardGameById(int id)  {
-        SpecificBoardGame specificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(id);        
+    // public SpecificBoardGame findSpecificBoardGameById(int id)  {
+    //     SpecificBoardGame specificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(id);        
         
-        if (specificBoardGame == null) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("No specific board game has id %s", id));
-        }
+    //     if (specificBoardGame == null) {
+    //         throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("No specific board game has id %s", id));
+    //     }
 
-        return specificBoardGame;
+    //     return specificBoardGame;
+    // }
+
+    @Transactional
+    public BoardGame createBoardGame(@Valid BoardGameCreationDto boardGameToCreate) {
+        BoardGame boardGame = new BoardGame(boardGameToCreate.getTitle(),
+                boardGameToCreate.getDescription(),
+                boardGameToCreate.getPlayersNeeded(),
+                boardGameToCreate.getPicture());
+        return boardGameRepo.save(boardGame);
     }
 
-
     //Add a board game to owner's collection
+    @Transactional
     public SpecificBoardGame createSpecificBoardGame(SpecificBoardGameCreationDto specificBoardGameToCreate) {
         //Make sure owner exists
-        Person owner = personService.findPersonById(specificBoardGameToCreate.getOwnerId());        
+        Person personToFind = personService.findPersonById(specificBoardGameToCreate.getPersonId());        
+
+        //make sure person is owner
+        if (!personToFind.isOwner()) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person is not a game owner");
+        }
+
+        // In case we need this later
+        // Convert game status from dto (string) to enum
+        // GameStatus status = specificBoardGameToCreate.getGameStatus();
 
         //Make sure board game exists
-        BoardGame boardGame = boardGameService.findBoardGameByTitle(specificBoardGameToCreate.getBoardGameTitle());
+        BoardGame boardGame = boardGameService.getBoardGameByTitle(specificBoardGameToCreate.getBoardGameTitle());
 
         //Create new specific board game
-        SpecificBoardGame newSpecificBoardGame = new SpecificBoardGame(specificBoardGameToCreate.getPicture(), specificBoardGameToCreate.getDescription(), specificBoardGameToCreate.getStatus(), boardGame, owner);
+        SpecificBoardGame newSpecificBoardGame = new SpecificBoardGame(specificBoardGameToCreate.getPicture(), specificBoardGameToCreate.getDescription(), specificBoardGameToCreate.getGameStatus(), boardGame, personToFind);
 
         return specificBoardGameRepo.save(newSpecificBoardGame);
     }
@@ -69,7 +95,7 @@ public class GameOwnerService {
     public SpecificBoardGame updateSpecificBoardGame(SpecificBoardGameUpdateDto specificBoardGameToUpdate) {
 
         //Make sure this specific board game exists
-        SpecificBoardGame existingSpecificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(specificBoardGameToUpdate.getId());
+        SpecificBoardGame existingSpecificBoardGame = boardGameService.getSpecificBoardGameById(specificBoardGameToUpdate.getId());
 
         if (null == existingSpecificBoardGame) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "This specific board game does not exist, cannot update it");

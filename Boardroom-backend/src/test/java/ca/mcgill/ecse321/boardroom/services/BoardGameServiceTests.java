@@ -29,8 +29,10 @@ public class BoardGameServiceTests {
         private BoardGameRepository boardGameRepo;
         @Mock
         private SpecificBoardGameRepository specificBoardGameRepo;
+        @Mock
+        private GameOwnerService gameOwnerService;
         @InjectMocks
-        private BoardGameServiceJanelle boardGameService;
+        private BoardGameService boardGameService;
 
         // Fields for general board game
         private static final String VALID_TITLE = "Monopoly";
@@ -106,9 +108,9 @@ public class BoardGameServiceTests {
         @Test
         public void testCreateValidGame() {
                 // Arrange
-                BoardGameCreationDtoJanelle newBoardGameDto = new BoardGameCreationDtoJanelle(
+                BoardGameCreationDto newBoardGameDto = new BoardGameCreationDto(
                                 VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_GAME_PICTURE);
-                BoardGame createdBoardGame = boardGameService.createBoardGame(newBoardGameDto);
+                BoardGame createdBoardGame = gameOwnerService.createBoardGame(newBoardGameDto);
 
                 // Assert
                 assertNotNull(createdBoardGame);
@@ -122,10 +124,10 @@ public class BoardGameServiceTests {
         @Test
         public void testCreateValidSpecificGame() {
             // Arrange
-            SpecificBoardGameCreationDtoJanelle newSpecificBoardGameDto = new SpecificBoardGameCreationDtoJanelle(
+            SpecificBoardGameCreationDto newSpecificBoardGameDto = new SpecificBoardGameCreationDto(
                             VALID_SPECIFIC_GAME_PICTURE, VALID_SPECIFIC_GAME_DESCRIPTION,
                             VALID_GAME_STATUS, VALID_TITLE, VALID_OWNER.getId());
-            SpecificBoardGame createdSpecificBoardGame = boardGameService
+            SpecificBoardGame createdSpecificBoardGame = gameOwnertService
                             .createSpecificBoardGame(newSpecificBoardGameDto);
         
             // Assert

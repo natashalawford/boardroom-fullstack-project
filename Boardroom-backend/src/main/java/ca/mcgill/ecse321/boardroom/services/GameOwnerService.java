@@ -32,15 +32,15 @@ public class GameOwnerService {
     @Autowired
     private BoardGameService boardGameService;
 
-    // public SpecificBoardGame findSpecificBoardGameById(int id)  {
-    //     SpecificBoardGame specificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(id);        
+    public SpecificBoardGame findSpecificBoardGameById(int id)  {
+        SpecificBoardGame specificBoardGame = specificBoardGameRepo.findSpecificBoardGameById(id);        
         
-    //     if (specificBoardGame == null) {
-    //         throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("No specific board game has id %s", id));
-    //     }
+        if (specificBoardGame == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("No specific board game has id %s", id));
+        }
 
-    //     return specificBoardGame;
-    // }
+        return specificBoardGame;
+    }
 
     @Transactional
     public BoardGame createBoardGame(@Valid BoardGameCreationDto boardGameToCreate) {

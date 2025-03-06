@@ -36,7 +36,7 @@ public class GameOwnerServiceTests {
     @Mock
     private PersonService personService;
 
-    @Mock
+    @InjectMocks
     private BoardGameService boardGameService;
 
     @InjectMocks

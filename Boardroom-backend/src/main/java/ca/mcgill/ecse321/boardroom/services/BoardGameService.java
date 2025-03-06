@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ca.mcgill.ecse321.boardroom.dtos.*;
@@ -14,6 +15,7 @@ import ca.mcgill.ecse321.boardroom.repositories.*;
 
 import jakarta.validation.Valid;
 
+@Service
 public class BoardGameService {
     @Autowired
     private PersonRepository personRepo;

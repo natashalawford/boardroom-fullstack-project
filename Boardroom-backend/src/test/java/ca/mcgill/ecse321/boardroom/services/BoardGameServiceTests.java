@@ -29,7 +29,7 @@ public class BoardGameServiceTests {
         private BoardGameRepository boardGameRepo;
         @Mock
         private SpecificBoardGameRepository specificBoardGameRepo;
-        @Mock
+        @InjectMocks
         private GameOwnerService gameOwnerService;
         @InjectMocks
         private BoardGameService boardGameService;
@@ -127,7 +127,7 @@ public class BoardGameServiceTests {
             SpecificBoardGameCreationDto newSpecificBoardGameDto = new SpecificBoardGameCreationDto(
                             VALID_SPECIFIC_GAME_PICTURE, VALID_SPECIFIC_GAME_DESCRIPTION,
                             VALID_GAME_STATUS, VALID_TITLE, VALID_OWNER.getId());
-            SpecificBoardGame createdSpecificBoardGame = gameOwnertService
+            SpecificBoardGame createdSpecificBoardGame = gameOwnerService
                             .createSpecificBoardGame(newSpecificBoardGameDto);
         
             // Assert

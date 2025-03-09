@@ -33,6 +33,16 @@ public class SpecificBoardGame {
         this.owner = owner;
     }
 
+    public SpecificBoardGame(int id, String description, int picture, GameStatus status, BoardGame boardGame,
+            Person owner) {
+        this.id = id;
+        this.description = description;
+        this.picture = picture;
+        this.status = status;
+        this.boardGame = boardGame;
+        this.owner = owner;
+    }
+
     public int getId() {
         return id;
     }

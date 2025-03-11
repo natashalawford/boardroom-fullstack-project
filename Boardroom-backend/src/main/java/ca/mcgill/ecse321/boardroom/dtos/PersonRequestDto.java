@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
-import ca.mcgill.ecse321.boardroom.model.Person;
 
 public class PersonRequestDto {
     private String name;
@@ -10,10 +9,10 @@ public class PersonRequestDto {
     private PersonRequestDto() {
     }
 
-    public PersonRequestDto(Person person) {
-        this.name = person.getName();
-        this.email = person.getEmail();
-        this.owner = person.isOwner();
+    public PersonRequestDto(String name, String email, boolean owner) {
+        this.name = name;
+        this.email = email;
+        this.owner = owner;
     }
 
     public String getName() {

@@ -86,4 +86,32 @@ public class RegistrationService {
                  e2.getEndDateTime().isBefore(e1.getStartDateTime())); // otherwise event 2 ending is before event 1 starts
                  // if neither of these are true, the events overlap
     }
+
+    @Transactional
+    public void unregisterFromEvent(EventRegistrationDto eventRegistrationDto) {
+        int personId = eventRegistrationDto.getPersonId();
+        Person person = personRepository.findById(personId).orElse(null);
+        
+        if (person == null) {
+            throw new IllegalArgumentException("Person not found");
+        }
+        // Get the event
+        int eventId = eventRegistrationDto.getEventId();
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        // Check if event exists, otherwise throw an exception
+        if (event == null) {
+            throw new IllegalArgumentException("Event not found");
+        }
+
+        Registration registration = registrationRepository.findByKeyPersonAndKeyEvent(person, event);
+
+        // If registration is null, the user is not actually registered for this event, throw an exception
+        if (registration == null) {
+            throw new IllegalStateException("User is not registered for this event");
+        }
+
+        //otherwise, delete the registration
+        registrationRepository.delete(registration);
+    }
 }

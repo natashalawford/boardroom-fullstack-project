@@ -1,5 +1,8 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -29,5 +32,20 @@ public class ReviewController {
         return new ReviewResponseDto(createdReview);
     }
 
+    /*
+     * Get reviews for a specific board game.
+     * 
+     * @param title The title of the board game
+     * @return The reviews for the board game
+     */
+    @GetMapping("/{title}")
+    public List<ReviewResponseDto> getReviewsForBoardGame(@PathVariable String title) {
+        List<Review> reviews = reviewService.getReviewsForBoardGame(title);
+        List<ReviewResponseDto> reviewResponseDtos = new ArrayList<>();
+        for (Review review : reviews) {
+            reviewResponseDtos.add(new ReviewResponseDto(review));
+        }
+        return reviewResponseDtos;
+    }
 
 }

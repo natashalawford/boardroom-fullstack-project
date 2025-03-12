@@ -12,4 +12,5 @@ public interface BorrowRequestRepository extends CrudRepository<BorrowRequest, I
     public BorrowRequest findBorrowRequestById(int id);
 
     List<BorrowRequest> findBySpecificBoardGameAndStatus(SpecificBoardGame specificBoardGame, RequestStatus status);
+    List<BorrowRequest> findByStatus(RequestStatus status);
 }

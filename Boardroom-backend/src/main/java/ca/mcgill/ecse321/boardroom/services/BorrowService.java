@@ -64,4 +64,9 @@ public class BorrowService {
     public List<BorrowRequest> viewBorrowRequestsByBoardgame(SpecificBoardGame specificBoardGame) {
         return borrowRequestRepo.findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
+
+    @Transactional
+    public List<BorrowRequest> viewPendingBorrowRequests() {
+        return borrowRequestRepo.findByStatus(RequestStatus.PENDING);
+    }
 }

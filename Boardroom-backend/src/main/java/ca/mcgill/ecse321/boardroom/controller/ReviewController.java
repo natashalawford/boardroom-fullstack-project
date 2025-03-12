@@ -41,11 +41,7 @@ public class ReviewController {
     @GetMapping("/{title}")
     public List<ReviewResponseDto> getReviewsForBoardGame(@PathVariable String title) {
         List<Review> reviews = reviewService.getReviewsForBoardGame(title);
-        List<ReviewResponseDto> reviewResponseDtos = new ArrayList<>();
-        for (Review review : reviews) {
-            reviewResponseDtos.add(new ReviewResponseDto(review));
-        }
-        return reviewResponseDtos;
+        return reviews.stream().map(ReviewResponseDto::new).toList();
     }
 
 }

@@ -2,10 +2,7 @@ package ca.mcgill.ecse321.boardroom.controller;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
-import ca.mcgill.ecse321.boardroom.dtos.PersonUpdateDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
-import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
-import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,24 +31,11 @@ public class PersonController {
      * Update person type
      */
     @PutMapping("people/{id}/role")
-    public PersonResponseDto toggleAccountType(@PathVariable("id") int id,
-                                              @RequestBody PersonRequestDto partialUpdatedPerson) {
-        //Get rest of information of person from database
-        Person personToUpdate =
-                personService.findPersonById(id);
+    public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@RequestBody PersonRequestDto partialUpdatedPerson) {
+        
+        PersonResponseDto updatedPerson = personService.updatePerson(id, partialUpdatedPerson);
 
-        if (personToUpdate == null) {
-                throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist");
-        }
-
-        //Build updated person
-        PersonUpdateDto updatedPerson = new PersonUpdateDto(id, partialUpdatedPerson.getName(), partialUpdatedPerson.getEmail(), personToUpdate.getPassword(), partialUpdatedPerson.isOwner()); 
-
-        //Update person
-        Person persistedUpdatedPerson =
-                personService.updatePerson(updatedPerson);
-
-        return new PersonResponseDto(persistedUpdatedPerson);
+        return updatedPerson;
 
     }
 }

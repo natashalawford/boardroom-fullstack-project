@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -53,7 +54,7 @@ public class EventIntegrationTests {
     private int locationId;
     private int hostId;
     private String boardGameName;
-    @BeforeEach
+    @BeforeAll
     public void setup() {
         VALID_LOCATION = new Location("McGill", "Montreal", "QC");
         locationRepository.save(VALID_LOCATION);
@@ -68,7 +69,7 @@ public class EventIntegrationTests {
         boardGameName = VALID_BOARD_GAME.getTitle();
     }
 
-    @AfterEach
+    @AfterAll
     public void cleanup() {
         eventRepository.deleteAll();
         locationRepository.deleteAll();
@@ -150,4 +151,81 @@ public class EventIntegrationTests {
                 List.of("A location with this id does not exist"),
                 response.getBody().getErrors());
     }
+
+    @Test
+    @Order(3)
+    public void testGetEventById_Success() {
+        // Arrange
+        String url = String.format("/events/%d", this.createdEventId);
+
+        // Act
+        ResponseEntity<EventResponseDto> getResponse = client.getForEntity(url, EventResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        assertNotNull(getResponse.getBody());
+        assertEquals(this.createdEventId, getResponse.getBody().getId());
+        assertEquals(VALID_TITLE, getResponse.getBody().getTitle());
+    }
+
+    @Test
+    @Order(4)
+    public void testGetEventById_NotFound() {
+        // Act
+        int invalidEventId = 99999;
+        ResponseEntity<ErrorDto> response = client.getForEntity("/events/" + invalidEventId, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("no event has ID " + invalidEventId),
+                response.getBody().getErrors()
+        );
+    }
+
+    @Test
+    @Order(5)
+    public void testGetAllEvents_Success() {
+        // Arrange
+
+        // Act: Retrieve all events
+        ResponseEntity<EventResponseDto[]> response = client.getForEntity("/events", EventResponseDto[].class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().length > 0, "There should be at least one event in the list.");
+    }
+
+    @Test
+    @Order(6)
+    public void testDeleteEventById_Success() {
+        // Arrange
+        String url = String.format("/events/%d", this.createdEventId);
+
+        // Act: Delete the event
+        client.delete(url);
+
+        // Assert: Ensure the event is deleted by checking retrieval
+        ResponseEntity<ErrorDto> getResponse = client.getForEntity(url, ErrorDto.class);
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    public void testDeleteEventById_NotFound() {
+        // Act: Try to delete a non-existent event
+        int invalidEventId = 99999;
+        ResponseEntity<ErrorDto> response = client.exchange("/events/" + invalidEventId, HttpMethod.DELETE, null, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("no event has ID " + invalidEventId),
+                response.getBody().getErrors()
+        );
+    }
+
 }

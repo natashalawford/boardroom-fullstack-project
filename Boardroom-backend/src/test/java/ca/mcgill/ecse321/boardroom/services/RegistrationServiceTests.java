@@ -211,4 +211,40 @@ public class RegistrationServiceTests {
         verify(registrationRepository, never()).save(argThat(reg -> reg.getKey().getEvent().equals(VALID_EVENT)));
     }
 
+    @Test
+    public void testUnregisterFromEvent_Sucess(){
+        //Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.findByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(new Registration(new Registration.Key(VALID_EVENT, PERSON), LocalDateTime.now()));
+
+        //Act 
+        registrationService.unregisterFromEvent(eventRegistrationDto);
+
+        //Assert
+        verify(registrationRepository, times(1)).delete(any(Registration.class));
+    }
+
+    @Test
+    public void testUnregisterFromEvent_PersonNotRegistered(){
+        //Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.findByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(null);
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> registrationService.unregisterFromEvent(eventRegistrationDto)
+        );
+        assertEquals("User is not registered for this event", exception.getMessage());
+        verify(registrationRepository, never()).delete(any(Registration.class));
+    }
+
 }

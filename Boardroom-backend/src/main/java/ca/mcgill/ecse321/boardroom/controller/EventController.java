@@ -9,6 +9,9 @@ import ca.mcgill.ecse321.boardroom.dtos.responses.EventResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.services.EventService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/events")  // Base path for event endpoints
 public class EventController {
@@ -27,6 +30,45 @@ public class EventController {
     public EventResponseDto createEvent(@RequestBody EventCreationDto eventToCreate) {
         Event createdEvent = eventService.createEvent(eventToCreate);
         return new EventResponseDto(createdEvent);
+    }
+
+
+    /**
+     * Get an event by ID.
+     *
+     * @param id The event ID
+     * @return The event details
+     */
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventResponseDto getEventById(@PathVariable int id) {
+        Event event = eventService.findEventById(id);
+        return new EventResponseDto(event);
+    }
+
+    /**
+     * Get all events.
+     *
+     * @return A list of all events
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventResponseDto> getAllEvents() {
+        return eventService.getEvents()
+                .stream()
+                .map(EventResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Delete an event by ID.
+     *
+     * @param id The event ID
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEventById(@PathVariable int id) {
+        eventService.deleteEventById(id);
     }
 
 }

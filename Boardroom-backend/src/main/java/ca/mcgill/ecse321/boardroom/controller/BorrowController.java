@@ -27,4 +27,12 @@ public class BorrowController {
         return new BorrowRequestDtoSpecific(createdBorrowRequest);
     }
 
+    @PutMapping("/borrowRequests/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BorrowRequestDtoSpecific updateBorrowRequest(@PathVariable int id, @RequestBody RequestStatus status){
+        BorrowRequest updatedBorrowRequest = borrowService.updateBorrowRequest(id, status);
+        return new BorrowRequestDtoSpecific(updateBorrowRequest);
+    }
+
+
 }

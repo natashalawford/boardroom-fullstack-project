@@ -7,6 +7,8 @@ public class SpecificBoardGameRequestDto {
     private int picture;
     private GameStatus status;
 
+    private SpecificBoardGameRequestDto() {}
+
     public SpecificBoardGameRequestDto(String description, int picture, GameStatus status) {
         
         this.description = description;

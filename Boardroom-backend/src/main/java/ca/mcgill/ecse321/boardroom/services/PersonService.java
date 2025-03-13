@@ -41,7 +41,7 @@ public class PersonService {
     }
 
     @Transactional
-    public PersonResponseDto updatePerson(int id, PersonRequestDto personToUpdateDto) {
+    public Person updatePerson(int id, PersonRequestDto personToUpdateDto) {
 
         // First check if this person exists, if not throw error
         Person personToUpdate = personRepo.findPersonById(id);
@@ -55,7 +55,7 @@ public class PersonService {
                 personToUpdateDto.getName(), personToUpdateDto.getEmail(),
                 personToUpdate.getPassword(), personToUpdateDto.isOwner());
 
-        return new PersonResponseDto(personRepo.save(updatedPerson));
+        return personRepo.save(updatedPerson);
     }
 
     @Transactional

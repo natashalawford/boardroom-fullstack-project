@@ -34,5 +34,15 @@ public class BorrowController {
         return new BorrowRequestDtoSpecific(updateBorrowRequest);
     }
 
+    @GetMapping("/borrowRequests")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestDtoSpecific> viewPendingBorrowRequests(){
+        ArrayList<BorrowRequestDtoSpecific> borrowRequestDtos = new ArrayList<>();
+        ArrayList<BorrowRequest> borrowRequests = borrowService.viewPendingBorrowRequests();
+        for(BorrowRequest borrowRequest : borrowRequests){
+            borrowRequestDtos.add(new BorrowRequestDtoSpecific(borrowRequest.getStatus(), borrowRequest.getRequestStartDate(), borrowRequest.getRequestEndDate(), borrowRequest.getPerson().getId(), borrowRequest.getSpecificBoardGame().getId()));
+        }
+        return borrowRequestDtos;
+    }
 
 }

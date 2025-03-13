@@ -12,11 +12,13 @@ import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.model.Event;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 
+import jakarta.validation.constraints.DecimalMin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -203,4 +207,115 @@ public class EventServiceTests {
 
         verify(eventRepository, never()).save(any(Event.class));
     }
+
+    @Test
+    public void testFindEventByValidId() {
+        // Arrange
+        Event event = new Event(
+                VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME
+        );
+
+        when(eventRepository.findEventById(42)).thenReturn(event);
+
+        // Act
+        Event foundEvent = eventService.findEventById(42);
+
+        // Assert
+        assertNotNull(foundEvent);
+        assertEquals(VALID_TITLE, foundEvent.getTitle());
+        assertEquals(VALID_DESCRIPTION, foundEvent.getDescription());
+        assertEquals(VALID_START_TIME, foundEvent.getStartDateTime());
+        assertEquals(VALID_END_TIME, foundEvent.getEndDateTime());
+        assertEquals(VALID_MAX_PARTICIPANTS, foundEvent.getMaxParticipants());
+        assertEquals(VALID_LOCATION, foundEvent.getLocation());
+        assertEquals(VALID_HOST, foundEvent.getEventHost());
+        assertEquals(VALID_BOARD_GAME, foundEvent.getBoardGame());
+
+        verify(eventRepository, times(1)).findEventById(42);
+    }
+
+    @Test
+    public void testFindEventThatDoesntExist() {
+        // Arrange
+        when(eventRepository.findEventById(99)).thenReturn(null);
+
+        // Act + Assert
+        BoardroomException e = assertThrows(
+                BoardroomException.class,
+                () -> eventService.findEventById(99) // Assuming there's a personService
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("no event has ID 99", e.getMessage());
+    }
+
+    @Test
+    public void testDeleteEventById_Success() {
+        // Arrange
+        int eventId = 42;
+        Event event = new Event(
+                VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME
+        );
+
+        when(eventRepository.findEventById(eventId)).thenReturn(event);
+
+        // Act
+        eventService.deleteEventById(eventId);
+
+        // Assert
+        verify(eventRepository, times(1)).deleteById(eventId);
+    }
+
+    @Test
+    public void testDeleteEventById_NotFound() {
+        // Arrange
+        int eventId = 99; // Nonexistent event
+        when(eventRepository.findEventById(eventId)).thenReturn(null);
+
+        // Act + Assert
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> eventService.deleteEventById(eventId)
+        );
+
+        assertEquals("no event has ID 99", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+
+        verify(eventRepository, never()).deleteById(anyInt());
+    }
+
+    @Test
+    public void testGetEvents_Success() {
+        // Arrange
+        List<Event> mockEvents = new ArrayList<>();
+        mockEvents.add(new Event("Game Night", "Play games", VALID_START_TIME, VALID_END_TIME, 10, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME));
+        mockEvents.add(new Event("Chess Tournament", "Compete in chess", VALID_START_TIME, VALID_END_TIME, 20, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME));
+
+        when(eventRepository.findAll()).thenReturn(mockEvents);
+
+        // Act
+        List<Event> events = eventService.getEvents();
+
+        // Assert
+        assertNotNull(events);
+        assertEquals(2, events.size());
+        verify(eventRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testGetEvents_EmptyList() {
+        // Arrange
+        when(eventRepository.findAll()).thenReturn(new ArrayList<>()); // No events
+
+        // Act
+        List<Event> events = eventService.getEvents();
+
+        // Assert
+        assertNotNull(events);
+        assertTrue(events.isEmpty());
+        verify(eventRepository, times(1)).findAll();
+    }
+
 }

@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import ca.mcgill.ecse321.boardroom.repositories.LocationRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -55,6 +56,35 @@ public class EventService {
                                 boardGameToFind);
 
                 return eventRepository.save(event);
+        }
+
+        @Transactional
+        public Event findEventById(int id) {
+                Event event = eventRepository.findEventById(id);
+                if(event == null) {
+                        throw new BoardroomException(
+                                HttpStatus.NOT_FOUND,
+                                String.format("no event has ID %d", id));
+                }
+                return event;
+        }
+
+        @Transactional
+        public List<Event> getEvents() {
+                List<Event> events = (List<Event>) eventRepository.findAll();
+                return events;
+        }
+
+        @Transactional
+        public void deleteEventById(int id) {
+                Event event = eventRepository.findEventById(id);
+                if(event != null) {
+                        eventRepository.deleteById(id);
+                } else {
+                        throw new BoardroomException(
+                                HttpStatus.NOT_FOUND,
+                                String.format("no event has ID %d", id));
+                }
         }
 
         private void validateEventTimes(LocalDateTime startTime, LocalDateTime endTime) {

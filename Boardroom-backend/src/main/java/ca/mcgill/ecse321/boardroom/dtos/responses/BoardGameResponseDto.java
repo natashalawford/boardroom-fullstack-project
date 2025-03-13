@@ -8,8 +8,8 @@ public class BoardGameResponseDto {
     private int playersNeeded;
     private int picture;
 
-    @SuppressWarnings("unused")
-    private BoardGameResponseDto() { }
+    private BoardGameResponseDto() {}
+
 
     public BoardGameResponseDto(BoardGame boardGame) {
         this.title = boardGame.getTitle();
@@ -30,7 +30,9 @@ public class BoardGameResponseDto {
         return playersNeeded;
     }
 
+
     public int getPicture() {
         return picture;
-    }
+    } 
+    
 }

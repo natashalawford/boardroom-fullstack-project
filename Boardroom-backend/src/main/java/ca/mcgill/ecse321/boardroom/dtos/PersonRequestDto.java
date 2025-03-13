@@ -1,22 +1,18 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
-public class PersonUpdateDto {
-    private int id;
+
+public class PersonRequestDto {
     private String name;
     private String email;
-    private String password;
     private boolean owner;
 
-    public PersonUpdateDto(int id, String name, String email, String password, boolean owner) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.owner = owner;
+    private PersonRequestDto() {
     }
 
-    public int getId() {
-        return id;
+    public PersonRequestDto(String name, String email, boolean owner) {
+        this.name = name;
+        this.email = email;
+        this.owner = owner;
     }
 
     public String getName() {
@@ -25,10 +21,6 @@ public class PersonUpdateDto {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public boolean isOwner() {

@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameUpdateDto;
+import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
@@ -150,18 +150,19 @@ public class GameOwnerServiceTests {
         when(boardGameService.getSpecificBoardGameById(anyInt())).thenReturn(existingSpecificBoardGame);
         when(specificBoardGameRepo.save(any(SpecificBoardGame.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
-        SpecificBoardGameUpdateDto specificBoardGameToUpdate = new SpecificBoardGameUpdateDto(1, VALID_SPECIFIC_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS);
+        int id = 1;
+        SpecificBoardGameRequestDto specificBoardGameToUpdate = new SpecificBoardGameRequestDto(VALID_SPECIFIC_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS);
     
         //Act
-        SpecificBoardGame updatedSpecificBoardGame = gameOwnerService.updateSpecificBoardGame(specificBoardGameToUpdate);
+        SpecificBoardGame updatedSpecificBoardGame = gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate);
 
         //Assert
         assertNotNull(updatedSpecificBoardGame);
         assertEquals(VALID_SPECIFIC_PICTURE, updatedSpecificBoardGame.getPicture());
         assertEquals(VALID_SPECIFIC_DESCRIPTION, updatedSpecificBoardGame.getDescription());
         assertEquals(VALID_STATUS, updatedSpecificBoardGame.getStatus());
-        assertEquals(VALID_BOARDGAME, updatedSpecificBoardGame.getBoardGame());
-        assertEquals(VALID_GAME_OWNER, updatedSpecificBoardGame.getOwner());
+        assertEquals(VALID_BOARDGAME.getTitle(), updatedSpecificBoardGame.getBoardGame().getTitle());
+        assertEquals(VALID_GAME_OWNER.getId(), updatedSpecificBoardGame.getOwner().getId());
 
         verify(boardGameService, times(1)).getSpecificBoardGameById(anyInt());
         verify(specificBoardGameRepo, times(1)).save(any(SpecificBoardGame.class));

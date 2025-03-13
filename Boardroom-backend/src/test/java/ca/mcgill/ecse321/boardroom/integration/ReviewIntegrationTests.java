@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -16,6 +18,7 @@ import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.ReviewResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
+import ca.mcgill.ecse321.boardroom.model.Review;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.ReviewRepository;
@@ -40,10 +43,11 @@ public class ReviewIntegrationTests {
 
     private static Person VALID_AUTHOR;
     private static BoardGame VALID_BOARD_GAME;
+    private static ReviewResponseDto VALID_REVIEW_DTO;
     private int authorId;
     private String boardGameName;
 
-    @BeforeEach
+    @BeforeAll
     public void setup() {
         VALID_AUTHOR = new Person("validUser", "user@mail.com", "securepass", false);
         personRepository.save(VALID_AUTHOR);
@@ -54,7 +58,7 @@ public class ReviewIntegrationTests {
         boardGameName = VALID_BOARD_GAME.getTitle();
     }
 
-    @AfterEach
+    @AfterAll
     public void cleanup() {
         reviewRepository.deleteAll();
         personRepository.deleteAll();
@@ -80,6 +84,7 @@ public class ReviewIntegrationTests {
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getId() > 0, "The ID should be a positive integer");
         this.createdReviewId = response.getBody().getId();
+        VALID_REVIEW = response.getBody();
         assertEquals(body.getStars(), response.getBody().getStars());
         assertEquals(body.getComment(), response.getBody().getComment());
 
@@ -112,6 +117,9 @@ public class ReviewIntegrationTests {
                 response.getBody().getErrors());
     }
 
+    /*
+     * Test creating a review with invalid fields (non-existent board game).
+     */
     @Test
     @Order(2)
     public void testCreateReviewWithInvalidFields() {
@@ -129,5 +137,64 @@ public class ReviewIntegrationTests {
         assertIterableEquals(
                 List.of("A board game with this name does not exist"),
                 response.getBody().getErrors());
+    }
+
+    /*
+     * Test getting reviews for a specific board game.
+     */
+    @Test
+    @Order(3)
+    public void testGetReviewsForBoardGame() {
+        // Arrange by creating review using endpoint
+        ReviewCreationDto body = new ReviewCreationDto(
+                3, "This game was okay.", authorId, boardGameName
+        );
+        ResponseEntity<ReviewResponseDto> response = client.postForEntity("/reviews", body, ReviewResponseDto.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        ReviewResponseDto reviewCreated = response.getBody();
+        
+        // Act by trying to retrieve reviews for the board game
+        String url = "/reviews/" + reviewCreated.getBoardGameName();
+        ResponseEntity<List<ReviewResponseDto>> reviewResponseBody = client.exchange(
+            url,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<ReviewResponseDto>>() {}
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
+        assertNotNull(reviewResponseBody.getBody());
+        assertTrue(reviewResponseBody.getBody().size() > 0);
+        ReviewResponseDto reviewResponse = reviewResponseBody.getBody().get(0);
+
+        assertEquals(reviewCreated.getId(), reviewResponse.getId());
+        assertEquals(reviewCreated.getStars(), reviewResponse.getStars());
+        assertEquals(reviewCreated.getComment(), reviewResponse.getComment());
+        assertEquals(reviewCreated.getAuthorId(), reviewResponse.getAuthorId());
+        assertEquals(reviewCreated.getBoardGameName(), reviewResponse.getBoardGameName());
+    }
+
+    /*
+     * Test getting reviews for a board game with an invalid title.
+     */
+    @Test
+    @Order(4)
+    public void testGetReviewsForBoardGameWithInvalidTitle() {
+        // Arrange
+        String url = "/reviews/" + "Nonexistent-title";
+
+        // Act
+        ResponseEntity<List<ReviewResponseDto>> reviewResponseBody = client.exchange(
+            url,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<ReviewResponseDto>>() {}
+        );
+
+        assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
+        assertNotNull(reviewResponseBody.getBody());
+        assertTrue(reviewResponseBody.getBody().size() == 0);
     }
 }

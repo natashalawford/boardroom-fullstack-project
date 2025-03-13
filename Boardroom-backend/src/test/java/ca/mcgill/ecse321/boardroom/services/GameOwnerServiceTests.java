@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
-import ca.mcgill.ecse321.boardroom.dtos.responses.SpecificBoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
@@ -155,15 +154,15 @@ public class GameOwnerServiceTests {
         SpecificBoardGameRequestDto specificBoardGameToUpdate = new SpecificBoardGameRequestDto(VALID_SPECIFIC_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS);
     
         //Act
-        SpecificBoardGameResponseDto updatedSpecificBoardGame = gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate);
+        SpecificBoardGame updatedSpecificBoardGame = gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate);
 
         //Assert
         assertNotNull(updatedSpecificBoardGame);
         assertEquals(VALID_SPECIFIC_PICTURE, updatedSpecificBoardGame.getPicture());
         assertEquals(VALID_SPECIFIC_DESCRIPTION, updatedSpecificBoardGame.getDescription());
         assertEquals(VALID_STATUS, updatedSpecificBoardGame.getStatus());
-        assertEquals(VALID_BOARDGAME.getTitle(), updatedSpecificBoardGame.getBoardGameTitle());
-        assertEquals(VALID_GAME_OWNER.getId(), updatedSpecificBoardGame.getOwnerId());
+        assertEquals(VALID_BOARDGAME.getTitle(), updatedSpecificBoardGame.getBoardGame().getTitle());
+        assertEquals(VALID_GAME_OWNER.getId(), updatedSpecificBoardGame.getOwner().getId());
 
         verify(boardGameService, times(1)).getSpecificBoardGameById(anyInt());
         verify(specificBoardGameRepo, times(1)).save(any(SpecificBoardGame.class));

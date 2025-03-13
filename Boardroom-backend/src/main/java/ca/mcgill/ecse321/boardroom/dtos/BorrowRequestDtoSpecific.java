@@ -13,6 +13,10 @@ public class BorrowRequestDtoSpecific {
     private int personId;
     private int specificBoardGameId;
 
+    public BorrowRequestDtoSpecific() {
+        
+    }
+    
     public BorrowRequestDtoSpecific(BorrowRequest borrowRequest) {
         this.id = borrowRequest.getId();
         this.status = borrowRequest.getStatus();

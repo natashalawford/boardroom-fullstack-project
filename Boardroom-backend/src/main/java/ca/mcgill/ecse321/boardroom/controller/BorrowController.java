@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,12 +18,13 @@ import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.services.BorrowService;
 
-
+@RestController
+@RequestMapping("/borrowRequests")
 public class BorrowController {
     @Autowired
     private BorrowService borrowService;
 
-    @PostMapping("/borrowRequests")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BorrowRequestDtoSpecific createBorrowRequest(@RequestBody BorrowRequestDtoCreation borrowRequestToCreate){
         BorrowRequest createdBorrowRequest = borrowService.createBorrowRequest(borrowRequestToCreate);
@@ -36,7 +38,7 @@ public class BorrowController {
         return new BorrowRequestDtoSpecific(updatedBorrowRequest);
     }
 
-    @GetMapping("/borrowRequests")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<BorrowRequestDtoSpecific> viewPendingBorrowRequests(){
         List<BorrowRequestDtoSpecific> borrowRequestDtos = new ArrayList<>();

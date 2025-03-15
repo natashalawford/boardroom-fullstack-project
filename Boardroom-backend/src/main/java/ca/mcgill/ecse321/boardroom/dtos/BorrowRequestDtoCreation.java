@@ -3,8 +3,6 @@ package ca.mcgill.ecse321.boardroom.dtos;
 import java.time.LocalDateTime;
 
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
 
 public class BorrowRequestDtoCreation {
 

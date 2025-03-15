@@ -98,11 +98,8 @@ public class BorrowIntegrationTests {
         personRepository.deleteAll();
     }
 
-    /**
-     * Test creating a new BorrowRequest
-     */
     @Test
-    @Order(1)
+    @Order(0)
     public void testCreateBorrowRequest() {
         // Arrange
         BorrowRequestDtoCreation borrowRequestCreationDto = new BorrowRequestDtoCreation(
@@ -134,4 +131,24 @@ public class BorrowIntegrationTests {
         assertEquals(VALID_SPECIFIC_GAME_ID, createdBorrowRequest.getSpecificBoardGameId());
     }
 
+    @Test
+    @Order(1)
+    public void testUpdateBorrowRequest() {
+        // Arrange
+        RequestStatus newStatus = RequestStatus.ACCEPTED;
+        String url = "/borrowRequests/" + VALID_BORROW_REQUEST_ID;
+
+        // Act
+        ResponseEntity<BorrowRequestDtoSpecific> response = client.exchange(
+                url,
+                HttpMethod.PUT,
+                new HttpEntity<>(newStatus),
+                BorrowRequestDtoSpecific.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(newStatus, response.getBody().getStatus());
+    }
 }

@@ -29,7 +29,6 @@ public class ReviewIntegrationTests {
 
     @Autowired
     private TestRestTemplate client;
-    private int createdReviewId;
 
     @Autowired
     private PersonRepository personRepository;
@@ -79,7 +78,6 @@ public class ReviewIntegrationTests {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getId() > 0, "The ID should be a positive integer");
-        this.createdReviewId = response.getBody().getId();
         assertEquals(body.getStars(), response.getBody().getStars());
         assertEquals(body.getComment(), response.getBody().getComment());
 

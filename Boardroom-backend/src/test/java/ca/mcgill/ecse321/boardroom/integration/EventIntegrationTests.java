@@ -54,6 +54,7 @@ public class EventIntegrationTests {
     private int locationId;
     private int hostId;
     private String boardGameName;
+    
     @BeforeAll
     public void setup() {
         VALID_LOCATION = new Location("McGill", "Montreal", "QC");
@@ -72,9 +73,9 @@ public class EventIntegrationTests {
     @AfterAll
     public void cleanup() {
         eventRepository.deleteAll();
+        boardGameRepository.deleteAll();
         locationRepository.deleteAll();
         personRepository.deleteAll();
-        boardGameRepository.deleteAll();
     }
 
     @Test

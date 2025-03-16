@@ -100,7 +100,7 @@ public class PersonServiceTests {
         when(personRepo.save(any(Person.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         //Act
-        PersonResponseDto updatedPerson = personService.updatePerson(id, personToUpdate);
+        Person updatedPerson = personService.updatePerson(id, personToUpdate);
 
         //Assert
         assertNotNull(updatedPerson);  

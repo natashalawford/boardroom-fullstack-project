@@ -33,9 +33,6 @@ public class PersonController {
     @PutMapping("people/{id}/role")
     public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@RequestBody PersonRequestDto partialUpdatedPerson) {
         
-        PersonResponseDto updatedPerson = personService.updatePerson(id, partialUpdatedPerson);
-
-        return updatedPerson;
-
+        return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
 }

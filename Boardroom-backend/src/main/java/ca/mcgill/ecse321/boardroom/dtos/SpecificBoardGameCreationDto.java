@@ -20,6 +20,8 @@ public class SpecificBoardGameCreationDto {
     @NotNull(message = "A board game owner is required")
     private int personId;
 
+    private SpecificBoardGameCreationDto() {}
+
     public SpecificBoardGameCreationDto(int picture, String description,
             GameStatus gameStatus, String boardGameTitle,
             int personId) {

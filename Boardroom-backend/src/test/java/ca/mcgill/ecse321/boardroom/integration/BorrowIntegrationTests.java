@@ -156,4 +156,44 @@ public class BorrowIntegrationTests {
         assertEquals(newStatus, response.getBody().getStatus());
     }
 
+    @Test
+    @Order(2)
+    public void testViewPendingBorrowRequests() {
+        // Arrange
+        String url = "/borrowRequests";
+
+        // Act
+        ResponseEntity<List<BorrowRequestDtoSpecific>> response = client.exchange(
+            url,
+            HttpMethod.GET,
+            null, 
+            new ParameterizedTypeReference<List<BorrowRequestDtoSpecific>>() {}
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "HTTP status should be 200 OK");
+        List<BorrowRequestDtoSpecific> pendingRequests = response.getBody();
+        assertNotNull(pendingRequests, "The list of pending requests must not be null");
+        
+        assertEquals(1, pendingRequests.size(), "There should be exactly 1 pending request in the repository");
+
+        for (BorrowRequestDtoSpecific dto : pendingRequests) {
+            assertEquals(validBorrowRequestId, dto.getId(), "BorrowRequest ID should match");
+            assertEquals(VALID_STATUS, dto.getStatus(), "BorrowRequest should have the PENDING status");
+            
+            // Truncate both expected and actual to milliseconds due to truncation mistmatches:
+            LocalDateTime expectedStart = VALID_REQUEST_START.truncatedTo(ChronoUnit.MILLIS);
+            LocalDateTime actualStart   = dto.getRequestStartDate().truncatedTo(ChronoUnit.MILLIS);
+            assertEquals(expectedStart, actualStart, "Request start date/time (truncated to millis) should match");
+
+            LocalDateTime expectedEnd = VALID_REQUEST_END.truncatedTo(ChronoUnit.MILLIS);
+            LocalDateTime actualEnd   = dto.getRequestEndDate().truncatedTo(ChronoUnit.MILLIS);
+            assertEquals(expectedEnd, actualEnd, "Request end date/time (truncated to millis) should match");
+
+            assertEquals(validPersonId, dto.getPersonId(), "Person ID should match");
+            assertEquals(validSpecificGameId, dto.getSpecificBoardGameId(), "SpecificBoardGame ID should match");
+        }
+
+    } 
+
 }

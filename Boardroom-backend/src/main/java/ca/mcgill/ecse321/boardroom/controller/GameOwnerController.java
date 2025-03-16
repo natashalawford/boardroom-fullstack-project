@@ -15,6 +15,7 @@ import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.SpecificBoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.services.GameOwnerService;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -23,9 +24,10 @@ public class GameOwnerController {
     GameOwnerService gameOwnerService;
 
 
+
     @PostMapping("boardgame")
     @ResponseStatus(HttpStatus.CREATED)
-    public BoardGameResponseDto createBoardGame(@RequestBody BoardGameCreationDto boardGameToCreate) {
+    public BoardGameResponseDto createBoardGame(@Valid @RequestBody BoardGameCreationDto boardGameToCreate) {
         return new BoardGameResponseDto(gameOwnerService.createBoardGame(boardGameToCreate));
     }
 
@@ -40,4 +42,7 @@ public class GameOwnerController {
     public SpecificBoardGameResponseDto updateSpecificBoardGame(@PathVariable("id") int id, @RequestBody SpecificBoardGameRequestDto specificBoardGameToUpdate) {
         return new SpecificBoardGameResponseDto(gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate));
     }
+
+    //delete endpoint needed
+    
 }

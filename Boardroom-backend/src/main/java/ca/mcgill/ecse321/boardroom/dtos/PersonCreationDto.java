@@ -6,6 +6,8 @@ public class PersonCreationDto {
     private String password;
     private boolean owner;
 
+    private PersonCreationDto() {}
+
     public PersonCreationDto(String name, String email, String password,
             boolean owner) {
         this.name = name;

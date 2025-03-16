@@ -16,6 +16,8 @@ public class BoardGameCreationDto {
     @NotBlank(message = "A photo of the board game is required")
     private int picture;
 
+    private BoardGameCreationDto() {}
+
     public BoardGameCreationDto(String title, String description,
             int playersNeeded, int picture) {
         this.title = title;

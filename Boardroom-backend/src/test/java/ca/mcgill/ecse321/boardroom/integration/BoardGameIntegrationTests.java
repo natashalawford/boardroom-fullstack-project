@@ -133,7 +133,7 @@ public class BoardGameIntegrationTests {
         SpecificBoardGameResponseDto specificBoardGameResponse = responseBody.get(0);
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getId(), specificBoardGameResponse.getId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getDescription(), specificBoardGameResponse.getDescription());
-        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwner().getId(), specificBoardGameResponse.getPersonId());
+        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwner().getId(), specificBoardGameResponse.getOwnerId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getPicture(), specificBoardGameResponse.getPicture());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getStatus(), specificBoardGameResponse.getStatus());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGame().getTitle(), specificBoardGameResponse.getBoardGameTitle());
@@ -173,7 +173,7 @@ public class BoardGameIntegrationTests {
         assertNotNull(responseBody);
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getId(), responseBody.getId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getDescription(), responseBody.getDescription());
-        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwner().getId(), responseBody.getPersonId());
+        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwner().getId(), responseBody.getOwnerId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getPicture(), responseBody.getPicture());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getStatus(), responseBody.getStatus());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGame().getTitle(), responseBody.getBoardGameTitle());

@@ -1,11 +1,13 @@
 package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.cglib.core.Local;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -64,11 +67,12 @@ public class BorrowIntegrationTests {
     private SpecificBoardGame specificBoardGame;
     private BorrowRequest borrowRequest;
 
+    private final RequestStatus VALID_STATUS = RequestStatus.PENDING;
     private final LocalDateTime VALID_REQUEST_START = LocalDateTime.now();
     private final LocalDateTime VALID_REQUEST_END = LocalDateTime.now().plusDays(7);
-    private int VALID_PERSON_ID;
-    private int VALID_SPECIFIC_GAME_ID;
-    private int VALID_BORROW_REQUEST_ID;
+    private int validPersonId;
+    private int validSpecificGameId;
+    private int validBorrowRequestId;
 
 
     @BeforeEach
@@ -82,12 +86,12 @@ public class BorrowIntegrationTests {
         specificBoardGame = new SpecificBoardGame(12345, "Good quality no rips",GameStatus.AVAILABLE, boardGame, person);
         specificBoardGame = specificBoardGameRepository.save(specificBoardGame);
 
-        borrowRequest = new BorrowRequest(RequestStatus.RETURNED, LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), person, specificBoardGame);
+        borrowRequest = new BorrowRequest(VALID_STATUS, VALID_REQUEST_START, VALID_REQUEST_END, person, specificBoardGame);
         borrowRequest = borrowRequestRepository.save(borrowRequest);
 
-        VALID_PERSON_ID = person.getId();
-        VALID_SPECIFIC_GAME_ID = specificBoardGame.getId();
-        VALID_BORROW_REQUEST_ID = borrowRequest.getId();
+        validPersonId = person.getId();
+        validSpecificGameId = specificBoardGame.getId();
+        validBorrowRequestId = borrowRequest.getId();
     }
 
     @AfterEach
@@ -103,7 +107,7 @@ public class BorrowIntegrationTests {
     public void testCreateBorrowRequest() {
         // Arrange
         BorrowRequestDtoCreation borrowRequestCreationDto = new BorrowRequestDtoCreation(
-                RequestStatus.PENDING,
+                VALID_STATUS,
                 VALID_REQUEST_START,
                 VALID_REQUEST_END,
                 person.getId(),
@@ -124,11 +128,11 @@ public class BorrowIntegrationTests {
         assertNotNull(createdBorrowRequest);
         assertNotNull(createdBorrowRequest.getId());
         assertTrue(createdBorrowRequest.getId() > 0, "Response should have a positive ID.");
-        assertEquals(RequestStatus.PENDING, createdBorrowRequest.getStatus());
+        assertEquals(VALID_STATUS, createdBorrowRequest.getStatus());
         assertEquals(VALID_REQUEST_START, createdBorrowRequest.getRequestStartDate());
         assertEquals(VALID_REQUEST_END, createdBorrowRequest.getRequestEndDate());
-        assertEquals(VALID_PERSON_ID, createdBorrowRequest.getPersonId());
-        assertEquals(VALID_SPECIFIC_GAME_ID, createdBorrowRequest.getSpecificBoardGameId());
+        assertEquals(validPersonId, createdBorrowRequest.getPersonId());
+        assertEquals(validSpecificGameId, createdBorrowRequest.getSpecificBoardGameId());
     }
 
     @Test
@@ -136,7 +140,7 @@ public class BorrowIntegrationTests {
     public void testUpdateBorrowRequest() {
         // Arrange
         RequestStatus newStatus = RequestStatus.ACCEPTED;
-        String url = "/borrowRequests/" + VALID_BORROW_REQUEST_ID;
+        String url = "/borrowRequests/" + validBorrowRequestId;
 
         // Act
         ResponseEntity<BorrowRequestDtoSpecific> response = client.exchange(
@@ -151,4 +155,5 @@ public class BorrowIntegrationTests {
         assertNotNull(response.getBody());
         assertEquals(newStatus, response.getBody().getStatus());
     }
+
 }

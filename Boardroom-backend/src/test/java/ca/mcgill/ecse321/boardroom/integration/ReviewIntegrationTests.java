@@ -89,6 +89,7 @@ public class ReviewIntegrationTests {
 
         String responseGame = response.getBody().getBoardGameName();
         assertEquals(body.getBoardGameName(), responseGame);
+        VALID_REVIEW = response.getBody();
     }
 
     /**

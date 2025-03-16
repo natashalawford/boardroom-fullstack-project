@@ -2,12 +2,12 @@ package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,6 @@ import ca.mcgill.ecse321.boardroom.dtos.responses.BoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.SpecificBoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
-import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -67,14 +66,13 @@ public class BoardGameIntegrationTests {
     private static BoardGameResponseDto VALID_BOARD_GAME;
     private static SpecificBoardGameResponseDto VALID_SPECIFIC_BOARD_GAME;
 
-    @AfterEach
+    @AfterAll
     public void resetDatabase() {
         specificBoardGameRepo.deleteAll();
         boardGameRepo.deleteAll();
         personRepo.deleteAll();
     }
 
-    @SuppressWarnings("null")
     @Test
     @Order(0)
     public void createValidBoardGame() {
@@ -98,7 +96,6 @@ public class BoardGameIntegrationTests {
         VALID_BOARD_GAME = response.getBody();
     }
 
-    @SuppressWarnings("null")
     @Test
     @Order(1)
     public void testCreateValidSpecificBoardGame() {
@@ -219,13 +216,12 @@ public class BoardGameIntegrationTests {
         ResponseEntity<BoardGameResponseDto> response = client.getForEntity(url, BoardGameResponseDto.class);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        BoardGameResponseDto responseBody = response.getBody();
-        assertNotNull(responseBody);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void findSpecificBoardGameById() {
         // Arrange
         String url = "/boardgames/specific/" + VALID_SPECIFIC_BOARD_GAME.getId();
@@ -244,5 +240,20 @@ public class BoardGameIntegrationTests {
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getPicture(), responseBody.getPicture());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getStatus(), responseBody.getStatus());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGameTitle(), responseBody.getBoardGameTitle());
+    }
+
+    @Test
+    @Order(7)
+    public void findSpecificBoardGameByInvalidId() {
+        // Arrange
+        String url = "/boardgames/specific/123";
+
+        // Act
+        ResponseEntity<SpecificBoardGameResponseDto> response = client.getForEntity(url,
+                SpecificBoardGameResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }

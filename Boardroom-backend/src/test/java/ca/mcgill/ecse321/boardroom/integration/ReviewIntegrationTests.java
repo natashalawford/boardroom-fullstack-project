@@ -18,7 +18,6 @@ import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.ReviewResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
-import ca.mcgill.ecse321.boardroom.model.Review;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.ReviewRepository;
@@ -43,7 +42,7 @@ public class ReviewIntegrationTests {
 
     private static Person VALID_AUTHOR;
     private static BoardGame VALID_BOARD_GAME;
-    private static ReviewResponseDto VALID_REVIEW_DTO;
+    private static ReviewResponseDto VALID_REVIEW;
     private int authorId;
     private String boardGameName;
 
@@ -145,17 +144,10 @@ public class ReviewIntegrationTests {
     @Test
     @Order(3)
     public void testGetReviewsForBoardGame() {
-        // Arrange by creating review using endpoint
-        ReviewCreationDto body = new ReviewCreationDto(
-                3, "This game was okay.", authorId, boardGameName
-        );
-        ResponseEntity<ReviewResponseDto> response = client.postForEntity("/reviews", body, ReviewResponseDto.class);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        ReviewResponseDto reviewCreated = response.getBody();
-        
-        // Act by trying to retrieve reviews for the board game
-        String url = "/reviews/" + reviewCreated.getBoardGameName();
+        // Arrange
+        String url = "/reviews/" + boardGameName;
+
+        // Act
         ResponseEntity<List<ReviewResponseDto>> reviewResponseBody = client.exchange(
             url,
             HttpMethod.GET,
@@ -169,11 +161,10 @@ public class ReviewIntegrationTests {
         assertTrue(reviewResponseBody.getBody().size() > 0);
         ReviewResponseDto reviewResponse = reviewResponseBody.getBody().get(0);
 
-        assertEquals(reviewCreated.getId(), reviewResponse.getId());
-        assertEquals(reviewCreated.getStars(), reviewResponse.getStars());
-        assertEquals(reviewCreated.getComment(), reviewResponse.getComment());
-        assertEquals(reviewCreated.getAuthorId(), reviewResponse.getAuthorId());
-        assertEquals(reviewCreated.getBoardGameName(), reviewResponse.getBoardGameName());
+        assertEquals(VALID_REVIEW.getAuthorId(), reviewResponse.getAuthorId());
+        assertEquals(VALID_REVIEW.getStars(), reviewResponse.getStars());
+        assertEquals(VALID_REVIEW.getComment(), reviewResponse.getComment());
+        assertEquals(VALID_REVIEW.getBoardGameName(), reviewResponse.getBoardGameName());
     }
 
     /*

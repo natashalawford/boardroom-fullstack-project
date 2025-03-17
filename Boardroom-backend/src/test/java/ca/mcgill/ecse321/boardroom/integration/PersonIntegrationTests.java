@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.http.HttpHeaders;
@@ -25,6 +26,7 @@ import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
+import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
 
@@ -190,7 +192,47 @@ public class PersonIntegrationTests {
             "Expected error message to contain 'Email and password are required.'."
         );
     }
-    
+
+    // delete person by id tests begin here
+    @Test
+    @Order(6)
+    public void testDeleteValidPerson() {
+        // Arrange
+        String url = "/people/" + createdPersonId;
+
+        // Act
+        ResponseEntity<Void> response =
+            client.exchange(url, HttpMethod.DELETE, null, Void.class);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        // Optionally, confirm that the person is gone by calling the service directly
+        BoardroomException ex = assertThrows(BoardroomException.class,
+            () -> personService.findPersonById(createdPersonId));
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertTrue(ex.getMessage().contains("No person has id " + createdPersonId));
+    }
+
+    @Test
+    @Order(7)
+    public void testDeleteInvalidPerson() {
+        // Arrange
+        int nonExistentId = 9999;
+        String url = "/people/" + nonExistentId;
+
+        // Act
+        ResponseEntity<String> response =
+            client.exchange(url, HttpMethod.DELETE, null, String.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        // You can also check the error message returned:
+        String body = response.getBody();
+        assertNotNull(body);
+        assertTrue(body.contains("No person has id " + nonExistentId));
+    }
+
 
 
 

@@ -58,6 +58,17 @@ public class PersonService {
         return personRepo.save(updatedPerson);
     }
 
+    //delete person
+    @Transactional
+    public void deletePersonById(int id) {
+        Person person = personRepo.findPersonById(id);
+        if (person == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND,
+                String.format("No person has id %d", id));
+        }
+        personRepo.deleteById(id);
+    }
+
     @Transactional
     public PersonResponseDto login(PersonLoginDto loginDto) {
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {

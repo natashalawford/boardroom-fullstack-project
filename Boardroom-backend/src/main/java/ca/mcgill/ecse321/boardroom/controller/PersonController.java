@@ -1,12 +1,14 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,4 +37,14 @@ public class PersonController {
         
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
+
+    @GetMapping("people/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public PersonResponseDto loginPerson(@PathVariable("email") String email, @RequestBody String password) {
+        PersonLoginDto loginPerson = new PersonLoginDto(email, password);
+        PersonResponseDto foundPerson = personService.login(loginPerson);
+        return foundPerson;
+    }
+
+
 }

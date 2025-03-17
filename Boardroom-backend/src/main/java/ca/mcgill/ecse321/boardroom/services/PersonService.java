@@ -89,4 +89,20 @@ public class PersonService {
         return new PersonResponseDto(person);
     }
 
+    public void changePassword(int id, String newPassword) { 
+    
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "Password is required");
+        }
+    
+        Person person = personRepo.findPersonById(id);
+        if (person == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND,
+                String.format("No person has id %d", id));
+        }
+    
+        person.setPassword(newPassword);
+        personRepo.save(person);
+    }
+
 }

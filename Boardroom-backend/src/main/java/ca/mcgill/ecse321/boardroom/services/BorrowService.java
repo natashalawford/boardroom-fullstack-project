@@ -69,4 +69,18 @@ public class BorrowService {
     public List<BorrowRequest> viewPendingBorrowRequests() {
         return borrowRequestRepo.findByStatus(RequestStatus.PENDING);
     }
+
+    //delete borrow requests method
+    @Transactional
+    public void deleteBorrowRequestById(int id) {
+        BorrowRequest borrowRequest = borrowRequestRepo.findById(id)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A borrow request with this id (%d) does not exist", id)
+            ));
+
+        // If found, delete
+        borrowRequestRepo.deleteById(id);
+    }
+
 }

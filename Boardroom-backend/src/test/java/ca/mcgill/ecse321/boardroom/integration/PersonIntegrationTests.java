@@ -71,7 +71,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     public void testUpdateValidPerson() {
         //Arrange
         PersonRequestDto updatePerson = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_OWNER);
@@ -85,6 +85,25 @@ public class PersonIntegrationTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(createdPersonId, response.getBody().getId());
+        assertEquals(VALID_NAME, response.getBody().getName());
+        assertEquals(VALID_EMAIL, response.getBody().getEmail());
+        assertEquals(VALID_OWNER, response.getBody().isOwner());
+    }
+
+    @Test
+    @Order(1)
+    public void testGetValidPerson() {
+        //Arrange
+        String url = "/people/{id}";
+
+
+        //Act
+        ResponseEntity<PersonResponseDto> response = client.getForEntity(url, PersonResponseDto.class, createdPersonId);
+
+        //Assert
+        assertNotNull(response);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(VALID_NAME, response.getBody().getName());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());

@@ -31,7 +31,7 @@ public class ReviewController {
         return new ReviewResponseDto(createdReview);
     }
 
-    /*
+    /**
      * Get reviews for a specific board game.
      * 
      * @param title The title of the board game
@@ -41,6 +41,17 @@ public class ReviewController {
     public List<ReviewResponseDto> getReviewsForBoardGame(@PathVariable String title) {
         List<Review> reviews = reviewService.getReviewsForBoardGame(title);
         return reviews.stream().map(ReviewResponseDto::new).toList();
+    }
+
+    /**
+     * Delete a review by ID.
+     *
+     * @param id The review ID
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReviewById(@PathVariable int id) {
+        reviewService.deleteReviewById(id);
     }
 
 }

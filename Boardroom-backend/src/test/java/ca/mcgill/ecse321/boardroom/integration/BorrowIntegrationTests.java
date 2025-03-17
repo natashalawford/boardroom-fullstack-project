@@ -193,4 +193,107 @@ public class BorrowIntegrationTests {
 
     } 
 
+    @Test
+    @Order(3)
+    public void testUpdateInvalidBorrowRequestStatus() {
+        // Arrange
+        int invalidId = 999999; 
+        RequestStatus newStatus = RequestStatus.ACCEPTED;
+        String url = "/borrowRequests/" + invalidId;
+
+        // Wrap the new status in HttpEntity
+        HttpEntity<RequestStatus> requestEntity = new HttpEntity<>(newStatus);
+
+        // Act
+        // Capture the response as a string to parse the error message
+        ResponseEntity<String> response = client.exchange(
+                url,
+                HttpMethod.PUT,
+                requestEntity,
+                String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), 
+                    "Should return 404 if the borrow request ID does not exist.");
+
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Response body must not be null for an error.");
+
+        assertTrue(
+            responseBody.contains("A borrow request with this id does not exist"),
+            "Expected error message to contain 'A borrow request with this id does not exist'"
+        );
+    }
+
+    @Test
+    @Order(4)
+    public void testCreateBorrowRequestInvalidPerson() {
+        // Arrange
+        int invalidPersonId = 999999; // ID that doesn't exist
+        BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
+            RequestStatus.PENDING,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(5),
+            invalidPersonId,              // invalid person ID
+            validSpecificGameId           // A valid board game ID
+        );
+
+        // Act
+        // We capture the response as String to check the error message
+        ResponseEntity<String> response = client.postForEntity(
+            "/borrowRequests",
+            body,
+            String.class
+        );
+
+        // Assert
+        // We expect a 404 Not Found (BoardroomException for missing Person)
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), 
+            "Should return 404 when the person ID does not exist.");
+
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Error response body should not be null.");
+        System.out.println("Error response body: " + responseBody);
+
+        // Check the message:
+        assertTrue(responseBody.contains("A person with this id does not exist"),
+            "Expected error message about nonexistent person ID");
+    }
+
+    @Test
+    @Order(5)
+    public void testCreateBorrowRequestInvalidSpecificBoardGame() {
+        // Arrange
+        int invalidBoardGameId = 888888; // ID that doesn't exist
+        BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
+            RequestStatus.PENDING,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(5),
+            validPersonId,               // A valid person ID
+            invalidBoardGameId           // invalid board game ID
+        );
+
+        // Act
+        ResponseEntity<String> response = client.postForEntity(
+            "/borrowRequests",
+            body,
+            String.class
+        );
+
+        // Assert
+        // Expect a 404 Not Found (BoardroomException for missing SpecificBoardGame)
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(),
+            "Should return 404 when the specific board game ID does not exist.");
+
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Error response body should not be null.");
+        System.out.println("Error response body: " + responseBody);
+
+        // Check the message:
+        assertTrue(responseBody.contains("A specific board game with this id does not exist"),
+            "Expected error message about nonexistent specific board game ID");
+    }
+
+    
 }

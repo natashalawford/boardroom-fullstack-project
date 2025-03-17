@@ -77,7 +77,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     public void testUpdateValidPerson() {
         //Arrange
         PersonRequestDto updatePerson = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_OWNER);
@@ -97,6 +97,24 @@ public class PersonIntegrationTests {
     }
 
     @Test
+    @Order(1)
+    public void testGetValidPerson() {
+        //Arrange
+        String url = "/people/{id}";
+
+
+        //Act
+        ResponseEntity<PersonResponseDto> response = client.getForEntity(url, PersonResponseDto.class, createdPersonId);
+
+        //Assert
+        assertNotNull(response);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+  
+        assertEquals(VALID_NAME, response.getBody().getName());
+        assertEquals(VALID_EMAIL, response.getBody().getEmail());
+        assertEquals(VALID_OWNER, response.getBody().isOwner());
+
     @Order(2)
     public void testLoginValidPerson() {
         // Arrange
@@ -114,9 +132,10 @@ public class PersonIntegrationTests {
         
         // If your Person object has an 'id' field, ensure it's the one you expect
         assertEquals(createdPersonId, response.getBody().getId());
-        assertEquals(VALID_NAME, response.getBody().getName());
+  assertEquals(VALID_NAME, response.getBody().getName());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
+        
     }
 
     @Test
@@ -232,9 +251,5 @@ public class PersonIntegrationTests {
         assertNotNull(body);
         assertTrue(body.contains("No person has id " + nonExistentId));
     }
-
-
-
-
 
 }

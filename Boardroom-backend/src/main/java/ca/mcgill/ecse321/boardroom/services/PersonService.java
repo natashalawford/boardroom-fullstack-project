@@ -89,4 +89,19 @@ public class PersonService {
         return new PersonResponseDto(person);
     }
 
+    //Maybe this should return a boolean or something
+    @Transactional
+    public void deletePerson(int id) {
+        //Get person to delete
+        Person personToDelete = findPersonById(id);
+
+        //make sure person exists
+        if (null == personToDelete) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person does not exist, it cannot be deleted");
+        }
+
+        //Delete person
+        personRepo.delete(personToDelete);
+    }
+
 }

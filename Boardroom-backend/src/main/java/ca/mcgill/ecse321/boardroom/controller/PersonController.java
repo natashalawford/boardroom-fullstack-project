@@ -38,13 +38,13 @@ public class PersonController {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
 
-    @GetMapping("people/{email}")
+    @PostMapping("people/login")
     @ResponseStatus(HttpStatus.OK)
-    public PersonResponseDto loginPerson(@PathVariable("email") String email, @RequestBody String password) {
-        PersonLoginDto loginPerson = new PersonLoginDto(email, password);
-        PersonResponseDto foundPerson = personService.login(loginPerson);
-        return foundPerson;
+    public PersonResponseDto loginPerson(@RequestBody PersonLoginDto loginDto) {
+        // Directly use the incoming loginDto
+        return personService.login(loginDto);
     }
+
 
 
 }

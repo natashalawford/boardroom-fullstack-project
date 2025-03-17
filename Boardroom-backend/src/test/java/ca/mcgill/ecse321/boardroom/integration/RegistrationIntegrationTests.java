@@ -86,30 +86,9 @@ public class RegistrationIntegrationTests {
         assertNotNull(createdRegistration.getRegistrationId());
     }
 
-    @Test
-    @Order(1)
-    public void testGetRegistration() {
-        // Arrange
-        int eventId = event.getId();
-        int personId = person.getId();
-        Registration registration = new Registration(new Registration.Key(event, person), LocalDateTime.now());
-        registrationRepository.save(registration);
-
-        // Act
-        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + eventId + "/" + personId, EventRegistrationResponseDto.class);
-
-        // Assert
-        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-        assertNotNull(getResponse.getBody());
-        assertEquals(person.getId(), getResponse.getBody().getPersonId());
-        assertEquals(event.getId(), getResponse.getBody().getEventId());
-        assertNotNull(getResponse.getBody().getRegistrationId());
-    }
-
-
     
     @Test
-    @Order(2)
+    @Order(1)
     public void testUnregisterFromEvent() {
         // Arrange
         EventRegistrationDto request = new EventRegistrationDto(person.getId(), event.getId());
@@ -123,7 +102,7 @@ public class RegistrationIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(2)
     public void testRegisterForNonExistentEvent() {
         // Arrange
         EventRegistrationDto request = new EventRegistrationDto(person.getId(), 99999);
@@ -136,7 +115,7 @@ public class RegistrationIntegrationTests {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void testRegisterNonExistentPerson() {
         // Arrange
         EventRegistrationDto request = new EventRegistrationDto(99999, event.getId());
@@ -149,7 +128,7 @@ public class RegistrationIntegrationTests {
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     public void testUnregisterWhenNotRegistered() {
         // Arrange
         Person newPerson = new Person("Alice", "alice@mail.com", "password123", false);
@@ -161,6 +140,51 @@ public class RegistrationIntegrationTests {
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+    @Test
+    @Order(1)
+    public void testGetRegistration() {
+        // Arrange
+        int eventId = event.getId();
+        int personId = person.getId();
+        Registration registration = new Registration(new Registration.Key(event, person), LocalDateTime.now());
+        registrationRepository.save(registration);
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + personId + "/" + eventId, EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        assertNotNull(getResponse.getBody());
+        assertEquals(person.getId(), getResponse.getBody().getPersonId());
+        assertEquals(event.getId(), getResponse.getBody().getEventId());
+        assertNotNull(getResponse.getBody().getRegistrationId());
+    }
+    
+    @Test
+    @Order(6)
+    public void testGetNonExistentRegistrationEventId() {
+        // Arrange
+        int personId = person.getId();
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + personId + "/" + 99999, EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    public void testGetNonExistentRegistrationPersonId() {
+        // Arrange
+        int eventId = event.getId();
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + 99999 + "/" + eventId, EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
     }
 
 }

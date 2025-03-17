@@ -50,10 +50,10 @@ public class RegistrationController {
      * @param personId
      * @return Registration
      */
-    @GetMapping("/{eventId}/{personId}")
+    @GetMapping("/{personId}/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public EventRegistrationResponseDto getRegistration(@PathVariable int eventId, @PathVariable int personId) {
-        Registration registration =  registrationService.getRegistration(eventId, personId);
+    public EventRegistrationResponseDto getRegistration(@PathVariable int personId, @PathVariable int eventId) {
+        Registration registration =  registrationService.getRegistration(personId, eventId);
         return new EventRegistrationResponseDto(registration);
     }
 

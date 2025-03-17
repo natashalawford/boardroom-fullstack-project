@@ -83,6 +83,11 @@ public class PersonService {
         //Get person to delete
         Person personToDelete = findPersonById(id);
 
+        //make sure person exists
+        if (null == personToDelete) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person does not exist, it cannot be deleted");
+        }
+
         //Delete person
         personRepo.delete(personToDelete);
     }

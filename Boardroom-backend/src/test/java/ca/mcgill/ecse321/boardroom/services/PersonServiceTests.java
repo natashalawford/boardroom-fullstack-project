@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardroom.services;
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -136,7 +137,7 @@ public class PersonServiceTests {
         PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, VALID_PASSWORD);
 
         // Act
-        Person loggedInPerson = personService.login(loginDto);
+        PersonResponseDto loggedInPerson = personService.login(loginDto);
 
         // Assert
         assertNotNull(loggedInPerson);

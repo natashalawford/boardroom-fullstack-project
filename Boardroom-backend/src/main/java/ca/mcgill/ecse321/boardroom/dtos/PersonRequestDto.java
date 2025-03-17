@@ -1,9 +1,16 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class PersonRequestDto {
+    @NotBlank(message = "The name must not be blank")
     private String name;
+
+    @NotBlank(message = "The email must not be blank")   
     private String email;
+
+    @NotNull(message = "The owner must not be null")
     private boolean owner;
 
     private PersonRequestDto() {

@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class PersonController {
     
     @PostMapping("people")
     @ResponseStatus(HttpStatus.CREATED)
-    public PersonResponseDto createPerson(@RequestBody PersonCreationDto personToCreate) {
+    public PersonResponseDto createPerson(@Valid @RequestBody PersonCreationDto personToCreate) {
         return new PersonResponseDto(personService.createPerson(personToCreate));
     }
 
@@ -34,9 +35,13 @@ public class PersonController {
      * Update person type
      */
     @PutMapping("people/{id}/role")
-    public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@RequestBody PersonRequestDto partialUpdatedPerson) {
-        
+    public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@Valid @RequestBody PersonRequestDto partialUpdatedPerson) {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
+    }
+
+    @GetMapping("people/{id}")
+    public PersonResponseDto getPerson(@PathVariable("id") int id) {
+        return new PersonResponseDto(personService.findPersonById(id));
     }
 
     // delete person by id
@@ -53,9 +58,6 @@ public class PersonController {
         // Directly use the incoming loginDto
         return personService.login(loginDto);
     }
-
-
-
 
 
 }

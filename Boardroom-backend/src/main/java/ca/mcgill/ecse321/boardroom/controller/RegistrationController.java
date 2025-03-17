@@ -1,9 +1,14 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.EventRegistrationResponseDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.EventResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.services.RegistrationService;
 
@@ -36,6 +41,20 @@ public class RegistrationController {
     @RequestMapping("/unregistration")
     public void unregisterFromEvent(@RequestBody EventRegistrationDto eventRegistrationDto) {
         registrationService.unregisterFromEvent(eventRegistrationDto);
+    }
+
+    /**
+     * Get Registration.
+     *
+     * @param eventId
+     * @param personId
+     * @return Registration
+     */
+    @GetMapping("/{personId}/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventRegistrationResponseDto getRegistration(@PathVariable int personId, @PathVariable int eventId) {
+        Registration registration =  registrationService.getRegistration(personId, eventId);
+        return new EventRegistrationResponseDto(registration);
     }
 
 

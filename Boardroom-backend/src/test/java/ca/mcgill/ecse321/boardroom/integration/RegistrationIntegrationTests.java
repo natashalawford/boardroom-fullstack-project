@@ -8,6 +8,7 @@ import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.EventRegistrationResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.model.Person;
+import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
@@ -85,6 +86,7 @@ public class RegistrationIntegrationTests {
         assertNotNull(createdRegistration.getRegistrationId());
     }
 
+    
     @Test
     @Order(1)
     public void testUnregisterFromEvent() {
@@ -98,4 +100,91 @@ public class RegistrationIntegrationTests {
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
+    @Test
+    @Order(2)
+    public void testRegisterForNonExistentEvent() {
+        // Arrange
+        EventRegistrationDto request = new EventRegistrationDto(person.getId(), 99999);
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> response = client.exchange("/registration", HttpMethod.PUT, new HttpEntity<>(request), EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(3)
+    public void testRegisterNonExistentPerson() {
+        // Arrange
+        EventRegistrationDto request = new EventRegistrationDto(99999, event.getId());
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> response = client.exchange("/registration", HttpMethod.PUT, new HttpEntity<>(request), EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
+    public void testUnregisterWhenNotRegistered() {
+        // Arrange
+        Person newPerson = new Person("Alice", "alice@mail.com", "password123", false);
+        personRepository.save(newPerson);
+        EventRegistrationDto request = new EventRegistrationDto(newPerson.getId(), event.getId());
+
+        // Act
+        ResponseEntity<Void> response = client.exchange("/unregistration", HttpMethod.DELETE, new HttpEntity<>(request), Void.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+    @Test
+    @Order(1)
+    public void testGetRegistration() {
+        // Arrange
+        int eventId = event.getId();
+        int personId = person.getId();
+        Registration registration = new Registration(new Registration.Key(event, person), LocalDateTime.now());
+        registrationRepository.save(registration);
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + personId + "/" + eventId, EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
+        assertNotNull(getResponse.getBody());
+        assertEquals(person.getId(), getResponse.getBody().getPersonId());
+        assertEquals(event.getId(), getResponse.getBody().getEventId());
+        assertNotNull(getResponse.getBody().getRegistrationId());
+    }
+    
+    @Test
+    @Order(6)
+    public void testGetNonExistentRegistrationEventId() {
+        // Arrange
+        int personId = person.getId();
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + personId + "/" + 99999, EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    public void testGetNonExistentRegistrationPersonId() {
+        // Arrange
+        int eventId = event.getId();
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + 99999 + "/" + eventId, EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
+    }
+
 }

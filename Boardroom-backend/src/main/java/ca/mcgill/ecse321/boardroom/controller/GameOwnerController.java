@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,5 +45,9 @@ public class GameOwnerController {
     }
 
     //delete endpoint needed
-    
+    @DeleteMapping("specificboardgame/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSpecificBoardGame(@PathVariable("id") int id) {
+        gameOwnerService.deleteSpecificBoardGame(id);
+    }
 }

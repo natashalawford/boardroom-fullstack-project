@@ -295,5 +295,60 @@ public class BorrowIntegrationTests {
             "Expected error message about nonexistent specific board game ID");
     }
 
+    // delete borrow request tests
+    @Test
+    @Order(6)
+    public void testDeleteValidBorrowRequest() {
+        // Arrange
+        String url = "/borrowRequests/" + validBorrowRequestId;
+
+        // Act: Perform delete request
+        ResponseEntity<Void> response = client.exchange(
+            url,
+            HttpMethod.DELETE,
+            null,
+            Void.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode(),
+            "Expected 204 No Content on successful delete."
+        );
+
+        // We can try to retrieve it and expect a 404
+        ResponseEntity<String> getResponse = client.getForEntity(url, String.class);
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
+        assertTrue(getResponse.getBody().contains("A borrow request with this id"),
+            "Should mention borrow request not found in the error message");
+    }
+    
+    @Test
+    @Order(7)
+    public void testDeleteInvalidBorrowRequest() {
+        // Arrange
+        int nonExistentId = 999999;
+        String url = "/borrowRequests/" + nonExistentId;
+
+        // Act
+        ResponseEntity<String> response = client.exchange(
+            url,
+            HttpMethod.DELETE,
+            null,
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(),
+            "Should return 404 if borrow request does not exist."
+        );
+        String body = response.getBody();
+        assertNotNull(body, "Error response body should not be null.");
+        assertTrue(body.contains("A borrow request with this id (999999) does not exist"),
+            "Expected error message to contain 'A borrow request with this id (999999) does not exist'."
+        );
+    }
+
+
+
     
 }

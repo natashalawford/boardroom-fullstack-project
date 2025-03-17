@@ -205,4 +205,46 @@ public class BorrowServiceTests {
 
         verify(borrowRequestRepo, times(1)).findByStatus(RequestStatus.PENDING);
     }
+
+    //delete borrow request tests
+    @Test
+    public void testDeleteValidBorrowRequest() {
+        // Arrange
+        int validId = VALID_BORROW_REQUEST_ID; // e.g. 3
+        BorrowRequest mockBorrowRequest = new BorrowRequest(
+            validId, VALID_STATUS, VALID_START_DATE, VALID_END_DATE,
+            new Person(), new SpecificBoardGame()
+        );
+
+        // Mock findById to return a valid BorrowRequest
+        when(borrowRequestRepo.findById(validId)).thenReturn(Optional.of(mockBorrowRequest));
+
+        // Act
+        borrowService.deleteBorrowRequestById(validId);
+
+        // Assert
+        verify(borrowRequestRepo, times(1)).findById(validId);
+        verify(borrowRequestRepo, times(1)).deleteById(validId);
+    }
+
+    @Test
+    public void testDeleteInvalidBorrowRequest() {
+        // Arrange
+        int invalidId = 999;
+        when(borrowRequestRepo.findById(invalidId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        BoardroomException ex = assertThrows(BoardroomException.class,
+            () -> borrowService.deleteBorrowRequestById(invalidId)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertEquals("A borrow request with this id (999) does not exist", ex.getMessage());
+
+        // Ensure delete is not called
+        verify(borrowRequestRepo, times(1)).findById(invalidId);
+        verify(borrowRequestRepo, times(0)).deleteById(anyInt());
+    }
+
+
 }       

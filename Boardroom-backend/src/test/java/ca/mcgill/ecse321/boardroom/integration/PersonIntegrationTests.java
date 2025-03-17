@@ -155,6 +155,67 @@ public class PersonIntegrationTests {
         );
     }
 
+    @Test
+    @Order(4)
+    public void testLoginFailIncorrectPassword() {
+        // Arrange
+        String url = "/people/" + VALID_EMAIL;   
+        
+        HttpEntity<String> requestEntity = new HttpEntity<>("wrongPassword");
+
+        // Act
+        // capture the error as a String to check the message
+        ResponseEntity<String> response = client.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(),
+            "Should return 401 if the password is incorrect.");
+        
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Response body must not be null on error.");
+
+        assertTrue(
+            responseBody.contains("Invalid email or password"),
+            "Expected error message to contain 'Invalid email or password'."
+        );
+    }
+
+    @Test
+    @Order(5)
+    public void testLoginFailPasswordMissing() {
+        // Arrange
+        String url = "/people/" + VALID_EMAIL;
+        
+        // Use null in the request body to simulate missing password
+        HttpEntity<String> requestEntity = new HttpEntity<>(null);
+
+        // Act
+        ResponseEntity<String> response = client.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(),
+            "Should return 400 if email or password is missing.");
+        
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Response body must not be null on error.");
+
+        assertTrue(
+            responseBody.contains("Email and password are required."),
+            "Expected error message to contain 'Email and password are required.'"
+        );
+    }
+
+
 
 
 

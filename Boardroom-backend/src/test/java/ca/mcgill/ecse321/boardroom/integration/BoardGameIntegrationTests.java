@@ -2,12 +2,12 @@ package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -23,11 +23,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import ca.mcgill.ecse321.boardroom.dtos.BoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.SpecificBoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
-import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -38,7 +39,7 @@ import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 @TestInstance(Lifecycle.PER_CLASS)
 public class BoardGameIntegrationTests {
     @Autowired
-	private TestRestTemplate client;
+    private TestRestTemplate client;
 
     @Autowired
     private PersonRepository personRepo;
@@ -47,82 +48,128 @@ public class BoardGameIntegrationTests {
     @Autowired
     private SpecificBoardGameRepository specificBoardGameRepo;
 
-    private static Person VALID_OWNER;
-    private static BoardGame VALID_BOARD_GAME;
-    private static SpecificBoardGame VALID_SPECIFIC_BOARD_GAME;
-    
-    // TODO: Replace these dummy values with the actual values from the endpoint when it is created
-    private String boardGameTitle;
-    private int specificBoardGameId;
+    // BoardGame fields
+    private static final String VALID_BOARDGAME_TITLE = "Monopoly";
+    private static final String VALID_DESCRIPTION = "This is a specific board game";
+    private static final GameStatus VALID_STATUS = GameStatus.AVAILABLE;
+    private static final int VALID_PLAYERS_NEEDED = 5;
+    private static final int VALID_PICTURE = 15;
 
-    @BeforeEach
-    public void setup() {
-        VALID_OWNER = new Person("John", "name@mail.com", "securepass", true);
-        personRepo.save(VALID_OWNER);
+    private static int CREATED_SPECIFICBOARDGAME_ID;
 
-        VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
-        boardGameRepo.save(VALID_BOARD_GAME);
-        boardGameTitle = VALID_BOARD_GAME.getTitle();
+    // Person fields
+    private static final String VALID_OWNER_NAME = "John Doe";
+    private static final String VALID_OWNER_EMAIL = "john.doe@gmail.com";
+    private static final String VALID_OWNER_PASSWORD = "1234";
+    private static final boolean VALID_OWNER_ROLE = true;
 
-        VALID_SPECIFIC_BOARD_GAME = new SpecificBoardGame(1234, "Good condition", GameStatus.AVAILABLE, VALID_BOARD_GAME, VALID_OWNER);
-        specificBoardGameRepo.save(VALID_SPECIFIC_BOARD_GAME);
-        specificBoardGameId = VALID_SPECIFIC_BOARD_GAME.getId();
-    }
+    private static BoardGameResponseDto VALID_BOARD_GAME;
+    private static SpecificBoardGameResponseDto VALID_SPECIFIC_BOARD_GAME;
 
-    @AfterEach
-    public void cleanup() {
+    @AfterAll
+    public void resetDatabase() {
         specificBoardGameRepo.deleteAll();
         boardGameRepo.deleteAll();
         personRepo.deleteAll();
     }
 
     @Test
-	@Order(0)
-	public void createValidBoardGame() {
-		// TODO: Update board game title with the value from the endpoint
-	}
+    @Order(0)
+    public void createValidBoardGame() {
+        // Arrange
+        BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_BOARDGAME_TITLE, VALID_DESCRIPTION,
+                VALID_PLAYERS_NEEDED, VALID_PICTURE);
+        String url = "/boardgame";
 
-	@Test
-	@Order(1)
-	public void findBoardGames() {
-		// Arrange
-		String url = "/boardgames/general/";
+        // Act
+        ResponseEntity<BoardGameResponseDto> response = client.postForEntity(url, boardGameToCreate,
+                BoardGameResponseDto.class);
 
-		// Act
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        assertEquals(VALID_BOARDGAME_TITLE, response.getBody().getTitle());
+        assertEquals(VALID_DESCRIPTION, response.getBody().getDescription());
+        assertEquals(VALID_PLAYERS_NEEDED, response.getBody().getPlayersNeeded());
+        assertEquals(VALID_PICTURE, response.getBody().getPicture());
+        VALID_BOARD_GAME = response.getBody();
+    }
+
+    @Test
+    @Order(1)
+    public void testCreateValidSpecificBoardGame() {
+        // Arrange
+        String url = "/specificboardgame";
+
+        // Need to persist Person and BoardGame with same id and title for the service
+        // method
+        Person persistedPerson = personRepo
+                .save(new Person(VALID_OWNER_NAME, VALID_OWNER_EMAIL, VALID_OWNER_PASSWORD, VALID_OWNER_ROLE));
+        BoardGame persistedBoardGame = boardGameRepo
+                .save(new BoardGame(VALID_BOARDGAME_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE));
+
+        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_PICTURE,
+                VALID_DESCRIPTION, VALID_STATUS, persistedBoardGame.getTitle(), persistedPerson.getId());
+
+        // Act
+        ResponseEntity<SpecificBoardGameResponseDto> response = client.postForEntity(url, specificBoardGameToCreate,
+                SpecificBoardGameResponseDto.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        assertEquals(VALID_PICTURE, response.getBody().getPicture());
+        assertEquals(VALID_DESCRIPTION, response.getBody().getDescription());
+        assertEquals(VALID_STATUS, response.getBody().getStatus());
+        assertEquals(persistedBoardGame.getTitle(), response.getBody().getBoardGameTitle());
+        assertEquals(persistedPerson.getId(), response.getBody().getOwnerId());
+
+        CREATED_SPECIFICBOARDGAME_ID = response.getBody().getId();
+        VALID_SPECIFIC_BOARD_GAME = response.getBody();
+    }
+
+    @Test
+    @Order(2)
+    public void findBoardGames() {
+        // Arrange
+        String url = "/boardgames/general/";
+
+        // Act
         ResponseEntity<List<BoardGameResponseDto>> response = client.exchange(
-            url,
-            HttpMethod.GET,
-            null,
-            new ParameterizedTypeReference<List<BoardGameResponseDto>>() {}
-        );
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<BoardGameResponseDto>>() {
+                });
 
-		// Assert
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		List<BoardGameResponseDto> responseBody = response.getBody();
-		assertNotNull(responseBody);
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<BoardGameResponseDto> responseBody = response.getBody();
+        assertNotNull(responseBody);
         assertTrue(responseBody.size() > 0);
-        
-        // TODO: Update the following assertions with the actual values from the endpoint
+
         BoardGameResponseDto boardGameResponse = responseBody.get(0);
         assertEquals(VALID_BOARD_GAME.getTitle(), boardGameResponse.getTitle());
         assertEquals(VALID_BOARD_GAME.getDescription(), boardGameResponse.getDescription());
         assertEquals(VALID_BOARD_GAME.getPlayersNeeded(), boardGameResponse.getPlayersNeeded());
         assertEquals(VALID_BOARD_GAME.getPicture(), boardGameResponse.getPicture());
-	}
+    }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void findSpecificBoardGames() {
         // Arrange
         String url = "/boardgames/specific/";
 
         // Act
         ResponseEntity<List<SpecificBoardGameResponseDto>> response = client.exchange(
-            url,
-            HttpMethod.GET,
-            null,
-            new ParameterizedTypeReference<List<SpecificBoardGameResponseDto>>() {}
-        );
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<SpecificBoardGameResponseDto>>() {
+                });
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -133,14 +180,15 @@ public class BoardGameIntegrationTests {
         SpecificBoardGameResponseDto specificBoardGameResponse = responseBody.get(0);
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getId(), specificBoardGameResponse.getId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getDescription(), specificBoardGameResponse.getDescription());
-        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwner().getId(), specificBoardGameResponse.getOwnerId());
+        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwnerId(), specificBoardGameResponse.getOwnerId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getPicture(), specificBoardGameResponse.getPicture());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getStatus(), specificBoardGameResponse.getStatus());
-        assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGame().getTitle(), specificBoardGameResponse.getBoardGameTitle());
+        assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGameTitle(),
+                specificBoardGameResponse.getBoardGameTitle());
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void findBoardGameByTitle() {
         // Arrange
         String url = "/boardgames/general/" + VALID_BOARD_GAME.getTitle();
@@ -159,13 +207,28 @@ public class BoardGameIntegrationTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
+    public void findBoardGameByInvalidTitle() {
+        // Arrange
+        String url = "/boardgames/general/InvalidTitle";
+
+        // Act
+        ResponseEntity<BoardGameResponseDto> response = client.getForEntity(url, BoardGameResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    @Order(6)
     public void findSpecificBoardGameById() {
         // Arrange
         String url = "/boardgames/specific/" + VALID_SPECIFIC_BOARD_GAME.getId();
 
         // Act
-        ResponseEntity<SpecificBoardGameResponseDto> response = client.getForEntity(url, SpecificBoardGameResponseDto.class);
+        ResponseEntity<SpecificBoardGameResponseDto> response = client.getForEntity(url,
+                SpecificBoardGameResponseDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -173,9 +236,24 @@ public class BoardGameIntegrationTests {
         assertNotNull(responseBody);
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getId(), responseBody.getId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getDescription(), responseBody.getDescription());
-        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwner().getId(), responseBody.getOwnerId());
+        assertEquals(VALID_SPECIFIC_BOARD_GAME.getOwnerId(), responseBody.getOwnerId());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getPicture(), responseBody.getPicture());
         assertEquals(VALID_SPECIFIC_BOARD_GAME.getStatus(), responseBody.getStatus());
-        assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGame().getTitle(), responseBody.getBoardGameTitle());
+        assertEquals(VALID_SPECIFIC_BOARD_GAME.getBoardGameTitle(), responseBody.getBoardGameTitle());
+    }
+
+    @Test
+    @Order(7)
+    public void findSpecificBoardGameByInvalidId() {
+        // Arrange
+        String url = "/boardgames/specific/123";
+
+        // Act
+        ResponseEntity<SpecificBoardGameResponseDto> response = client.getForEntity(url,
+                SpecificBoardGameResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }

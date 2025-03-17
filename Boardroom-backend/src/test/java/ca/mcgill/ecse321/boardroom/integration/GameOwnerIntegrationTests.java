@@ -37,7 +37,6 @@ import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -55,7 +54,7 @@ public class GameOwnerIntegrationTests {
     @Autowired
     private PersonRepository personRepo;
 
-    //BoardGame fields
+    // BoardGame fields
     private static final String VALID_BOARDGAME_TITLE = "Monopogy";
     private static final String VALID_DESCRIPTION = "This is a specific board game";
     private static final GameStatus VALID_STATUS = GameStatus.AVAILABLE;
@@ -63,8 +62,8 @@ public class GameOwnerIntegrationTests {
     private static final int VALID_PICTURE = 15;
 
     private static int CREATED_SPECIFICBOARDGAME_ID;
-    
-    //Person fields
+
+    // Person fields
     private static final String VALID_OWNER_NAME = "John Doe";
     private static final String VALID_OWNER_EMAIL = "john.doe@gmail.com";
     private static final String VALID_OWNER_PASSWORD = "1234";
@@ -81,17 +80,19 @@ public class GameOwnerIntegrationTests {
     @Test
     @Order(0)
     public void testCreateValidBoardGame() {
-        //Arrange
-        BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_BOARDGAME_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
+        // Arrange
+        BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_BOARDGAME_TITLE, VALID_DESCRIPTION,
+                VALID_PLAYERS_NEEDED, VALID_PICTURE);
         String url = "/boardgame";
 
-        //Act
-        ResponseEntity<BoardGameResponseDto> response = client.postForEntity(url, boardGameToCreate, BoardGameResponseDto.class);
+        // Act
+        ResponseEntity<BoardGameResponseDto> response = client.postForEntity(url, boardGameToCreate,
+                BoardGameResponseDto.class);
 
-        //Assert
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        
+
         assertEquals(VALID_BOARDGAME_TITLE, response.getBody().getTitle());
         assertEquals(VALID_DESCRIPTION, response.getBody().getDescription());
         assertEquals(VALID_PLAYERS_NEEDED, response.getBody().getPlayersNeeded());
@@ -102,20 +103,24 @@ public class GameOwnerIntegrationTests {
     @Test
     @Order(1)
     public void testCreateValidSpecificBoardGame() {
-        //Arrange
+        // Arrange
         String url = "/specificboardgame";
-        
-        //Need to persist Person and BoardGame with same id and title for the service method
-        Person persistedPerson =  personRepo.save(new Person(VALID_OWNER_NAME, VALID_OWNER_EMAIL, VALID_OWNER_PASSWORD, VALID_OWNER_ROLE));
-        BoardGame persistedBoardGame = boardGameRepo.save(new BoardGame(VALID_BOARDGAME_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE));
 
-        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_PICTURE, VALID_DESCRIPTION, VALID_STATUS, persistedBoardGame.getTitle(), persistedPerson.getId());
-        
+        // Need to persist Person and BoardGame with same id and title for the service
+        // method
+        Person persistedPerson = personRepo
+                .save(new Person(VALID_OWNER_NAME, VALID_OWNER_EMAIL, VALID_OWNER_PASSWORD, VALID_OWNER_ROLE));
+        BoardGame persistedBoardGame = boardGameRepo
+                .save(new BoardGame(VALID_BOARDGAME_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE));
 
-        //Act
-        ResponseEntity<SpecificBoardGameResponseDto> response = client.postForEntity(url, specificBoardGameToCreate, SpecificBoardGameResponseDto.class);
+        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_PICTURE,
+                VALID_DESCRIPTION, VALID_STATUS, persistedBoardGame.getTitle(), persistedPerson.getId());
 
-        //Assert
+        // Act
+        ResponseEntity<SpecificBoardGameResponseDto> response = client.postForEntity(url, specificBoardGameToCreate,
+                SpecificBoardGameResponseDto.class);
+
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -131,24 +136,22 @@ public class GameOwnerIntegrationTests {
     @Test
     @Order(2)
     public void testUpdateValidSpecificBoardgame() {
-        //Arrange
+        // Arrange
         String url = "/specificboardgame/{id}";
 
-        SpecificBoardGameRequestDto specificBoardGameToUpdate = new SpecificBoardGameRequestDto(VALID_DESCRIPTION, VALID_PICTURE, VALID_STATUS);
+        SpecificBoardGameRequestDto specificBoardGameToUpdate = new SpecificBoardGameRequestDto(VALID_DESCRIPTION,
+                VALID_PICTURE, VALID_STATUS);
 
+        // Act
+        ResponseEntity<SpecificBoardGameResponseDto> response = client.exchange(url, HttpMethod.PUT,
+                new HttpEntity<SpecificBoardGameRequestDto>(specificBoardGameToUpdate),
+                SpecificBoardGameResponseDto.class, CREATED_SPECIFICBOARDGAME_ID);
 
-
-        //Act
-        ResponseEntity<SpecificBoardGameResponseDto> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<SpecificBoardGameRequestDto>(specificBoardGameToUpdate), SpecificBoardGameResponseDto.class, CREATED_SPECIFICBOARDGAME_ID);
-
-        //Assert
+        // Assert
         assertNotNull(response);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        
 
     }
-
-
 
 }

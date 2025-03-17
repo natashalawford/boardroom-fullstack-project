@@ -77,4 +77,14 @@ public class PersonService {
         return person;
     }
 
+    //Maybe this should return a boolean or something
+    @Transactional
+    public void deletePerson(int id) {
+        //Get person to delete
+        Person personToDelete = findPersonById(id);
+
+        //Delete person
+        personRepo.delete(personToDelete);
+    }
+
 }

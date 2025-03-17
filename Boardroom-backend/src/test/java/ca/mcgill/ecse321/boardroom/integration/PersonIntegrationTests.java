@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.http.HttpHeaders;
 
@@ -118,6 +119,42 @@ public class PersonIntegrationTests {
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
     }
+
+    @Test
+    @Order(3)
+    public void testLoginInvalidEmail() {
+        // Arrange
+        String invalidEmail = "dne@example.com";
+        String url = "/people/" + invalidEmail;
+
+        HttpEntity<String> requestEntity = new HttpEntity<>("SomePassword");
+
+        // Act
+        // receive a string response so we can check the error message
+        ResponseEntity<String> response = client.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            String.class
+        );
+
+        // Assert
+        // If person is not found, we expect UNAUTHORIZED 
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(),
+            "Should return 401 if the email does not exist."
+        );
+        
+        // Make sure we got a body with the error message
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Response body must not be null for an error.");
+
+        // Check that it matches the exception message
+        assertTrue(
+            responseBody.contains("Invalid email or password"),
+            "Expected error message to contain 'Invalid email or password'"
+        );
+    }
+
 
 
 

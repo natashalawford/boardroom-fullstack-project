@@ -58,6 +58,19 @@ public class GameOwnerService {
         return specificBoardGameRepo.save(newSpecificBoardGame);
     }
 
+    @Transactional
+    public void deleteBoardGame(String title) {
+        //get board game to delete
+        BoardGame boardGameToDelete = boardGameService.getBoardGameByTitle(title);
+
+        if (null == boardGameToDelete) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This board game does not exist");
+        }
+
+        boardGameRepo.delete(boardGameToDelete);
+    }
+
+    @Transactional
     public void deleteSpecificBoardGame(int id) {
         //Get board game to delete
         SpecificBoardGame specificBoardGameToDelete = specificBoardGameRepo.findSpecificBoardGameById(id);
@@ -67,10 +80,11 @@ public class GameOwnerService {
             throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("This specific board game with id %d does not exist, so it cannot be deleted.", id));
         }
 
-        //Delete board game
+        //Delete specific board game
         specificBoardGameRepo.delete(specificBoardGameToDelete); 
     }
 
+    @Transactional
     public SpecificBoardGame updateSpecificBoardGame(int id, SpecificBoardGameRequestDto specificBoardGameToUpdate) {
         //Make sure this specific board game exists
         SpecificBoardGame existingSpecificBoardGame = boardGameService.getSpecificBoardGameById(id);

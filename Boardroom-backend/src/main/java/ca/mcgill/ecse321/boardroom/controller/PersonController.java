@@ -39,6 +39,11 @@ public class PersonController {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
 
+    @GetMapping("people/{id}")
+    public PersonResponseDto getPerson(@PathVariable("id") int id) {
+        return new PersonResponseDto(personService.findPersonById(id));
+    }
+
     // delete person by id
     @DeleteMapping("people/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

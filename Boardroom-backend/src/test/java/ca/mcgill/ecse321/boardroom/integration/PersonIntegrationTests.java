@@ -114,8 +114,9 @@ public class PersonIntegrationTests {
         assertEquals(VALID_NAME, response.getBody().getName());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
+    }
 
-    @Order(2)
+    @Order(3)
     public void testLoginValidPerson() {
         // Arrange
         String url = "/people/login";
@@ -139,7 +140,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void testLoginInvalidEmail() {
         // Arrange
         String url = "/people/login";
@@ -165,7 +166,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testLoginFailIncorrectPassword() {
         // Arrange
         String url = "/people/login";
@@ -189,7 +190,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testLoginFailPasswordMissing() {
         // Arrange
         String url = "/people/login";
@@ -214,7 +215,7 @@ public class PersonIntegrationTests {
 
     // delete person by id tests begin here
     @Test
-    @Order(6)
+    @Order(7)
     public void testDeleteValidPerson() {
         // Arrange
         String url = "/people/" + createdPersonId;
@@ -234,7 +235,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void testDeleteInvalidPerson() {
         // Arrange
         int nonExistentId = 9999;

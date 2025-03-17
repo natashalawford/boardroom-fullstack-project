@@ -114,4 +114,31 @@ public class RegistrationService {
         //otherwise, delete the registration
         registrationRepository.delete(registration);
     }
+
+    @Transactional
+    public Registration findRegistration(EventRegistrationDto eventRegistrationDto) {
+
+        int personId = eventRegistrationDto.getPersonId();
+        int eventId = eventRegistrationDto.getEventId();
+        
+        Person person = personRepository.findPersonById(personId);
+        Event event = eventRepository.findEventById(eventId);
+
+        //check if person and event exist
+        if (person == null) {
+            throw new IllegalArgumentException("Person not found");
+        }
+
+        if (event == null) {
+            throw new IllegalArgumentException("Event not found");
+        }
+
+        Registration registration = registrationRepository.findByKeyPersonAndKeyEvent(person, event);
+
+        if (registration == null) {
+            throw new IllegalArgumentException("Registration not found");
+        }
+
+        return registration;
+    }
 }

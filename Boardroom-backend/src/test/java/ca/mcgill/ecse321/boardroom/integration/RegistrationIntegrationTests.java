@@ -85,6 +85,7 @@ public class RegistrationIntegrationTests {
         assertNotNull(createdRegistration.getRegistrationId());
     }
 
+    
     @Test
     @Order(1)
     public void testUnregisterFromEvent() {
@@ -97,5 +98,46 @@ public class RegistrationIntegrationTests {
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(2)
+    public void testRegisterForNonExistentEvent() {
+        // Arrange
+        EventRegistrationDto request = new EventRegistrationDto(person.getId(), 99999);
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> response = client.exchange("/registration", HttpMethod.PUT, new HttpEntity<>(request), EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(3)
+    public void testRegisterNonExistentPerson() {
+        // Arrange
+        EventRegistrationDto request = new EventRegistrationDto(99999, event.getId());
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto> response = client.exchange("/registration", HttpMethod.PUT, new HttpEntity<>(request), EventRegistrationResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
+    public void testUnregisterWhenNotRegistered() {
+        // Arrange
+        Person newPerson = new Person("Alice", "alice@mail.com", "password123", false);
+        personRepository.save(newPerson);
+        EventRegistrationDto request = new EventRegistrationDto(newPerson.getId(), event.getId());
+
+        // Act
+        ResponseEntity<Void> response = client.exchange("/unregistration", HttpMethod.DELETE, new HttpEntity<>(request), Void.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

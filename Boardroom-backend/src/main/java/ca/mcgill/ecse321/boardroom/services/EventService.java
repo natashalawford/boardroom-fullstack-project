@@ -8,7 +8,6 @@ import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import ca.mcgill.ecse321.boardroom.repositories.LocationRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import jakarta.validation.Valid;
@@ -25,8 +24,6 @@ public class EventService {
         @Autowired
         private EventRepository eventRepository;
         @Autowired
-        private LocationRepository locationRepository;
-        @Autowired
         private PersonRepository personRepository;
         @Autowired
         private BoardGameRepository boardGameRepository;
@@ -35,9 +32,6 @@ public class EventService {
         public Event createEvent(@Valid EventCreationDto eventToCreate) {
                 validateEventTimes(eventToCreate.getStartDateTime(), eventToCreate.getEndDateTime());
 
-                Location locationToFind = locationRepository.findById(eventToCreate.getLocationId()).orElseThrow(
-                                () -> new BoardroomException(HttpStatus.NOT_FOUND,
-                                                "A location with this id does not exist"));
                 Person personToFind = personRepository.findById(eventToCreate.getHostId()).orElseThrow(
                                 () -> new BoardroomException(HttpStatus.NOT_FOUND,
                                                 "A person with this id does not exist"));
@@ -51,7 +45,7 @@ public class EventService {
                                 eventToCreate.getStartDateTime(),
                                 eventToCreate.getEndDateTime(),
                                 eventToCreate.getMaxParticipants(),
-                                locationToFind,
+                                eventToCreate.getLocation(),
                                 personToFind,
                                 boardGameToFind);
 

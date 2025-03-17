@@ -3,6 +3,8 @@ package ca.mcgill.ecse321.boardroom.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.net.http.HttpHeaders;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -89,4 +92,33 @@ public class PersonIntegrationTests {
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
     }
+
+    @Test
+    @Order(2)
+    public void testLoginValidPerson() {
+        // Arrange
+        String url = "/people/" + VALID_EMAIL;
+
+        // Put the password in the request body - no headers, no extra imports
+        HttpEntity<String> requestEntity = new HttpEntity<>(VALID_PASSWORD);
+
+        // Act
+        ResponseEntity<PersonResponseDto> response = client.exchange(
+            url,
+            HttpMethod.GET,
+            requestEntity,
+            PersonResponseDto.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(createdPersonId, response.getBody().getId());
+        assertEquals(VALID_NAME, response.getBody().getName());
+        assertEquals(VALID_EMAIL, response.getBody().getEmail());
+        assertEquals(VALID_OWNER, response.getBody().isOwner());
+    }
+
+
+
 }

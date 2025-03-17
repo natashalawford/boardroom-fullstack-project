@@ -193,4 +193,38 @@ public class BorrowIntegrationTests {
 
     } 
 
+    @Test
+    @Order(3)
+    public void testUpdateInvalidBorrowRequestStatus() {
+        // Arrange
+        int invalidId = 999999; 
+        RequestStatus newStatus = RequestStatus.ACCEPTED;
+        String url = "/borrowRequests/" + invalidId;
+
+        // Wrap the new status in HttpEntity
+        HttpEntity<RequestStatus> requestEntity = new HttpEntity<>(newStatus);
+
+        // Act
+        // Capture the response as a string to parse the error message
+        ResponseEntity<String> response = client.exchange(
+                url,
+                HttpMethod.PUT,
+                requestEntity,
+                String.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), 
+                    "Should return 404 if the borrow request ID does not exist.");
+
+        String responseBody = response.getBody();
+        assertNotNull(responseBody, "Response body must not be null for an error.");
+
+        assertTrue(
+            responseBody.contains("A borrow request with this id does not exist"),
+            "Expected error message to contain 'A borrow request with this id does not exist'"
+        );
+    }
+
+    
 }

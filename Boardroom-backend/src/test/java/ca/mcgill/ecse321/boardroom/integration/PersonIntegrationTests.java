@@ -116,39 +116,30 @@ public class PersonIntegrationTests {
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
     }
-    /*
+
     @Test
     @Order(3)
     public void testLoginInvalidEmail() {
         // Arrange
+        String url = "/people/login";
         String invalidEmail = "dne@example.com";
-        String url = "/people/" + invalidEmail;
-
-        HttpEntity<String> requestEntity = new HttpEntity<>("SomePassword");
+        
+        // Email does not exist in DB
+        PersonLoginDto loginDto = new PersonLoginDto(invalidEmail, "SomePassword");
 
         // Act
-        // receive a string response so we can check the error message
-        ResponseEntity<String> response = client.exchange(
-            url,
-            HttpMethod.GET,
-            requestEntity,
-            String.class
-        );
+        // response as String so we can parse the error message
+        ResponseEntity<String> response = client.postForEntity(url, loginDto, String.class);
 
         // Assert
-        // If person is not found, we expect UNAUTHORIZED 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(),
             "Should return 401 if the email does not exist."
         );
-        
-        // Make sure we got a body with the error message
         String responseBody = response.getBody();
         assertNotNull(responseBody, "Response body must not be null for an error.");
-
-        // Check that it matches the exception message
         assertTrue(
             responseBody.contains("Invalid email or password"),
-            "Expected error message to contain 'Invalid email or password'"
+            "Expected error message to contain 'Invalid email or password'."
         );
     }
 
@@ -156,26 +147,20 @@ public class PersonIntegrationTests {
     @Order(4)
     public void testLoginFailIncorrectPassword() {
         // Arrange
-        String url = "/people/" + VALID_EMAIL;   
+        String url = "/people/login";
         
-        HttpEntity<String> requestEntity = new HttpEntity<>("wrongPassword");
+        // Valid email, but wrong password
+        PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, "wrongPassword");
 
         // Act
-        // capture the error as a String to check the message
-        ResponseEntity<String> response = client.exchange(
-            url,
-            HttpMethod.GET,
-            requestEntity,
-            String.class
-        );
+        ResponseEntity<String> response = client.postForEntity(url, loginDto, String.class);
 
         // Assert
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(),
-            "Should return 401 if the password is incorrect.");
-        
+            "Should return 401 if the password is incorrect."
+        );
         String responseBody = response.getBody();
         assertNotNull(responseBody, "Response body must not be null on error.");
-
         assertTrue(
             responseBody.contains("Invalid email or password"),
             "Expected error message to contain 'Invalid email or password'."
@@ -186,32 +171,26 @@ public class PersonIntegrationTests {
     @Order(5)
     public void testLoginFailPasswordMissing() {
         // Arrange
-        String url = "/people/" + VALID_EMAIL;
-        
-        // Use null in the request body to simulate missing password
-        HttpEntity<String> requestEntity = new HttpEntity<>(null);
-
+        String url = "/people/login";
+    
+        // Null password => triggers BAD_REQUEST
+        PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, null);
+    
         // Act
-        ResponseEntity<String> response = client.exchange(
-            url,
-            HttpMethod.GET,
-            requestEntity,
-            String.class
-        );
-
+        ResponseEntity<String> response = client.postForEntity(url, loginDto, String.class);
+    
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(),
-            "Should return 400 if email or password is missing.");
-        
+            "Should return 400 if email or password is missing."
+        );
         String responseBody = response.getBody();
         assertNotNull(responseBody, "Response body must not be null on error.");
-
         assertTrue(
             responseBody.contains("Email and password are required."),
-            "Expected error message to contain 'Email and password are required.'"
+            "Expected error message to contain 'Email and password are required.'."
         );
     }
-*/
+    
 
 
 

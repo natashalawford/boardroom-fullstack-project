@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardroom.services;
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -57,8 +58,19 @@ public class PersonService {
         return personRepo.save(updatedPerson);
     }
 
+    //delete person
     @Transactional
-    public Person login(PersonLoginDto loginDto) {
+    public void deletePersonById(int id) {
+        Person person = personRepo.findPersonById(id);
+        if (person == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND,
+                String.format("No person has id %d", id));
+        }
+        personRepo.deleteById(id);
+    }
+
+    @Transactional
+    public PersonResponseDto login(PersonLoginDto loginDto) {
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "Email and password are required.");
         }
@@ -74,7 +86,7 @@ public class PersonService {
             throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
-        return person;
+        return new PersonResponseDto(person);
     }
 
     //Maybe this should return a boolean or something

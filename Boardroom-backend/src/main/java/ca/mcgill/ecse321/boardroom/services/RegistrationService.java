@@ -37,7 +37,7 @@ public class RegistrationService {
 
         // Get the user
         int personId = eventRegistrationDto.getPersonId();
-        Person person = personRepository.findById(personId).orElse(null);
+        Person person = personRepository.findPersonById(personId);
 
         // Check if person exists, otherwise throw an exception
         if (person == null) {
@@ -46,7 +46,7 @@ public class RegistrationService {
 
         // Get the event
         int eventId = eventRegistrationDto.getEventId();
-        Event event = eventRepository.findById(eventId).orElse(null);
+        Event event = eventRepository.findEventById(eventId);
 
         // Check if event exists, otherwise throw an exception
         if (event == null) {
@@ -85,5 +85,33 @@ public class RegistrationService {
         return !(e1.getEndDateTime().isBefore(e2.getStartDateTime()) || // event 1 ending is before event 2 starts
                  e2.getEndDateTime().isBefore(e1.getStartDateTime())); // otherwise event 2 ending is before event 1 starts
                  // if neither of these are true, the events overlap
+    }
+
+    @Transactional
+    public void unregisterFromEvent(EventRegistrationDto eventRegistrationDto) {
+        int personId = eventRegistrationDto.getPersonId();
+        Person person = personRepository.findPersonById(personId);
+        
+        if (person == null) {
+            throw new IllegalArgumentException("Person not found");
+        }
+        // Get the event
+        int eventId = eventRegistrationDto.getEventId();
+        Event event = eventRepository.findEventById(eventId);
+
+        // Check if event exists, otherwise throw an exception
+        if (event == null) {
+            throw new IllegalArgumentException("Event not found");
+        }
+
+        Registration registration = registrationRepository.findByKeyPersonAndKeyEvent(person, event);
+
+        // If registration is null, the user is not actually registered for this event, throw an exception
+        if (registration == null) {
+            throw new IllegalStateException("User is not registered for this event");
+        }
+
+        //otherwise, delete the registration
+        registrationRepository.delete(registration);
     }
 }

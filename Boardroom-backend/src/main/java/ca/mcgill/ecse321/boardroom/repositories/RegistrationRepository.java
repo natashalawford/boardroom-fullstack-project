@@ -15,5 +15,6 @@ public interface RegistrationRepository extends CrudRepository<Registration,
     public long countByKeyEvent(Event event); 
     public boolean existsByKeyPersonAndKeyEvent(Person person, Event event); 
     public List<Registration> findByKeyPerson(Person person);
+    public Registration findByKeyPersonAndKeyEvent(Person person, Event event);
 
 }

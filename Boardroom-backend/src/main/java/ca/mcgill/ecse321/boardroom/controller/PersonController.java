@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
@@ -38,13 +39,20 @@ public class PersonController {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
 
-    @GetMapping("people/{id}") 
-    public PersonResponseDto getPerson(@PathVariable("id") int id) {
-        return new PersonResponseDto(personService.findPersonById(id));
+    // delete person by id
+    @DeleteMapping("people/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePersonById(@PathVariable("id") int id) {
+        personService.deletePersonById(id);
     }
 
-    @DeleteMapping("people/{id}")
-    public void deletePerson(@PathVariable("id") int id) {
-        personService.deletePerson(id);
+    //login endpoint
+    @PostMapping("people/login")
+    @ResponseStatus(HttpStatus.OK)
+    public PersonResponseDto loginPerson(@RequestBody PersonLoginDto loginDto) {
+        // Directly use the incoming loginDto
+        return personService.login(loginDto);
     }
+
+
 }

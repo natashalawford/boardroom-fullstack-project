@@ -11,7 +11,7 @@ public class EventResponseDto {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private int maxParticipants;
-    private int locationId;
+    private String location;
     private int hostId;
     private String boardGameName;
 
@@ -25,7 +25,7 @@ public class EventResponseDto {
         this.startDateTime = event.getStartDateTime();
         this.endDateTime = event.getEndDateTime();
         this.maxParticipants = event.getMaxParticipants();
-        this.locationId = event.getLocation().getId();
+        this.location = event.getLocation();
         this.hostId = event.getEventHost().getId();
         this.boardGameName = event.getBoardGame().getTitle();
     }
@@ -54,8 +54,8 @@ public class EventResponseDto {
         return maxParticipants;
     }
 
-    public int getLocationId() {
-        return locationId;
+    public String getLocation() {
+        return location;
     }
 
     public int getHostId() {

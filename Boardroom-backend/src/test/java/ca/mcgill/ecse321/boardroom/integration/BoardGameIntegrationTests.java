@@ -55,8 +55,6 @@ public class BoardGameIntegrationTests {
     private static final int VALID_PLAYERS_NEEDED = 5;
     private static final int VALID_PICTURE = 15;
 
-    private static int CREATED_SPECIFICBOARDGAME_ID;
-
     // Person fields
     private static final String VALID_OWNER_NAME = "John Doe";
     private static final String VALID_OWNER_EMAIL = "john.doe@gmail.com";
@@ -126,7 +124,6 @@ public class BoardGameIntegrationTests {
         assertEquals(persistedBoardGame.getTitle(), response.getBody().getBoardGameTitle());
         assertEquals(persistedPerson.getId(), response.getBody().getOwnerId());
 
-        CREATED_SPECIFICBOARDGAME_ID = response.getBody().getId();
         VALID_SPECIFIC_BOARD_GAME = response.getBody();
     }
 

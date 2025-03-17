@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -100,7 +101,7 @@ public class PersonServiceTests {
         when(personRepo.save(any(Person.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         //Act
-        PersonResponseDto updatedPerson = personService.updatePerson(id, personToUpdate);
+        Person updatedPerson = personService.updatePerson(id, personToUpdate);
 
         //Assert
         assertNotNull(updatedPerson);  
@@ -126,6 +127,43 @@ public class PersonServiceTests {
         assertEquals("A person with this id does not exist", e.getMessage());
     }
 
+    //delete person by id tests begin here
+    @Test
+    public void testDeleteValidPerson() {
+        // Arrange
+        int validId = 1;
+        // Mock existing person
+        Person existingPerson = new Person(validId, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        when(personRepo.findPersonById(validId)).thenReturn(existingPerson);
+
+        // Act
+        personService.deletePersonById(validId);
+
+        // Assert
+        verify(personRepo, times(1)).findPersonById(validId);
+        verify(personRepo, times(1)).deleteById(validId);
+    }
+
+    @Test
+    public void testDeleteInvalidPerson() {
+        // Arrange
+        int invalidId = 99;
+        // Make sure repo returns null for this ID
+        when(personRepo.findPersonById(invalidId)).thenReturn(null);
+
+        // Act + Assert
+        BoardroomException ex = assertThrows(
+            BoardroomException.class,
+            () -> personService.deletePersonById(invalidId)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertEquals("No person has id 99", ex.getMessage());
+
+        verify(personRepo, times(1)).findPersonById(invalidId);
+        verify(personRepo, times(0)).deleteById(anyInt()); // Should never delete
+    }
+
     
     // login tests begin here
     @Test
@@ -137,7 +175,7 @@ public class PersonServiceTests {
         PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, VALID_PASSWORD);
 
         // Act
-        Person loggedInPerson = personService.login(loginDto);
+        PersonResponseDto loggedInPerson = personService.login(loginDto);
 
         // Assert
         assertNotNull(loggedInPerson);

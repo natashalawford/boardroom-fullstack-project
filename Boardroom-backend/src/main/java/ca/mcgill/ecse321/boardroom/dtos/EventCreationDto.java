@@ -25,8 +25,8 @@ public class EventCreationDto {
     @Min(value = 1, message = "Maximum participants must be at least 1.")
     private int maxParticipants;
 
-    @NotNull(message = "Location is required")
-    private Integer locationId;
+    @NotBlank(message = "Location is required")
+    private String location;
 
     @NotNull(message = "Host is required")
     private Integer hostId;
@@ -36,13 +36,13 @@ public class EventCreationDto {
 
     public EventCreationDto(String title, String description,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
-            int maxParticipants, int locationId, int hostId, String boardGameName) {
+            int maxParticipants, String location, int hostId, String boardGameName) {
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxParticipants = maxParticipants;
-        this.locationId = locationId;
+        this.location = location;
         this.hostId = hostId;
         this.boardGameName = boardGameName;
     }
@@ -59,8 +59,8 @@ public class EventCreationDto {
         return maxParticipants;
     }
 
-    public int getLocationId() {
-        return locationId;
+    public String getLocation() {
+        return location;
     }
 
     public int getHostId() {

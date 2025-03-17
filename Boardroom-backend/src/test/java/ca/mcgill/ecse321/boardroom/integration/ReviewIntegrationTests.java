@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -40,10 +42,11 @@ public class ReviewIntegrationTests {
 
     private static Person VALID_AUTHOR;
     private static BoardGame VALID_BOARD_GAME;
+    private static ReviewResponseDto VALID_REVIEW;
     private int authorId;
     private String boardGameName;
 
-    @BeforeEach
+    @BeforeAll
     public void setup() {
         VALID_AUTHOR = new Person("validUser", "user@mail.com", "securepass", false);
         personRepository.save(VALID_AUTHOR);
@@ -54,7 +57,7 @@ public class ReviewIntegrationTests {
         boardGameName = VALID_BOARD_GAME.getTitle();
     }
 
-    @AfterEach
+    @AfterAll
     public void cleanup() {
         reviewRepository.deleteAll();
         personRepository.deleteAll();
@@ -88,6 +91,7 @@ public class ReviewIntegrationTests {
 
         String responseGame = response.getBody().getBoardGameName();
         assertEquals(body.getBoardGameName(), responseGame);
+        VALID_REVIEW = response.getBody();
     }
 
     /**
@@ -112,6 +116,9 @@ public class ReviewIntegrationTests {
                 response.getBody().getErrors());
     }
 
+    /*
+     * Test creating a review with invalid fields (non-existent board game).
+     */
     @Test
     @Order(2)
     public void testCreateReviewWithInvalidFields() {
@@ -129,5 +136,84 @@ public class ReviewIntegrationTests {
         assertIterableEquals(
                 List.of("A board game with this name does not exist"),
                 response.getBody().getErrors());
+    }
+
+    /*
+     * Test getting reviews for a specific board game.
+     */
+    @Test
+    @Order(3)
+    public void testGetReviewsForBoardGame() {
+        // Arrange
+        String url = "/reviews/" + boardGameName;
+
+        // Act
+        ResponseEntity<List<ReviewResponseDto>> reviewResponseBody = client.exchange(
+            url,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<ReviewResponseDto>>() {}
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
+        assertNotNull(reviewResponseBody.getBody());
+        assertTrue(reviewResponseBody.getBody().size() > 0);
+        ReviewResponseDto reviewResponse = reviewResponseBody.getBody().get(0);
+
+        assertEquals(VALID_REVIEW.getAuthorId(), reviewResponse.getAuthorId());
+        assertEquals(VALID_REVIEW.getStars(), reviewResponse.getStars());
+        assertEquals(VALID_REVIEW.getComment(), reviewResponse.getComment());
+        assertEquals(VALID_REVIEW.getBoardGameName(), reviewResponse.getBoardGameName());
+    }
+
+    /*
+     * Test getting reviews for a board game with an invalid title.
+     */
+    @Test
+    @Order(4)
+    public void testGetReviewsForBoardGameWithInvalidTitle() {
+        // Arrange
+        String url = "/reviews/" + "Nonexistent-title";
+
+        // Act
+        ResponseEntity<List<ReviewResponseDto>> reviewResponseBody = client.exchange(
+            url,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<ReviewResponseDto>>() {}
+        );
+
+        assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
+        assertNotNull(reviewResponseBody.getBody());
+        assertTrue(reviewResponseBody.getBody().size() == 0);
+    }
+
+    @Test
+    @Order(6)
+    public void testDeleteReviewById_Success() {
+        // Arrange
+        String url = String.format("/reviews/%d", this.createdReviewId);
+
+        // Act: Delete the event
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.DELETE, null, ErrorDto.class);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    public void testDeleteReviewById_NotFound() {
+        // Act: Try to delete a non-existent event
+        int invalidReviewId = 99999;
+        ResponseEntity<ErrorDto> response = client.exchange("/reviews/" + invalidReviewId, HttpMethod.DELETE, null, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("no review has ID " + invalidReviewId),
+                response.getBody().getErrors()
+        );
     }
 }

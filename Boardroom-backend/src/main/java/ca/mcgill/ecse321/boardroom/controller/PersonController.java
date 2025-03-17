@@ -1,12 +1,15 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,9 +36,26 @@ public class PersonController {
     @PutMapping("people/{id}/role")
     public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@RequestBody PersonRequestDto partialUpdatedPerson) {
         
-        PersonResponseDto updatedPerson = personService.updatePerson(id, partialUpdatedPerson);
-
-        return updatedPerson;
-
+        return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
+
+    // delete person by id
+    @DeleteMapping("people/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePersonById(@PathVariable("id") int id) {
+        personService.deletePersonById(id);
+    }
+
+    //login endpoint
+    @PostMapping("people/login")
+    @ResponseStatus(HttpStatus.OK)
+    public PersonResponseDto loginPerson(@RequestBody PersonLoginDto loginDto) {
+        // Directly use the incoming loginDto
+        return personService.login(loginDto);
+    }
+
+
+
+
+
 }

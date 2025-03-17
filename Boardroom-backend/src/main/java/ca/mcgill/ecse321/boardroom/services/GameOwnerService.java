@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.boardroom.dtos.BoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameUpdateDto;
+import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
@@ -71,16 +71,16 @@ public class GameOwnerService {
         specificBoardGameRepo.delete(specificBoardGameToDelete); 
     }
 
-    public SpecificBoardGame updateSpecificBoardGame(SpecificBoardGameUpdateDto specificBoardGameToUpdate) {
+    public SpecificBoardGame updateSpecificBoardGame(int id, SpecificBoardGameRequestDto specificBoardGameToUpdate) {
         //Make sure this specific board game exists
-        SpecificBoardGame existingSpecificBoardGame = boardGameService.getSpecificBoardGameById(specificBoardGameToUpdate.getId());
+        SpecificBoardGame existingSpecificBoardGame = boardGameService.getSpecificBoardGameById(id);
 
         if (null == existingSpecificBoardGame) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "This specific board game does not exist, cannot update it");
         }
 
         //Construct new specific board game with updating attributes
-        SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(specificBoardGameToUpdate.getId(), specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getPicture(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());
+        SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(id, specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getPicture(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());
 
         return specificBoardGameRepo.save(updatedSpecificBoardGame);
     }

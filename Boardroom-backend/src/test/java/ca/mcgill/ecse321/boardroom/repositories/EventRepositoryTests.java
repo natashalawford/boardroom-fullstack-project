@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
-import ca.mcgill.ecse321.boardroom.model.Location;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Event;
 
@@ -20,8 +19,6 @@ public class EventRepositoryTests {
     @Autowired
     private EventRepository eventRepo;
     @Autowired
-    private LocationRepository locationRepo;
-    @Autowired
     private PersonRepository personRepo;
     @Autowired
     private BoardGameRepository boardGameRepo;
@@ -29,7 +26,6 @@ public class EventRepositoryTests {
     @AfterEach
     public void clearDatabase() {
         eventRepo.deleteAll();
-        locationRepo.deleteAll();
         personRepo.deleteAll();
         boardGameRepo.deleteAll();
     }
@@ -37,12 +33,6 @@ public class EventRepositoryTests {
     @Test
     public void testCreateAndReadEvent() {
         // Arrange
-        String address = "1234 Rue Sainte-Catherine";
-        String city = "Montreal";
-        String province = "Quebec";
-        Location montrealCafe = new Location(address, city, province);
-        montrealCafe = locationRepo.save(montrealCafe);
-
         Person bob = new Person("Bob", "bob@mail.mcgill.ca", "1234", true);
         bob = personRepo.save(bob);
 
@@ -51,7 +41,7 @@ public class EventRepositoryTests {
 
         LocalDateTime startDateTime = LocalDateTime.parse("2025-02-13T00:00:00");
         LocalDateTime endDateTime = LocalDateTime.parse("2025-02-14T00:00:00");
-        Event event = new Event("Cafe Get-together", "Meet new friends", startDateTime, endDateTime, 10, montrealCafe,
+        Event event = new Event("Cafe Get-together", "Meet new friends", startDateTime, endDateTime, 10, "1234 Rue Sainte-Catherine, Montreal, QC",
                 bob, boardGame);
         event = eventRepo.save(event);
 
@@ -66,7 +56,7 @@ public class EventRepositoryTests {
         assertEquals(event.getStartDateTime(), eventFromDB.getStartDateTime());
         assertEquals(event.getEndDateTime(), eventFromDB.getEndDateTime());
         assertEquals(event.getMaxParticipants(), eventFromDB.getMaxParticipants());
-        assertEquals(event.getLocation().getId(), eventFromDB.getLocation().getId());
+        assertEquals(event.getLocation(), eventFromDB.getLocation());
         assertEquals(event.getEventHost().getId(), eventFromDB.getEventHost().getId());
         assertEquals(event.getBoardGame().getTitle(), eventFromDB.getBoardGame().getTitle());
     }

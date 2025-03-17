@@ -17,9 +17,7 @@ public class Event {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private int maxParticipants;
-
-    @ManyToOne
-    private Location location;
+    private String location;
     @ManyToOne
     private Person eventHost;
     @ManyToOne
@@ -29,7 +27,7 @@ public class Event {
 
     public Event(String title, String description,
                  LocalDateTime startDateTime, LocalDateTime endDateTime,
-                 int maxParticipants, Location location, Person eventHost, BoardGame boardGame) {
+                 int maxParticipants, String location, Person eventHost, BoardGame boardGame) {
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
@@ -56,7 +54,7 @@ public class Event {
         return maxParticipants;
     }
 
-    public Location getLocation() {
+    public String getLocation() {
         return location;
     }
 

@@ -41,7 +41,7 @@ public class PersonService {
     }
 
     @Transactional
-    public PersonResponseDto updatePerson(int id, PersonRequestDto personToUpdateDto) {
+    public Person updatePerson(int id, PersonRequestDto personToUpdateDto) {
 
         // First check if this person exists, if not throw error
         Person personToUpdate = personRepo.findPersonById(id);
@@ -55,11 +55,22 @@ public class PersonService {
                 personToUpdateDto.getName(), personToUpdateDto.getEmail(),
                 personToUpdate.getPassword(), personToUpdateDto.isOwner());
 
-        return new PersonResponseDto(personRepo.save(updatedPerson));
+        return personRepo.save(updatedPerson);
+    }
+
+    //delete person
+    @Transactional
+    public void deletePersonById(int id) {
+        Person person = personRepo.findPersonById(id);
+        if (person == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND,
+                String.format("No person has id %d", id));
+        }
+        personRepo.deleteById(id);
     }
 
     @Transactional
-    public Person login(PersonLoginDto loginDto) {
+    public PersonResponseDto login(PersonLoginDto loginDto) {
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "Email and password are required.");
         }
@@ -75,7 +86,7 @@ public class PersonService {
             throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
-        return person;
+        return new PersonResponseDto(person);
     }
 
 }

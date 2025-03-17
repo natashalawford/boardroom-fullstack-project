@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
-import ca.mcgill.ecse321.boardroom.model.Location;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.model.Registration;
@@ -53,7 +52,7 @@ public class RegistrationServiceTests {
     private static final LocalDateTime VALID_START_TIME = LocalDateTime.now().plusDays(1);
     private static final LocalDateTime VALID_END_TIME = LocalDateTime.now().plusDays(1).plusHours(2);
     private static final int VALID_MAX_PARTICIPANTS = 10;
-    private static Location VALID_LOCATION;
+    private static String VALID_LOCATION = "1234 Rue Sainte-Catherine";
     private static Person VALID_HOST;
     private static BoardGame VALID_BOARD_GAME;
     private static Person PERSON;
@@ -62,7 +61,6 @@ public class RegistrationServiceTests {
 
     @BeforeEach
     public void setup() {
-        VALID_LOCATION = new Location("McGill", "Montreal", "QC");
         VALID_HOST = new Person("Alice", "alice@mail.com", "securepass", false);
         VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
         PERSON = new Person("Person", "person@mail.com", "pass12", false);
@@ -209,6 +207,42 @@ public class RegistrationServiceTests {
         
         //verify the overlapping registration was not saved
         verify(registrationRepository, never()).save(argThat(reg -> reg.getKey().getEvent().equals(VALID_EVENT)));
+    }
+
+    @Test
+    public void testUnregisterFromEvent_Sucess(){
+        //Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.findByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(new Registration(new Registration.Key(VALID_EVENT, PERSON), LocalDateTime.now()));
+
+        //Act 
+        registrationService.unregisterFromEvent(eventRegistrationDto);
+
+        //Assert
+        verify(registrationRepository, times(1)).delete(any(Registration.class));
+    }
+
+    @Test
+    public void testUnregisterFromEvent_PersonNotRegistered(){
+        //Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+        when(personRepository.findById(PERSON_ID)).thenReturn(java.util.Optional.of(PERSON));
+        when(eventRepository.findById(EVENT_ID)).thenReturn(java.util.Optional.of(VALID_EVENT));
+        when(registrationRepository.findByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(null);
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> registrationService.unregisterFromEvent(eventRegistrationDto)
+        );
+        assertEquals("User is not registered for this event", exception.getMessage());
+        verify(registrationRepository, never()).delete(any(Registration.class));
     }
 
 }

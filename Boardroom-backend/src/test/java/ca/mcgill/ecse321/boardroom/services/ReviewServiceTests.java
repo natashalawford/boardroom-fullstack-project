@@ -19,6 +19,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,5 +152,41 @@ public class ReviewServiceTests {
         reviews = reviewService.getReviewsForBoardGame(VALID_BOARD_GAME.getTitle());
         Review review = reviews.get(0);
         assertNotNull(review);
+    }
+
+    @Test
+    public void testDeleteEventById_Success() {
+        // Arrange
+        int reviewId = 5;
+        LocalTime now = LocalTime.now();
+        Review review = new Review(
+                VALID_STARS, VALID_COMMENT, now, VALID_AUTHOR, VALID_BOARD_GAME
+        );
+
+        when(reviewRepository.findReviewById(reviewId)).thenReturn(review);
+
+        // Act
+        reviewService.deleteReviewById(reviewId);
+
+        // Assert
+        verify(reviewRepository, times(1)).deleteById(reviewId);
+    }
+
+    @Test
+    public void testDeleteEventById_NotFound() {
+        // Arrange
+        int eventId = 99; // Nonexistent event
+        when(reviewRepository.findReviewById(eventId)).thenReturn(null);
+
+        // Act + Assert
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> reviewService.deleteReviewById(eventId)
+        );
+
+        assertEquals("no review has ID 99", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+
+        verify(reviewRepository, never()).deleteById(anyInt());
     }
 }

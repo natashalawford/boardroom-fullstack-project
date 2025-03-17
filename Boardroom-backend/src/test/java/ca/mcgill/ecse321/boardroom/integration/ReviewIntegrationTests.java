@@ -31,6 +31,7 @@ public class ReviewIntegrationTests {
 
     @Autowired
     private TestRestTemplate client;
+    private int createdReviewId;
 
     @Autowired
     private PersonRepository personRepository;
@@ -81,6 +82,7 @@ public class ReviewIntegrationTests {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getId() > 0, "The ID should be a positive integer");
+        this.createdReviewId = response.getBody().getId();
         assertEquals(body.getStars(), response.getBody().getStars());
         assertEquals(body.getComment(), response.getBody().getComment());
 
@@ -185,5 +187,33 @@ public class ReviewIntegrationTests {
         assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
         assertNotNull(reviewResponseBody.getBody());
         assertTrue(reviewResponseBody.getBody().size() == 0);
+    }
+
+    @Test
+    @Order(6)
+    public void testDeleteReviewById_Success() {
+        // Arrange
+        String url = String.format("/reviews/%d", this.createdReviewId);
+
+        // Act: Delete the event
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.DELETE, null, ErrorDto.class);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    public void testDeleteReviewById_NotFound() {
+        // Act: Try to delete a non-existent event
+        int invalidReviewId = 99999;
+        ResponseEntity<ErrorDto> response = client.exchange("/reviews/" + invalidReviewId, HttpMethod.DELETE, null, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("no review has ID " + invalidReviewId),
+                response.getBody().getErrors()
+        );
     }
 }

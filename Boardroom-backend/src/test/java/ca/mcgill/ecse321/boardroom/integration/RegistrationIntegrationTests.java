@@ -96,7 +96,7 @@ public class RegistrationIntegrationTests {
         registrationRepository.save(registration);
 
         // Act
-        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + eventId + "/" + personId, EventRegistrationResponseDto.class);
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + personId + "/" + eventId, EventRegistrationResponseDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, getResponse.getStatusCode());
@@ -105,7 +105,6 @@ public class RegistrationIntegrationTests {
         assertEquals(event.getId(), getResponse.getBody().getEventId());
         assertNotNull(getResponse.getBody().getRegistrationId());
     }
-
 
     
     @Test

@@ -37,7 +37,7 @@ public class RegistrationService {
 
         // Get the user
         int personId = eventRegistrationDto.getPersonId();
-        Person person = personRepository.findById(personId).orElse(null);
+        Person person = personRepository.findPersonById(personId);
 
         // Check if person exists, otherwise throw an exception
         if (person == null) {
@@ -46,7 +46,7 @@ public class RegistrationService {
 
         // Get the event
         int eventId = eventRegistrationDto.getEventId();
-        Event event = eventRepository.findById(eventId).orElse(null);
+        Event event = eventRepository.findEventById(eventId);
 
         // Check if event exists, otherwise throw an exception
         if (event == null) {
@@ -90,14 +90,14 @@ public class RegistrationService {
     @Transactional
     public void unregisterFromEvent(EventRegistrationDto eventRegistrationDto) {
         int personId = eventRegistrationDto.getPersonId();
-        Person person = personRepository.findById(personId).orElse(null);
+        Person person = personRepository.findPersonById(personId);
         
         if (person == null) {
             throw new IllegalArgumentException("Person not found");
         }
         // Get the event
         int eventId = eventRegistrationDto.getEventId();
-        Event event = eventRepository.findById(eventId).orElse(null);
+        Event event = eventRepository.findEventById(eventId);
 
         // Check if event exists, otherwise throw an exception
         if (event == null) {

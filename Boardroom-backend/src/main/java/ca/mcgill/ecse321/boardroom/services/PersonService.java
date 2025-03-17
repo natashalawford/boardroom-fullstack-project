@@ -59,7 +59,7 @@ public class PersonService {
     }
 
     @Transactional
-    public Person login(PersonLoginDto loginDto) {
+    public PersonResponseDto login(PersonLoginDto loginDto) {
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "Email and password are required.");
         }
@@ -75,7 +75,7 @@ public class PersonService {
             throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
-        return person;
+        return new PersonResponseDto(person);
     }
 
 }

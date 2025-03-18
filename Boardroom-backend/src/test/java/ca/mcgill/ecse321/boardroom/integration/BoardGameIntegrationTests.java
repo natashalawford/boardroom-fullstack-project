@@ -150,7 +150,7 @@ public class BoardGameIntegrationTests {
                 assertEquals(HttpStatus.OK, response.getStatusCode(), "HTTP status should be 200 OK");
                 List<BoardGameResponseDto> responseBody = response.getBody();
                 assertNotNull(responseBody, "Response body should not be null");
-                
+
                 assertEquals(1, responseBody.size(), "Response body should have 1 board game");
 
                 BoardGameResponseDto boardGameResponse = responseBody.get(0);
@@ -259,6 +259,7 @@ public class BoardGameIntegrationTests {
                 // Assert
                 assertNotNull(response);
                 assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-                assertTrue(response.getBody().getErrors().contains("A specific board game with this id does not exist"));
+                assertTrue(response.getBody().getErrors()
+                                .contains("A specific board game with this id does not exist"));
         }
 }

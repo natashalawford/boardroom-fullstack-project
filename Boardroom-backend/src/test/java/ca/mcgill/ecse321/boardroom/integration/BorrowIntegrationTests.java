@@ -336,6 +336,44 @@ public class BorrowIntegrationTests {
         );
     }
 
+    //get borrow request by id
+    @Test
+    @Order(8)
+    public void testGetBorrowRequestById_Valid() {
+        // Arrange
+        String url = "/borrowRequests/" + this.validBorrowRequestId;
+
+        // Act
+        ResponseEntity<BorrowRequestResponseDto> response = client.getForEntity(url, BorrowRequestResponseDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode(), 
+            "Expected 200 OK for an existing borrow request");
+        BorrowRequestResponseDto dto = response.getBody();
+        assertNotNull(dto, "Response body must not be null");
+        assertEquals(validBorrowRequestId, dto.getId(), "The IDs must match");
+        // Optionally check other fields like status, startDate, endDate, etc.
+    }
+
+    @Test
+    @Order(9)
+    public void testGetBorrowRequestById_Invalid() {
+        // Arrange
+        int nonExistentId = 999999;
+        String url = "/borrowRequests/" + nonExistentId;
+
+        // Act
+        ResponseEntity<String> response = client.getForEntity(url, String.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(),
+            "Should return 404 if the borrow request does not exist");
+        String body = response.getBody();
+        assertNotNull(body, "Error response should not be null");
+        assertTrue(body.contains("A borrow request with this id (999999) does not exist"),
+            "Error message should mention the missing ID");
+    }
+
 
 
     

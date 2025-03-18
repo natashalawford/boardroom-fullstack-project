@@ -157,7 +157,7 @@ public class RegistrationIntegrationTests {
         registrationRepository.save(registration);
 
         // Act
-        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/" + personId + "/" + eventId,
+        ResponseEntity<EventRegistrationResponseDto> getResponse = client.getForEntity("/registration/" + personId + "/" + eventId,
                 EventRegistrationResponseDto.class);
 
         // Assert

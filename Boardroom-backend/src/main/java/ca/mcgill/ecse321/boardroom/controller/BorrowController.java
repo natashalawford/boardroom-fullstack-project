@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
-import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
-import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.services.BorrowService;
 import jakarta.validation.Valid;
@@ -28,6 +26,13 @@ public class BorrowController {
     @Autowired
     private BorrowService borrowService;
 
+    
+    /** 
+     * Create a new borrow request.
+     * 
+     * @param borrowRequestToCreate
+     * @return BorrowRequestResponseDto
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BorrowRequestResponseDto createBorrowRequest(@Valid @RequestBody BorrowRequestDtoCreation borrowRequestToCreate){
@@ -35,6 +40,14 @@ public class BorrowController {
         return new BorrowRequestResponseDto(createdBorrowRequest);
     }
 
+    
+    /** 
+     * Update status of a borrow request.
+     * 
+     * @param id
+     * @param status
+     * @return BorrowRequestResponseDto
+     */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BorrowRequestResponseDto updateBorrowRequest(@PathVariable int id, @RequestBody RequestStatus status){
@@ -42,6 +55,12 @@ public class BorrowController {
         return new BorrowRequestResponseDto(updatedBorrowRequest);
     }
 
+    
+    /** 
+     * View pending borrow requests.
+     * 
+     * @return List<BorrowRequestResponseDto>
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<BorrowRequestResponseDto> viewPendingBorrowRequests(){
@@ -53,7 +72,13 @@ public class BorrowController {
         return borrowRequestDtos;
     }
 
-    //get borrow request by id
+    
+    /** 
+     * Get borrow request by ID.
+     * 
+     * @param id
+     * @return BorrowRequestResponseDto
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BorrowRequestResponseDto getBorrowRequestById(@PathVariable int id) {
@@ -61,7 +86,12 @@ public class BorrowController {
         return new BorrowRequestResponseDto(br);
     }
 
-    //delete borrow request
+    
+    /** 
+     * Delete borrow request by ID.
+     * 
+     * @param id
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBorrowRequest(@PathVariable int id) {
@@ -69,10 +99,17 @@ public class BorrowController {
     }
 
 
-    @GetMapping("/history/{boardGameId}")
+    
+    /** 
+     * View history of borrow requests for a specific board game.
+     * 
+     * @param boardGameId
+     * @return List<BorrowRequestResponseDto>
+     */
+    @GetMapping("/history/{specificBoardGameId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestResponseDto> viewLendingHistoryByBoardGame(@PathVariable int boardGameId) {
-        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(boardGameId);
+    public List<BorrowRequestResponseDto> viewLendingHistoryByBoardGame(@PathVariable int specificBoardGameId) {
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGameId);
         List<BorrowRequestResponseDto> borrowRequestDtos = new ArrayList<>();
         for (BorrowRequest borrowRequest : borrowRequests) {
             borrowRequestDtos.add(new BorrowRequestResponseDto(borrowRequest));

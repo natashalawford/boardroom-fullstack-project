@@ -38,7 +38,7 @@ public class PersonService {
 
         try {
             return personRepo.save(newPerson);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, String.format("An error occured creating the account: %s", e.getMessage()));
         }
     }

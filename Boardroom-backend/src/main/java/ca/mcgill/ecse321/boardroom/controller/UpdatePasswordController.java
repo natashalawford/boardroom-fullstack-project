@@ -1,9 +1,7 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
-import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
-import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonUpdatePasswordDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
-import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +21,9 @@ public class UpdatePasswordController {
     /**
      * Change password
      */
-    @PutMapping("people/{id}/password")
-    public ResponseEntity<Void> changePassword(@PathVariable("id") int id, @RequestBody String passwordChange) {
-
-        try {
-            personService.changePassword(id, passwordChange);
-            return ResponseEntity.ok().build();
-        } catch (BoardroomException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
+     @PutMapping("people/{id}/password")
+    @ResponseStatus(HttpStatus.OK) // Automatically returns 200 OK if no exception is thrown
+    public void changePassword(@PathVariable("id") int id, @RequestBody PersonUpdatePasswordDto passwordDto) {
+        personService.changePassword(id, passwordDto);
     }
 }

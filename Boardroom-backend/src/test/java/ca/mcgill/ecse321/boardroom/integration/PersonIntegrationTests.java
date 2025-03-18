@@ -23,9 +23,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonUpdatePasswordDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -100,18 +102,17 @@ public class PersonIntegrationTests {
     @Test
     @Order(1)
     public void testGetValidPerson() {
-        //Arrange
+        // Arrange
         String url = "/people/{id}";
 
-
-        //Act
+        // Act
         ResponseEntity<PersonResponseDto> response = client.getForEntity(url, PersonResponseDto.class, createdPersonId);
 
-        //Assert
+        // Assert
         assertNotNull(response);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-  
+
         assertEquals(VALID_NAME, response.getBody().getName());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
@@ -133,10 +134,10 @@ public class PersonIntegrationTests {
 
         // If your Person object has an 'id' field, ensure it's the one you expect
         assertEquals(createdPersonId, response.getBody().getId());
-  assertEquals(VALID_NAME, response.getBody().getName());
+        assertEquals(VALID_NAME, response.getBody().getName());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_OWNER, response.getBody().isOwner());
-        
+
     }
 
     @Test
@@ -209,7 +210,7 @@ public class PersonIntegrationTests {
 
     // delete person by id tests begin here
     @Test
-    @Order(7)
+    @Order(13)
     public void testDeleteValidPerson() {
         // Arrange
         String url = "/people/" + createdPersonId;
@@ -228,7 +229,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void testDeleteInvalidPerson() {
         // Arrange
         int nonExistentId = 9999;
@@ -250,15 +251,16 @@ public class PersonIntegrationTests {
     public void testChangePasswordValid() {
         // Arrange
         String url = "/people/{id}/password";
-        String newPassword = "newPassword123";
-        HttpEntity<String> request = new HttpEntity<>(newPassword);
+        PersonUpdatePasswordDto passwordDto = new PersonUpdatePasswordDto(VALID_PASSWORD, "newPassword123");
+
+        HttpEntity<PersonUpdatePasswordDto> request = new HttpEntity<>(passwordDto);
 
         // Act
         ResponseEntity<Void> response = client.exchange(url, HttpMethod.PUT, request, Void.class, createdPersonId);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Password change should succeed.");
-        assertEquals(newPassword, personService.findPersonById(createdPersonId).getPassword(),
+        assertEquals(passwordDto.getNewPassword(), personService.findPersonById(createdPersonId).getPassword(),
                 "Password should be updated.");
     }
 
@@ -268,15 +270,68 @@ public class PersonIntegrationTests {
         // Arrange
         int nonExistentId = 9999;
         String url = "/people/{id}/password";
-        String newPassword = "newPassword123";
-        HttpEntity<String> request = new HttpEntity<>(newPassword);
+        PersonUpdatePasswordDto passwordDto = new PersonUpdatePasswordDto("1234", "newPassword123"); // Assuming "1234"
+                                                                                                     // is the old
+                                                                                                     // password
+        HttpEntity<PersonUpdatePasswordDto> request = new HttpEntity<>(passwordDto);
 
         // Act
-        ResponseEntity<String> response = client.exchange(url, HttpMethod.PUT, request, String.class, nonExistentId);
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.PUT, request, ErrorDto.class, nonExistentId);
 
         // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        String responseBody = response.getBody();
-        assertNull(responseBody);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("No person has id " + nonExistentId, response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
+        
     }
+
+    @Test
+    @Order(10)
+    public void testChangePasswordInvalidPassword() {
+        // Arrange
+        String url = "/people/{id}/password";
+        PersonUpdatePasswordDto passwordDto = new PersonUpdatePasswordDto("wrongOldPassword", "newPassword123"); 
+        HttpEntity<PersonUpdatePasswordDto> request = new HttpEntity<>(passwordDto);
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.PUT, request, ErrorDto.class, createdPersonId);
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("Invalid password", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
+    }
+
+    @Test
+    @Order(11)
+    public void testChangePasswordEmptyNewPassword() {
+        // Arrange
+        String url = "/people/{id}/password";
+        PersonUpdatePasswordDto passwordDto = new PersonUpdatePasswordDto("1234", ""); // Empty new password
+        HttpEntity<PersonUpdatePasswordDto> request = new HttpEntity<>(passwordDto);
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.PUT, request, ErrorDto.class, createdPersonId);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Password is required", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
+    }
+
+    @Test
+    @Order(12)
+    public void testChangePasswordNullNewPassword() {
+        // Arrange
+        String url = "/people/{id}/password";
+        PersonUpdatePasswordDto passwordDto = new PersonUpdatePasswordDto("1234", null); // Null new password
+        HttpEntity<PersonUpdatePasswordDto> request = new HttpEntity<>(passwordDto);
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.PUT, request, ErrorDto.class, createdPersonId);
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Password is required", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
+    }
+
 }

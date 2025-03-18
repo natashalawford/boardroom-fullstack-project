@@ -21,9 +21,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import ca.mcgill.ecse321.boardroom.dtos.BoardGameCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.BoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.SpecificBoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
@@ -164,6 +165,24 @@ public class GameOwnerIntegrationTests {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
         assertNull(specificBoardGameRepo.findSpecificBoardGameById(CREATED_SPECIFICBOARDGAME_ID));
+    }
+
+
+    //Jakarta validation test
+    @Test
+    public void testCreateInvalidTitleBoardGame() {
+        //Arrange
+        BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(" ", VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
+
+        String url = "/boardgame";
+
+        //Act
+        ResponseEntity<ErrorDto> response = client.postForEntity(url, boardGameToCreate, ErrorDto.class);
+
+        //Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode()); 
+        assertEquals("Title is required", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
     }
 
 }

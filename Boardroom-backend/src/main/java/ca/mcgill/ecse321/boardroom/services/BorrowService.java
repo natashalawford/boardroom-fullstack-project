@@ -10,6 +10,7 @@ import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class BorrowService {
 
     @Transactional
     public BorrowRequest createBorrowRequest(BorrowRequestDtoCreation borrowRequestToCreate) {
+        validateRequestTimes(borrowRequestToCreate.getRequestStartDate(), borrowRequestToCreate.getRequestEndDate());
+
         Person personToFind = personRepo.findById(borrowRequestToCreate.getPersonId()).orElseThrow(
                 () -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
         SpecificBoardGame specificBoardGameToFind = specificBoardGameRepo
@@ -88,6 +91,22 @@ public class BorrowService {
 
         // If found, delete
         borrowRequestRepo.deleteById(id);
+    }
+
+    private void validateRequestTimes(LocalDateTime startTime, LocalDateTime endTime) {
+                LocalDateTime now = LocalDateTime.now();
+
+                if (startTime.isBefore(now)) {
+                        throw new BoardroomException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "Start time cannot be in the past");
+                }
+
+                if (endTime.isBefore(startTime)) {
+                        throw new BoardroomException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "End time must be after start time");
+                }
     }
 
 }

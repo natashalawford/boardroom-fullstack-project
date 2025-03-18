@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,7 +67,7 @@ public class BorrowIntegrationTests {
     private BorrowRequest borrowRequest;
 
     private final RequestStatus VALID_STATUS = RequestStatus.PENDING;
-    private final LocalDateTime VALID_REQUEST_START = LocalDateTime.now();
+    private final LocalDateTime VALID_REQUEST_START = LocalDateTime.now().plusDays(1);
     private final LocalDateTime VALID_REQUEST_END = LocalDateTime.now().plusDays(7);
     private int validPersonId;
     private int validSpecificGameId;
@@ -142,8 +143,55 @@ public class BorrowIntegrationTests {
 
     }
 
+        @Test
+        @Order(1)
+        public void testCreateBorrowRequestWithPastStartTime() {
+        // Arrange
+        BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
+                RequestStatus.PENDING,
+                LocalDateTime.now().minusDays(1),  // Past start time
+                LocalDateTime.now().plusDays(5),
+                validPersonId,
+                validSpecificGameId
+        );
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.postForEntity("/borrowRequests", body, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("Start time cannot be in the past"),
+                response.getBody().getErrors());
+        }
+
+        @Test
+        @Order(2)
+        public void testCreateBorrowRequestWithEndTimeBeforeStartTime() {
+        // Arrange
+        BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
+                RequestStatus.PENDING,
+                LocalDateTime.now().plusDays(5),  // End time (incorrectly placed as start time)
+                LocalDateTime.now().plusDays(1),  // Start time after end time
+                validPersonId,
+                validSpecificGameId
+        );
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.postForEntity("/borrowRequests", body, ErrorDto.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertIterableEquals(
+                List.of("End time must be after start time"),
+                response.getBody().getErrors());
+    }
+
+
     @Test
-    @Order(1)
+    @Order(3)
     public void testCreateBorrowRequest() {
         // Arrange
         BorrowRequestDtoCreation borrowRequestCreationDto = new BorrowRequestDtoCreation(
@@ -174,7 +222,7 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     public void testUpdateBorrowRequest() {
         // Arrange
         RequestStatus newStatus = RequestStatus.ACCEPTED;
@@ -194,7 +242,7 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(5)
     public void testUpdateInvalidBorrowRequestStatus() {
         // Arrange
         int invalidId = 999999;
@@ -225,13 +273,13 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     public void testCreateBorrowRequestInvalidPerson() {
         // Arrange
         int invalidPersonId = 999999;
         BorrowRequestDtoCreation borrowRequestDtoCreation = new BorrowRequestDtoCreation(
                 RequestStatus.PENDING,
-                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5),
                 invalidPersonId,
                 validSpecificGameId);
@@ -256,13 +304,13 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void testCreateBorrowRequestInvalidSpecificBoardGame() {
         // Arrange
         int invalidBoardGameId = 888888;
         BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
                 RequestStatus.PENDING,
-                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5),
                 validPersonId,
                 invalidBoardGameId);
@@ -288,7 +336,7 @@ public class BorrowIntegrationTests {
 
     // get borrow request by id
     @Test
-    @Order(6)
+    @Order(8)
     public void testGetBorrowRequestById_Valid() {
         // Arrange
         String url = "/borrowRequests/" + this.validBorrowRequestId;
@@ -306,7 +354,7 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     public void testGetBorrowRequestById_Invalid() {
         // Arrange
         int nonExistentId = 999999;
@@ -325,7 +373,7 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     public void testViewLendingHistoryByBoardGame() {
         // Arrange
         String url = "/borrowRequests/history/" + validSpecificGameId;
@@ -357,7 +405,7 @@ public class BorrowIntegrationTests {
 
     // delete borrow request tests
     @Test
-    @Order(9)
+    @Order(11)
     public void testDeleteValidBorrowRequest() {
         // Arrange: Construct the URL for this BorrowRequest
         String url = "/borrowRequests/" + this.validBorrowRequestId;
@@ -372,7 +420,7 @@ public class BorrowIntegrationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     public void testDeleteInvalidBorrowRequest() {
         // Arrange
         int nonExistentId = 999999;

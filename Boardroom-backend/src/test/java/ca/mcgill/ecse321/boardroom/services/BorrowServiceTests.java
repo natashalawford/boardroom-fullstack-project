@@ -62,8 +62,8 @@ public class BorrowServiceTests {
         BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
         specificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_GAME_ID, "Good quality, no rips", GameStatus.AVAILABLE, boardGame, person);
     
-        borrowRequest1 = new BorrowRequest(1, RequestStatus.RETURNED, LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), person, specificBoardGame);
-        borrowRequest2 = new BorrowRequest(2, RequestStatus.ACCEPTED, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(2), person, specificBoardGame);
+        borrowRequest1 = new BorrowRequest(1, RequestStatus.RETURNED, LocalDateTime.now().plusDays(1), LocalDateTime.now().minusDays(5), person, specificBoardGame);
+        borrowRequest2 = new BorrowRequest(2, RequestStatus.ACCEPTED, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), person, specificBoardGame);
     }
 
     @Test
@@ -95,6 +95,53 @@ public class BorrowServiceTests {
         verify(specificBoardGameRepo, times(1)).findById(VALID_SPECIFIC_GAME_ID);
         verify(borrowRequestRepo, times(1)).save(any(BorrowRequest.class));
     }
+
+    @Test
+    public void testCreateBorrowRequestWithInvalidStartTime() {
+        // Arrange: Start time in the past
+        BorrowRequestDtoCreation invalidBorrowRequestDto = new BorrowRequestDtoCreation(
+                RequestStatus.PENDING,
+                LocalDateTime.now().minusDays(1),  // Past start time
+                LocalDateTime.now().plusDays(5),
+                VALID_PERSON_ID,
+                VALID_SPECIFIC_GAME_ID
+        );
+
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> borrowService.createBorrowRequest(invalidBorrowRequestDto)
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Start time cannot be in the past", exception.getMessage());
+
+        // Verify that save was never called
+        verify(borrowRequestRepo, never()).save(any(BorrowRequest.class));
+    }
+
+    @Test
+    public void testCreateBorrowRequestWithEndTimeBeforeStartTime() {
+        // Arrange: End time before start time
+        BorrowRequestDtoCreation invalidBorrowRequestDto = new BorrowRequestDtoCreation(
+                RequestStatus.PENDING,
+                LocalDateTime.now().plusDays(5),  // End time
+                LocalDateTime.now().plusDays(1),  // Start time (after end time)
+                VALID_PERSON_ID,
+                VALID_SPECIFIC_GAME_ID
+        );
+
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> borrowService.createBorrowRequest(invalidBorrowRequestDto)
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("End time must be after start time", exception.getMessage());
+
+        // Verify that save was never called
+        verify(borrowRequestRepo, never()).save(any(BorrowRequest.class));
+    }
+
 
     @Test
     public void testCreateBorrowRequestInvalidPerson() {
@@ -331,5 +378,5 @@ public class BorrowServiceTests {
         verify(borrowRequestRepo, times(0)).deleteById(anyInt());
     }
 
-
+    
 }       

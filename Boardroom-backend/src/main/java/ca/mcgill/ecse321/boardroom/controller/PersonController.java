@@ -25,7 +25,7 @@ public class PersonController {
     private PersonService personService;
 
     
-    @PostMapping("people")
+    @PostMapping("/people")
     @ResponseStatus(HttpStatus.CREATED)
     public PersonResponseDto createPerson(@Valid @RequestBody PersonCreationDto personToCreate) {
         return new PersonResponseDto(personService.createPerson(personToCreate));
@@ -34,25 +34,25 @@ public class PersonController {
     /**
      * Update person type
      */
-    @PutMapping("people/{id}/role")
+    @PutMapping("/people/{id}/role")
     public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@Valid @RequestBody PersonRequestDto partialUpdatedPerson) {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
 
-    @GetMapping("people/{id}")
+    @GetMapping("/people/{id}")
     public PersonResponseDto getPerson(@PathVariable("id") int id) {
         return new PersonResponseDto(personService.findPersonById(id));
     }
 
     // delete person by id
-    @DeleteMapping("people/{id}")
+    @DeleteMapping("/people/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePersonById(@PathVariable("id") int id) {
         personService.deletePersonById(id);
     }
 
     //login endpoint
-    @PostMapping("people/login")
+    @PostMapping("/people/login")
     @ResponseStatus(HttpStatus.OK)
     public PersonResponseDto loginPerson(@RequestBody PersonLoginDto loginDto) {
         // Directly use the incoming loginDto

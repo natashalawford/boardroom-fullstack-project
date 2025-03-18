@@ -169,8 +169,8 @@ public class PersonServiceTests {
             () -> personService.deletePerson(invalidId)
         );
 
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
-        assertEquals("No person has id 99", ex.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
+        assertEquals("This person does not exist, it cannot be deleted", ex.getMessage());
 
         verify(personRepo, times(1)).findPersonById(invalidId);
         verify(personRepo, times(0)).delete(any(Person.class)); // Should never delete
@@ -204,7 +204,7 @@ public class PersonServiceTests {
         BoardroomException e = assertThrows(BoardroomException.class, () -> personService.login(loginDto));
 
         assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-        assertEquals("Invalid email or password.", e.getMessage());
+        assertEquals("Invalid email or password", e.getMessage());
 
         verify(personRepo, times(1)).findByEmail("null@gmail.com");
     }
@@ -221,23 +221,8 @@ public class PersonServiceTests {
         BoardroomException e = assertThrows(BoardroomException.class, () -> personService.login(loginDto));
 
         assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-        assertEquals("Invalid email or password.", e.getMessage());
+        assertEquals("Invalid email or password", e.getMessage());
 
         verify(personRepo, times(1)).findByEmail(VALID_EMAIL);
     }
-
-    // THIS WILL BE IN INTEGRATION TESTS - JAKARTA VALIDATION
-    // @Test
-    // public void testLoginFailEmailOrPassMissing() {
-    //     // Arrange & Act & Assert
-    //     BoardroomException e1 = assertThrows(BoardroomException.class, () -> personService.login(new PersonLoginDto(null, VALID_PASSWORD)));
-    //     assertEquals(HttpStatus.BAD_REQUEST, e1.getStatus());
-    //     assertEquals("Email and password are required.", e1.getMessage());
-
-    //     BoardroomException e2 = assertThrows(BoardroomException.class, () -> personService.login(new PersonLoginDto(VALID_EMAIL, null)));
-    //     assertEquals(HttpStatus.BAD_REQUEST, e2.getStatus());
-    //     assertEquals("Email and password are required.", e2.getMessage());
-
-    //     verify(personRepo, times(0)).findByEmail(any());
-    // }
 }

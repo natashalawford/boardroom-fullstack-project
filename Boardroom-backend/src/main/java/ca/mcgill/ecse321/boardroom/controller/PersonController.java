@@ -33,26 +33,18 @@ public class PersonController {
         return new PersonResponseDto(personService.createPerson(personToCreate));
     }
 
-    @PutMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public PersonResponseDto toggleAccountType(@PathVariable("id") int id, @Valid @RequestBody PersonRequestDto partialUpdatedPerson) {
-        return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
-    }
-
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public PersonResponseDto getPerson(@PathVariable("id") int id) {
         return new PersonResponseDto(personService.findPersonById(id));
     }
 
-    // delete person by id
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePersonById(@PathVariable("id") int id) {
-        personService.deletePerson(id);
-    }
+    @PutMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public PersonResponseDto toggleAccountType(@PathVariable("id") int id, @Valid @RequestBody PersonRequestDto partialUpdatedPerson) {
+        return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
+    } 
 
-    //login endpoint
     @PostMapping("login")
     @ResponseStatus(HttpStatus.OK)
     public PersonResponseDto loginPerson(@Valid @RequestBody PersonLoginDto loginDto) {
@@ -60,5 +52,9 @@ public class PersonController {
         return personService.login(loginDto);
     }
 
-
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePersonById(@PathVariable("id") int id) {
+        personService.deletePerson(id);
+    }
 }

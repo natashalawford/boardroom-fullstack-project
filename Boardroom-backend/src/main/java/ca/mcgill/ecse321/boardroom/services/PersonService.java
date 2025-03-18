@@ -63,10 +63,26 @@ public class PersonService {
         return personRepo.save(updatedPerson);
     } 
 
+    public PersonResponseDto login(PersonLoginDto loginDto) { 
+        // Find person with email
+        Person existingPerson = personRepo.findByEmail(loginDto.getEmail());
+
+        if (null == existingPerson) {
+            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
+
+        // Verify password
+        if (!existingPerson.getPassword().equals(loginDto.getPassword())) {
+            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
+
+        return new PersonResponseDto(existingPerson);
+    }
+
     @Transactional
     public void deletePerson(int id) {
         //Get person to delete
-        Person personToDelete = findPersonById(id);
+        Person personToDelete = personRepo.findPersonById(id);
 
         //make sure person exists
         if (null == personToDelete) {
@@ -75,21 +91,5 @@ public class PersonService {
 
         //Delete person
         personRepo.delete(personToDelete);
-    }
-
-    public PersonResponseDto login(PersonLoginDto loginDto) { 
-        // Find person with email
-        Person existingPerson = personRepo.findByEmail(loginDto.getEmail());
-
-        if (null == existingPerson) {
-            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
-        }
-
-        // Verify password
-        if (!existingPerson.getPassword().equals(loginDto.getPassword())) {
-            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
-        }
-
-        return new PersonResponseDto(existingPerson);
-    }
+    } 
 }

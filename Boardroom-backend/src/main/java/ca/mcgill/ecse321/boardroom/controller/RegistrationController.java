@@ -29,6 +29,7 @@ public class RegistrationController {
 
     /**
      * Unregister a person from an event
+     * 
      * @param eventRegistrationDto
      * @return void
      * 
@@ -49,10 +50,8 @@ public class RegistrationController {
     @GetMapping("/{personId}/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventRegistrationResponseDto getRegistration(@PathVariable int personId, @PathVariable int eventId) {
-        Registration registration =  registrationService.getRegistration(personId, eventId);
+        Registration registration = registrationService.getRegistration(personId, eventId);
         return new EventRegistrationResponseDto(registration);
     }
 
-
-    
 }

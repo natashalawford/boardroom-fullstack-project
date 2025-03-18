@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.boardroom.services;
 
-import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
+import ca.mcgill.ecse321.boardroom.dtos.creation.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.*;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;

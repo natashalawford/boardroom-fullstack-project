@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.boardroom.services;
 
-import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Event;

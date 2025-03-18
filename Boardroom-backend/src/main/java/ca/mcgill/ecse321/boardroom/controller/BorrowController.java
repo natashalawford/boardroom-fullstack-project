@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
+import ca.mcgill.ecse321.boardroom.dtos.creation.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;

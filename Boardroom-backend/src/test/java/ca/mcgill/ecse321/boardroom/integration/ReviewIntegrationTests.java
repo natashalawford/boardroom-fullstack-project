@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
-import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.ReviewResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;

@@ -1,12 +1,12 @@
 package ca.mcgill.ecse321.boardroom.services;
 
+import ca.mcgill.ecse321.boardroom.dtos.creation.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
-import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.model.Event;
 
 import static org.mockito.ArgumentMatchers.any;

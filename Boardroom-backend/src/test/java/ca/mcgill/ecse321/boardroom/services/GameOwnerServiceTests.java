@@ -17,8 +17,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
@@ -65,35 +65,7 @@ public class GameOwnerServiceTests {
     public void objectInstantiation() {
         VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
         VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER); 
-    }
-    
-    // @Test
-    // public void testFindValidSpecificBoardGame() {
-    //     //Arrange
-    //     // BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
-
-    //     // Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
-
-    //     when(specificBoardGameRepo.findSpecificBoardGameById(1)).thenReturn(new SpecificBoardGame(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_BOARDGAME, VALID_GAME_OWNER));
-
-    //     //Act
-    //     SpecificBoardGame specificBoardGame = boardGameService.getSpecificBoardGameById(1);
-
-    //     //Assert
-    //     assertNotNull(specificBoardGame);
-    //     assertEquals(VALID_SPECIFIC_PICTURE, specificBoardGame.getPicture());
-    //     assertEquals(VALID_SPECIFIC_DESCRIPTION, specificBoardGame.getDescription());
-    //     assertEquals(VALID_STATUS, specificBoardGame.getStatus());
-    //     assertEquals(VALID_BOARDGAME, specificBoardGame.getBoardGame());
-    //     assertEquals(VALID_GAME_OWNER, specificBoardGame.getOwner());
-
-    //     verify(specificBoardGameRepo, times(1)).findSpecificBoardGameById(anyInt());
-    // }
-
-    // @Test
-    // public void testFindInvalidSpecificBoardGame() {
-
-    // }
+    } 
     
     
     @Test

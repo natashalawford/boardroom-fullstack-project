@@ -96,9 +96,26 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testCreateReviewWithInvalidStars() {
+    public void testCreateReviewWithInvalidStars_0() {
         // Arrange: Rating below 1
         ReviewCreationDto invalidReviewDto = new ReviewCreationDto(0, VALID_COMMENT, authorId, boardGameName);
+
+        // Act & Assert
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> reviewService.createReview(invalidReviewDto)
+        );
+
+        assertEquals("Rating must be between 1 and 5 stars.", exception.getMessage());
+
+        // Verify that save was never called
+        verify(reviewRepository, never()).save(any(Review.class));
+    }
+
+    @Test
+    public void testCreateReviewWithInvalidStars_6() {
+        // Arrange: Rating below 1
+        ReviewCreationDto invalidReviewDto = new ReviewCreationDto(6, VALID_COMMENT, authorId, boardGameName);
 
         // Act & Assert
         BoardroomException exception = assertThrows(

@@ -28,19 +28,21 @@ public class PersonService {
         return person;
     }
 
-    //THIS IS UPDATED TO HANDLE TRYING TO MAKE AN ACCOUNT WITH AN EMAIL THAT ALREADY EXISTS
-    @Transactional
+   @Transactional
     public Person createPerson(PersonCreationDto personToCreate) {
+        //Make sure the email is not in use  
+        Person person = personRepo.findByEmail(personToCreate.getEmail());
+
+        if (null != person) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, String.format("This email is already in use"));
+        }
+
         Person newPerson = new Person(personToCreate.getName(),
                 personToCreate.getEmail(),
                 personToCreate.getPassword(),
                 personToCreate.isOwner());
 
-        try {
-            return personRepo.save(newPerson);
-        } catch (RuntimeException e) {
-            throw new BoardroomException(HttpStatus.BAD_REQUEST, String.format("An error occured creating the account: %s", e.getMessage()));
-        }
+        return personRepo.save(newPerson);
     }
 
     @Transactional

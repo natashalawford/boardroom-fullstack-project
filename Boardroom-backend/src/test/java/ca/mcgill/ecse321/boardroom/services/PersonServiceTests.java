@@ -93,12 +93,15 @@ public class PersonServiceTests {
         //Assert
         PersonCreationDto personToCreate = new PersonCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
 
-        when(personRepo.save(any(Person.class))).thenThrow(RuntimeException.class);
+        when(personRepo.findByEmail(anyString())).thenReturn(new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER));
 
         //Act + Assert
         BoardroomException e = assertThrows(BoardroomException.class, () -> personService.createPerson(personToCreate));
 
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+
+        //verify that save isn't being called
+        verify(personRepo, times(0)).save(any(Person.class));
     }
 
 

@@ -229,6 +229,25 @@ public class BorrowServiceTests {
         verify(specificBoardGameRepo, times(1)).findById(VALID_SPECIFIC_GAME_ID);
         verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
+
+    @Test
+    public void testViewBorrowRequestsByBoardgameInvalid() {
+        // Arrange
+        int invalidSpecificBoardGameId = 999;
+        when(specificBoardGameRepo.findById(invalidSpecificBoardGameId)).thenReturn(Optional.empty());
+
+        // Act & Assert:
+        BoardroomException exception = assertThrows(BoardroomException.class, () ->
+            borrowService.viewBorrowRequestsByBoardgame(invalidSpecificBoardGameId)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals(String.format("A specific board game with this id (%d) does not exist", invalidSpecificBoardGameId),
+                     exception.getMessage());
+
+        verify(specificBoardGameRepo, times(1)).findById(invalidSpecificBoardGameId);
+        verify(borrowRequestRepo, never()).findBySpecificBoardGameAndStatus(any(SpecificBoardGame.class), eq(RequestStatus.RETURNED));
+    }
     
     @Test
     public void testViewPendingBorrowRequests() {

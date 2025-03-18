@@ -61,7 +61,7 @@ public class BorrowServiceTests {
         Person person = new Person(VALID_PERSON_ID, "John Doe", "john.doe@gmail.com", "password", false);
         BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
         specificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_GAME_ID, "Good quality, no rips", GameStatus.AVAILABLE, boardGame, person);
-
+    
         borrowRequest1 = new BorrowRequest(1, RequestStatus.RETURNED, LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), person, specificBoardGame);
         borrowRequest2 = new BorrowRequest(2, RequestStatus.ACCEPTED, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(2), person, specificBoardGame);
     }
@@ -172,21 +172,22 @@ public class BorrowServiceTests {
     @Test
     public void testViewBorrowRequestsByBoardgame() {
         // Arrange
+        when(specificBoardGameRepo.findById(VALID_SPECIFIC_GAME_ID)).thenReturn(Optional.of(specificBoardGame));
         when(borrowRequestRepo.findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED)))
                 .thenReturn(List.of(borrowRequest1));
-
+    
         // Act
-        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGame);
-
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(VALID_SPECIFIC_GAME_ID);
+    
         // Assert
         assertNotNull(borrowRequests);
         assertEquals(1, borrowRequests.size());
-        assertTrue(borrowRequests.contains(borrowRequest1));
-        assertFalse(borrowRequests.contains(borrowRequest2));
-
-        verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED));
+        assertEquals(RequestStatus.RETURNED, borrowRequests.get(0).getStatus());
+    
+        verify(specificBoardGameRepo, times(1)).findById(VALID_SPECIFIC_GAME_ID);
+        verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
-
+    
     @Test
     public void testViewPendingBorrowRequests() {
         // Arrange
@@ -205,4 +206,130 @@ public class BorrowServiceTests {
 
         verify(borrowRequestRepo, times(1)).findByStatus(RequestStatus.PENDING);
     }
+
+    //get borrow request by id 
+    @Test
+    public void testGetBorrowRequestById_Valid() {
+        // Arrange
+        int validId = 123;
+        BorrowRequest mockRequest = new BorrowRequest(
+            validId,
+            RequestStatus.PENDING,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(1),
+            null, // Person
+            null  // SpecificBoardGame
+        );
+        when(borrowRequestRepo.findById(validId)).thenReturn(Optional.of(mockRequest));
+
+        // Act
+        BorrowRequest result = borrowService.getBorrowRequestById(validId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(validId, result.getId());
+        verify(borrowRequestRepo, times(1)).findById(validId);
+    }
+
+    @Test
+    public void testGetBorrowRequestById_Invalid() {
+        // Arrange
+        int invalidId = 999;
+        when(borrowRequestRepo.findById(invalidId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        BoardroomException ex = assertThrows(
+            BoardroomException.class,
+            () -> borrowService.getBorrowRequestById(invalidId)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertTrue(ex.getMessage().contains("A borrow request with this id (999) does not exist"));
+        verify(borrowRequestRepo, times(1)).findById(invalidId);
+    }
+
+    //delete borrow request tests
+    @Test
+    public void testDeleteValidBorrowRequest() {
+        // Arrange
+        int validId = VALID_BORROW_REQUEST_ID;
+
+        // Create a Person for the game’s owner
+        Person fakeOwner = new Person(
+            999,                        
+            "Jane Owner",            
+            "owner@example.com",     
+            "testOwnerPwd",         
+            true                     
+        );
+
+        // Create a BoardGame
+        BoardGame fakeBoardGame = new BoardGame(
+            "Fake Game Title",         
+            "Sample board game desc",  
+            2,                          
+            4                           
+        );
+
+        // Create a SpecificBoardGame with the above owner and BG
+        SpecificBoardGame fakeSpecificBoardGame = new SpecificBoardGame(
+            123,                       
+            "Some condition/description",
+            456,                       
+            GameStatus.AVAILABLE,       
+            fakeBoardGame,            
+            fakeOwner                 
+        );
+
+        // Create a Person for the “borrower”
+        Person fakeBorrower = new Person(
+            111,                        
+            "Alice Borrower",
+            "borrower@example.com",
+            "testBorrowerPwd",
+            false                      
+        );
+
+        // Now create the BorrowRequest with the arguments
+        BorrowRequest mockBorrowRequest = new BorrowRequest(
+            validId,                 
+            VALID_STATUS,               
+            VALID_START_DATE,
+            VALID_END_DATE,
+            fakeBorrower,            
+            fakeSpecificBoardGame     
+        );
+
+        // Mock findById to return that BorrowRequest
+        when(borrowRequestRepo.findById(validId)).thenReturn(Optional.of(mockBorrowRequest));
+
+        // Act
+        borrowService.deleteBorrowRequestById(validId);
+
+        // Assert
+        verify(borrowRequestRepo, times(1)).findById(validId);
+        verify(borrowRequestRepo, times(1)).deleteById(validId);
+    }
+
+
+    @Test
+    public void testDeleteInvalidBorrowRequest() {
+        // Arrange
+        int invalidId = 999;
+        when(borrowRequestRepo.findById(invalidId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        BoardroomException ex = assertThrows(BoardroomException.class,
+            () -> borrowService.deleteBorrowRequestById(invalidId)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertEquals("A borrow request with this id (999) does not exist", ex.getMessage());
+
+        // Ensure delete is not called
+        verify(borrowRequestRepo, times(1)).findById(invalidId);
+        verify(borrowRequestRepo, times(0)).deleteById(anyInt());
+    }
+
+
 }       

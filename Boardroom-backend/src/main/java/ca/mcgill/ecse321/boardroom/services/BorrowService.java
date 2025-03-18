@@ -54,11 +54,40 @@ public class BorrowService {
         return borrowRequestRepo.save(borrowRequest);
     }
 
-    public List<BorrowRequest> viewBorrowRequestsByBoardgame(SpecificBoardGame specificBoardGame) {
+    public List<BorrowRequest> viewBorrowRequestsByBoardgame(int specificBoardGameId) {
+        SpecificBoardGame specificBoardGame = specificBoardGameRepo.findById(specificBoardGameId)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A specific board game with this id (%d) does not exist", specificBoardGameId)
+            ));
         return borrowRequestRepo.findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
 
     public List<BorrowRequest> viewPendingBorrowRequests() {
         return borrowRequestRepo.findByStatus(RequestStatus.PENDING);
     }
+
+    // get borrow request by id method
+    @Transactional
+    public BorrowRequest getBorrowRequestById(int id) {
+        return borrowRequestRepo.findById(id)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A borrow request with this id (%d) does not exist", id)
+            ));
+    }
+
+    //delete borrow requests method
+    @Transactional
+    public void deleteBorrowRequestById(int id) {
+        BorrowRequest borrowRequest = borrowRequestRepo.findById(id)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A borrow request with this id (%d) does not exist", id)
+            ));
+
+        // If found, delete
+        borrowRequestRepo.deleteById(id);
+    }
+
 }

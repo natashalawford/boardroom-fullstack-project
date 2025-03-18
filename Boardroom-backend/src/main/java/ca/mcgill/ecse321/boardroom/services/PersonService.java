@@ -80,12 +80,7 @@ public class PersonService {
     @Transactional
     public void deletePerson(int id) {
         //Get person to delete
-        Person personToDelete = personRepo.findPersonById(id);
-
-        //make sure person exists
-        if (null == personToDelete) {
-            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person does not exist, it cannot be deleted");
-        }
+        Person personToDelete = this.findPersonById(id); 
 
         //Delete person
         personRepo.delete(personToDelete);

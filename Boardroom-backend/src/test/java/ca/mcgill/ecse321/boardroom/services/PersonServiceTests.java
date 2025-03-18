@@ -104,6 +104,7 @@ public class PersonServiceTests {
         verify(personRepo, times(0)).save(any(Person.class));
     }
 
+    // put updated fields so that you're actually testing it
 
     @Test
     public void testUpdateValidPerson() {
@@ -169,8 +170,8 @@ public class PersonServiceTests {
             () -> personService.deletePerson(invalidId)
         );
 
-        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
-        assertEquals("This person does not exist, it cannot be deleted", ex.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertEquals("No person has id 99", ex.getMessage());
 
         verify(personRepo, times(1)).findPersonById(invalidId);
         verify(personRepo, times(0)).delete(any(Person.class)); // Should never delete

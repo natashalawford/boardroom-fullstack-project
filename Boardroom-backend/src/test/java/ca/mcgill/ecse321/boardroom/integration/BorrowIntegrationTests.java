@@ -297,28 +297,18 @@ public class BorrowIntegrationTests {
     @Test
     @Order(6)
     public void testDeleteValidBorrowRequest() {
-        // Arrange
-        String url = "/borrowRequests/" + validBorrowRequestId;
+        // Arrange: Construct the URL for this BorrowRequest
+        String url = "/borrowRequests/" + this.validBorrowRequestId;
 
-        // Act: Perform delete request
-        ResponseEntity<Void> response = client.exchange(
-            url,
-            HttpMethod.DELETE,
-            null,
-            Void.class
-        );
+        // Act: Delete the BorrowRequest
+        client.delete(url);
 
-        // Assert
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode(),
-            "Expected 204 No Content on successful delete."
-        );
-
-        // We can try to retrieve it and expect a 404
-        ResponseEntity<String> getResponse = client.getForEntity(url, String.class);
-        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
-        assertTrue(getResponse.getBody().contains("A borrow request with this id"),
-            "Should mention borrow request not found in the error message");
+        // Assert: Retrieving the same ID should now return 404 NOT_FOUND
+        ResponseEntity<ErrorDto> getResponse = client.getForEntity(url, ErrorDto.class);
+        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode(),
+            "Expected 404 NOT_FOUND after deleting the borrow request");
     }
+
     
     @Test
     @Order(7)

@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,8 @@ import ca.mcgill.ecse321.boardroom.repositories.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
-import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoSpecific;
+import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
+import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -72,7 +73,7 @@ public class BorrowIntegrationTests {
     private int validBorrowRequestId;
 
 
-    @BeforeEach
+    @BeforeAll
     public void setup() {
         person = new Person("John Doe", "john.doe@gmail.com", "password", false);
         person = personRepository.save(person);
@@ -91,7 +92,7 @@ public class BorrowIntegrationTests {
         validBorrowRequestId = borrowRequest.getId();
     }
 
-    @AfterEach
+    @AfterAll
     public void cleanup() {
         borrowRequestRepository.deleteAll();
         specificBoardGameRepository.deleteAll();
@@ -101,80 +102,26 @@ public class BorrowIntegrationTests {
 
     @Test
     @Order(0)
-    public void testCreateBorrowRequest() {
-        // Arrange
-        BorrowRequestDtoCreation borrowRequestCreationDto = new BorrowRequestDtoCreation(
-                VALID_STATUS,
-                VALID_REQUEST_START,
-                VALID_REQUEST_END,
-                person.getId(),
-                specificBoardGame.getId()
-        );
-
-        // Act
-        ResponseEntity<BorrowRequestDtoSpecific> response = client.postForEntity(
-                "/borrowRequests",
-                borrowRequestCreationDto,
-                BorrowRequestDtoSpecific.class
-        );
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        BorrowRequestDtoSpecific createdBorrowRequest = response.getBody();
-        assertNotNull(createdBorrowRequest);
-        assertNotNull(createdBorrowRequest.getId());
-        assertTrue(createdBorrowRequest.getId() > 0, "Response should have a positive ID.");
-        assertEquals(VALID_STATUS, createdBorrowRequest.getStatus());
-        assertEquals(VALID_REQUEST_START, createdBorrowRequest.getRequestStartDate());
-        assertEquals(VALID_REQUEST_END, createdBorrowRequest.getRequestEndDate());
-        assertEquals(validPersonId, createdBorrowRequest.getPersonId());
-        assertEquals(validSpecificGameId, createdBorrowRequest.getSpecificBoardGameId());
-    }
-
-    @Test
-    @Order(1)
-    public void testUpdateBorrowRequest() {
-        // Arrange
-        RequestStatus newStatus = RequestStatus.ACCEPTED;
-        String url = "/borrowRequests/" + validBorrowRequestId;
-
-        // Act
-        ResponseEntity<BorrowRequestDtoSpecific> response = client.exchange(
-                url,
-                HttpMethod.PUT,
-                new HttpEntity<>(newStatus),
-                BorrowRequestDtoSpecific.class
-        );
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(newStatus, response.getBody().getStatus());
-    }
-
-    @Test
-    @Order(2)
     public void testViewPendingBorrowRequests() {
         // Arrange
         String url = "/borrowRequests";
 
         // Act
-        ResponseEntity<List<BorrowRequestDtoSpecific>> response = client.exchange(
+        ResponseEntity<List<BorrowRequestResponseDto>> response = client.exchange(
             url,
             HttpMethod.GET,
             null, 
-            new ParameterizedTypeReference<List<BorrowRequestDtoSpecific>>() {}
+            new ParameterizedTypeReference<List<BorrowRequestResponseDto>>() {}
         );
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(), "HTTP status should be 200 OK");
-        List<BorrowRequestDtoSpecific> pendingRequests = response.getBody();
+        List<BorrowRequestResponseDto> pendingRequests = response.getBody();
         assertNotNull(pendingRequests, "The list of pending requests must not be null");
         
         assertEquals(1, pendingRequests.size(), "There should be exactly 1 pending request in the repository");
 
-        for (BorrowRequestDtoSpecific dto : pendingRequests) {
+        for (BorrowRequestResponseDto dto : pendingRequests) {
             assertEquals(validBorrowRequestId, dto.getId(), "BorrowRequest ID should match");
             assertEquals(VALID_STATUS, dto.getStatus(), "BorrowRequest should have the PENDING status");
             
@@ -194,70 +141,122 @@ public class BorrowIntegrationTests {
     } 
 
     @Test
-    @Order(3)
-    public void testUpdateInvalidBorrowRequestStatus() {
+    @Order(1)
+    public void testCreateBorrowRequest() {
         // Arrange
-        int invalidId = 999999; 
-        RequestStatus newStatus = RequestStatus.ACCEPTED;
-        String url = "/borrowRequests/" + invalidId;
-
-        // Wrap the new status in HttpEntity
-        HttpEntity<RequestStatus> requestEntity = new HttpEntity<>(newStatus);
+        BorrowRequestDtoCreation borrowRequestCreationDto = new BorrowRequestDtoCreation(
+                VALID_STATUS,
+                VALID_REQUEST_START,
+                VALID_REQUEST_END,
+                person.getId(),
+                specificBoardGame.getId()
+        );
 
         // Act
-        // Capture the response as a string to parse the error message
-        ResponseEntity<String> response = client.exchange(
-                url,
-                HttpMethod.PUT,
-                requestEntity,
-                String.class
+        ResponseEntity<BorrowRequestResponseDto> response = client.postForEntity(
+                "/borrowRequests",
+                borrowRequestCreationDto,
+                BorrowRequestResponseDto.class
         );
 
         // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), 
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        BorrowRequestResponseDto createdBorrowRequest = response.getBody();
+        assertNotNull(createdBorrowRequest);
+        assertNotNull(createdBorrowRequest.getId());
+        assertTrue(createdBorrowRequest.getId() > 0, "Response should have a positive ID.");
+        assertEquals(VALID_STATUS, createdBorrowRequest.getStatus());
+        assertEquals(VALID_REQUEST_START, createdBorrowRequest.getRequestStartDate());
+        assertEquals(VALID_REQUEST_END, createdBorrowRequest.getRequestEndDate());
+        assertEquals(validPersonId, createdBorrowRequest.getPersonId());
+        assertEquals(validSpecificGameId, createdBorrowRequest.getSpecificBoardGameId());
+    }
+
+    @Test
+    @Order(2)
+    public void testUpdateBorrowRequest() {
+        // Arrange
+        RequestStatus newStatus = RequestStatus.ACCEPTED;
+        String url = "/borrowRequests/" + validBorrowRequestId;
+
+        // Act
+        ResponseEntity<BorrowRequestResponseDto> response = client.exchange(
+                url,
+                HttpMethod.PUT,
+                new HttpEntity<>(newStatus),
+                BorrowRequestResponseDto.class
+        );
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(newStatus, response.getBody().getStatus());
+    }
+
+    @Test
+    @Order(3)
+    public void testUpdateInvalidBorrowRequestStatus() {
+        // Arrange
+        int invalidId = 999999;
+        RequestStatus newStatus = RequestStatus.ACCEPTED;
+        String url = "/borrowRequests/" + invalidId;
+
+        HttpEntity<RequestStatus> requestEntity = new HttpEntity<>(newStatus);
+
+        // Act
+        ResponseEntity<ErrorDto> response = client.exchange(
+                url,
+                HttpMethod.PUT,
+                requestEntity,
+                ErrorDto.class
+        );
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(),
                     "Should return 404 if the borrow request ID does not exist.");
 
-        String responseBody = response.getBody();
-        assertNotNull(responseBody, "Response body must not be null for an error.");
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto, "Response body (ErrorDto) must not be null for an error.");
+        
+        String actualErrorMessage = errorDto.getErrors().get(0).replace("[", "").replace("]", "");
 
-        assertTrue(
-            responseBody.contains("A borrow request with this id does not exist"),
-            "Expected error message to contain 'A borrow request with this id does not exist'"
-        );
+        assertEquals("A borrow request with this id does not exist", actualErrorMessage,
+                    "Expected error message for non-existent borrow request ID.");
     }
+
 
     @Test
     @Order(4)
     public void testCreateBorrowRequestInvalidPerson() {
         // Arrange
-        int invalidPersonId = 999999; // ID that doesn't exist
-        BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
+        int invalidPersonId = 999999;
+        BorrowRequestDtoCreation borrowRequestDtoCreation = new BorrowRequestDtoCreation(
             RequestStatus.PENDING,
             LocalDateTime.now(),
             LocalDateTime.now().plusDays(5),
-            invalidPersonId,              // invalid person ID
-            validSpecificGameId           // A valid board game ID
+            invalidPersonId,
+            validSpecificGameId
         );
 
         // Act
-        // We capture the response as String to check the error message
-        ResponseEntity<String> response = client.postForEntity(
+        ResponseEntity<ErrorDto> response = client.postForEntity(
             "/borrowRequests",
-            body,
-            String.class
+            borrowRequestDtoCreation,
+            ErrorDto.class
         );
 
         // Assert
-        // We expect a 404 Not Found (BoardroomException for missing Person)
+        assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), 
             "Should return 404 when the person ID does not exist.");
 
-        String responseBody = response.getBody();
-        assertNotNull(responseBody, "Error response body should not be null.");
-        System.out.println("Error response body: " + responseBody);
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto, "Error response body (ErrorDto) should not be null.");
 
-        // Check the message:
-        assertTrue(responseBody.contains("A person with this id does not exist"),
+        String actualErrorMessage = errorDto.getErrors().get(0).replace("[", "").replace("]", "");
+        assertEquals("A person with this id does not exist", actualErrorMessage,
             "Expected error message about nonexistent person ID");
     }
 
@@ -265,35 +264,33 @@ public class BorrowIntegrationTests {
     @Order(5)
     public void testCreateBorrowRequestInvalidSpecificBoardGame() {
         // Arrange
-        int invalidBoardGameId = 888888; // ID that doesn't exist
+        int invalidBoardGameId = 888888;
         BorrowRequestDtoCreation body = new BorrowRequestDtoCreation(
             RequestStatus.PENDING,
             LocalDateTime.now(),
             LocalDateTime.now().plusDays(5),
-            validPersonId,               // A valid person ID
-            invalidBoardGameId           // invalid board game ID
+            validPersonId,
+            invalidBoardGameId
         );
 
         // Act
-        ResponseEntity<String> response = client.postForEntity(
+        ResponseEntity<ErrorDto> response = client.postForEntity(
             "/borrowRequests",
             body,
-            String.class
+            ErrorDto.class
         );
 
         // Assert
-        // Expect a 404 Not Found (BoardroomException for missing SpecificBoardGame)
+        assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(),
             "Should return 404 when the specific board game ID does not exist.");
 
-        String responseBody = response.getBody();
-        assertNotNull(responseBody, "Error response body should not be null.");
-        System.out.println("Error response body: " + responseBody);
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto, "Error response body (ErrorDto) should not be null.");
 
-        // Check the message:
-        assertTrue(responseBody.contains("A specific board game with this id does not exist"),
+        String actualErrorMessage = errorDto.getErrors().get(0).replace("[", "").replace("]", "");
+        assertEquals("A specific board game with this id does not exist", actualErrorMessage,
             "Expected error message about nonexistent specific board game ID");
     }
-
     
 }

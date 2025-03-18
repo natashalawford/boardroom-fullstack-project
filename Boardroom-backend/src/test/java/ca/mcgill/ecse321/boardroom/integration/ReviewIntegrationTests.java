@@ -158,7 +158,7 @@ public class ReviewIntegrationTests {
         // Assert
         assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
         assertNotNull(reviewResponseBody.getBody());
-        //assertTrue(reviewResponseBody.getBody().contains(VALID_REVIEW));
+        assertEquals(reviewResponseBody.getBody().size(), 1);
 
         ReviewResponseDto reviewResponse = reviewResponseBody.getBody().get(0);
 

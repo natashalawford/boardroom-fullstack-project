@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
+import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
+import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.services.BorrowService;
 import jakarta.validation.Valid;
@@ -67,4 +69,14 @@ public class BorrowController {
     }
 
 
+    @GetMapping("/history/{boardGameId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BorrowRequestResponseDto> viewLendingHistoryByBoardGame(@PathVariable int boardGameId) {
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(boardGameId);
+        List<BorrowRequestResponseDto> borrowRequestDtos = new ArrayList<>();
+        for (BorrowRequest borrowRequest : borrowRequests) {
+            borrowRequestDtos.add(new BorrowRequestResponseDto(borrowRequest));
+        }
+        return borrowRequestDtos;
+    }
 }

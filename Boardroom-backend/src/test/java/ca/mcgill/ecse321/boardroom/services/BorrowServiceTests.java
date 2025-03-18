@@ -61,7 +61,7 @@ public class BorrowServiceTests {
         Person person = new Person(VALID_PERSON_ID, "John Doe", "john.doe@gmail.com", "password", false);
         BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
         specificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_GAME_ID, "Good quality, no rips", GameStatus.AVAILABLE, boardGame, person);
-
+    
         borrowRequest1 = new BorrowRequest(1, RequestStatus.RETURNED, LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), person, specificBoardGame);
         borrowRequest2 = new BorrowRequest(2, RequestStatus.ACCEPTED, LocalDateTime.now().minusDays(3), LocalDateTime.now().plusDays(2), person, specificBoardGame);
     }
@@ -172,21 +172,22 @@ public class BorrowServiceTests {
     @Test
     public void testViewBorrowRequestsByBoardgame() {
         // Arrange
+        when(specificBoardGameRepo.findById(VALID_SPECIFIC_GAME_ID)).thenReturn(Optional.of(specificBoardGame));
         when(borrowRequestRepo.findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED)))
                 .thenReturn(List.of(borrowRequest1));
-
+    
         // Act
-        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGame);
-
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(VALID_SPECIFIC_GAME_ID);
+    
         // Assert
         assertNotNull(borrowRequests);
         assertEquals(1, borrowRequests.size());
-        assertTrue(borrowRequests.contains(borrowRequest1));
-        assertFalse(borrowRequests.contains(borrowRequest2));
-
-        verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(eq(specificBoardGame), eq(RequestStatus.RETURNED));
+        assertEquals(RequestStatus.RETURNED, borrowRequests.get(0).getStatus());
+    
+        verify(specificBoardGameRepo, times(1)).findById(VALID_SPECIFIC_GAME_ID);
+        verify(borrowRequestRepo, times(1)).findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
-
+    
     @Test
     public void testViewPendingBorrowRequests() {
         // Arrange

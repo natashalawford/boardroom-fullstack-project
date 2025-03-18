@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.boardroom.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class BoardroomException extends RuntimeException{
+public class BoardroomException extends RuntimeException {
     private HttpStatus status;
 
     public BoardroomException(HttpStatus status, String message) {

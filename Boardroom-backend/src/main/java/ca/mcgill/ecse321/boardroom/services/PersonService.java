@@ -32,7 +32,7 @@ public class PersonService {
     public Person createPerson(PersonCreationDto personToCreate) {
         //Make sure the email is not in use  
         if (personRepo.existsByEmail(personToCreate.getEmail())) {
-            throw new BoardroomException(HttpStatus.BAD_REQUEST, String.format("This email is already in use"));
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This email is already in use");
         }
 
         Person newPerson = new Person(personToCreate.getName(),

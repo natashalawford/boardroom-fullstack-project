@@ -252,6 +252,43 @@ public class RegistrationServiceTests {
     }
 
     @Test
+public void testUnregisterFromEvent_PersonNotFound() {
+    // Arrange
+    EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+    when(personRepository.findPersonById(PERSON_ID)).thenReturn(null);
+
+    // Act & Assert
+    BoardroomException exception = assertThrows(
+            BoardroomException.class,
+            () -> registrationService.unregisterFromEvent(eventRegistrationDto)
+    );
+
+    assertEquals("Person not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    verify(registrationRepository, never()).delete(any(Registration.class));
+}
+
+@Test
+public void testUnregisterFromEvent_EventNotFound() {
+    // Arrange
+    EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
+    when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
+    when(eventRepository.findEventById(EVENT_ID)).thenReturn(null);
+
+    // Act & Assert
+    BoardroomException exception = assertThrows(
+            BoardroomException.class,
+            () -> registrationService.unregisterFromEvent(eventRegistrationDto)
+    );
+
+    assertEquals("Event not found", exception.getMessage());
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    verify(registrationRepository, never()).delete(any(Registration.class));
+}
+
+    @Test
     public void getRegistration_Success(){
         //Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME, VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);

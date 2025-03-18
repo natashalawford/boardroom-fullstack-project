@@ -131,7 +131,7 @@ public class BoardGameIntegrationTests {
     @Order(2)
     public void findBoardGames() {
         // Arrange
-        String url = "/boardgames/general/";
+        String url = "/boardgames/general";
 
         // Act
         ResponseEntity<List<BoardGameResponseDto>> response = client.exchange(
@@ -158,7 +158,7 @@ public class BoardGameIntegrationTests {
     @Order(3)
     public void findSpecificBoardGames() {
         // Arrange
-        String url = "/boardgames/specific/";
+        String url = "/boardgames/specific";
 
         // Act
         ResponseEntity<List<SpecificBoardGameResponseDto>> response = client.exchange(

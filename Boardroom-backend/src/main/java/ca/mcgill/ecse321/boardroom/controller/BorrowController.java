@@ -69,11 +69,10 @@ public class BorrowController {
     }
 
 
-        @GetMapping("/history/{boardGameId}")
+    @GetMapping("/history/{boardGameId}")
     @ResponseStatus(HttpStatus.OK)
     public List<BorrowRequestResponseDto> viewLendingHistoryByBoardGame(@PathVariable int boardGameId) {
-        SpecificBoardGame specificBoardGame = borrowService.getSpecificBoardGameById(boardGameId); // Use service method
-        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGame);
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(boardGameId);
         List<BorrowRequestResponseDto> borrowRequestDtos = new ArrayList<>();
         for (BorrowRequest borrowRequest : borrowRequests) {
             borrowRequestDtos.add(new BorrowRequestResponseDto(borrowRequest));

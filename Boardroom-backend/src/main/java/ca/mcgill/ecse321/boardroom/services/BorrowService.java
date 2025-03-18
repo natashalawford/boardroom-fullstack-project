@@ -54,7 +54,12 @@ public class BorrowService {
         return borrowRequestRepo.save(borrowRequest);
     }
 
-    public List<BorrowRequest> viewBorrowRequestsByBoardgame(SpecificBoardGame specificBoardGame) {
+    public List<BorrowRequest> viewBorrowRequestsByBoardgame(int specificBoardGameId) {
+        SpecificBoardGame specificBoardGame = specificBoardGameRepo.findById(specificBoardGameId)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A specific board game with this id (%d) does not exist", specificBoardGameId)
+            ));
         return borrowRequestRepo.findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
 

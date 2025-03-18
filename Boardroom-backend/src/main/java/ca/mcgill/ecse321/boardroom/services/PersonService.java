@@ -21,7 +21,7 @@ public class PersonService {
 
     public Person findPersonById(int id) {
         Person person = personRepo.findPersonById(id);
-        if (person == null) {
+        if (null == person) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, String.format(
                     "No person has id %d", id));
         }
@@ -45,14 +45,8 @@ public class PersonService {
 
     @Transactional
     public Person updatePerson(int id, PersonRequestDto personToUpdateDto) {
-
         // First check if this person exists, if not throw error
-        Person personToUpdate = personRepo.findPersonById(id);
-
-        if (null == personToUpdate) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
-                    "this id does not exist");
-        }
+        Person personToUpdate = this.findPersonById(id);
 
         Person updatedPerson = new Person(id,
                 personToUpdateDto.getName(), personToUpdateDto.getEmail(),

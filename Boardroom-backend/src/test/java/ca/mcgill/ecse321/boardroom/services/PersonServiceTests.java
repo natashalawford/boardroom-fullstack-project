@@ -139,7 +139,7 @@ public class PersonServiceTests {
         BoardroomException e = assertThrows(BoardroomException.class, () -> personService.updatePerson(id, personToUpdate));
         
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-        assertEquals("A person with this id does not exist", e.getMessage());
+        assertEquals("No person has id 2", e.getMessage());
     }
 
     //delete person by id tests begin here

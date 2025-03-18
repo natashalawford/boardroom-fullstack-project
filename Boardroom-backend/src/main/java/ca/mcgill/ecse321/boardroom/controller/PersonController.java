@@ -5,9 +5,11 @@ import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.services.PersonService;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +27,7 @@ public class PersonController {
     
     @PostMapping("people")
     @ResponseStatus(HttpStatus.CREATED)
-    public PersonResponseDto createPerson(@RequestBody PersonCreationDto personToCreate) {
+    public PersonResponseDto createPerson(@Valid @RequestBody PersonCreationDto personToCreate) {
         return new PersonResponseDto(personService.createPerson(personToCreate));
     }
 
@@ -33,18 +35,29 @@ public class PersonController {
      * Update person type
      */
     @PutMapping("people/{id}/role")
-    public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@RequestBody PersonRequestDto partialUpdatedPerson) {
-        
+    public PersonResponseDto toggleAccountType(@PathVariable("id") int id,@Valid @RequestBody PersonRequestDto partialUpdatedPerson) {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     }
 
+    @GetMapping("people/{id}")
+    public PersonResponseDto getPerson(@PathVariable("id") int id) {
+        return new PersonResponseDto(personService.findPersonById(id));
+    }
+
+    // delete person by id
+    @DeleteMapping("people/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePersonById(@PathVariable("id") int id) {
+        personService.deletePersonById(id);
+    }
+
+    //login endpoint
     @PostMapping("people/login")
     @ResponseStatus(HttpStatus.OK)
     public PersonResponseDto loginPerson(@RequestBody PersonLoginDto loginDto) {
         // Directly use the incoming loginDto
         return personService.login(loginDto);
     }
-
 
 
 }

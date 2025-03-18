@@ -10,17 +10,18 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.extension.*;
 import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.stubbing.Answer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@MockitoSettings
 public class BoardGameServiceTests {
         @Mock
         private PersonRepository personRepo;
@@ -43,6 +44,8 @@ public class BoardGameServiceTests {
         private static final int VALID_SPECIFIC_GAME_PICTURE = 23456;
         private static final String VALID_SPECIFIC_GAME_DESCRIPTION = "Good condition";
         private static final GameStatus VALID_GAME_STATUS = GameStatus.AVAILABLE;
+        
+        // Valid objects
         private static Person VALID_OWNER;
         private static BoardGame VALID_BOARD_GAME;
         private static SpecificBoardGame VALID_SPECIFIC_BOARD_GAME;
@@ -76,17 +79,19 @@ public class BoardGameServiceTests {
                                         }
                                 });
 
-                lenient().when(boardGameRepo.findAll()).thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
-                        ArrayList<BoardGame> list = new ArrayList<BoardGame>();
-                        list.add(VALID_BOARD_GAME);
-                        return list;
-                });
+                lenient().when(boardGameRepo.findAll())
+                                .thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
+                                        ArrayList<BoardGame> list = new ArrayList<BoardGame>();
+                                        list.add(VALID_BOARD_GAME);
+                                        return list;
+                                });
 
-                lenient().when(specificBoardGameRepo.findAll()).thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
-                        ArrayList<SpecificBoardGame> list = new ArrayList<SpecificBoardGame>();
-                        list.add(VALID_SPECIFIC_BOARD_GAME);
-                        return list;
-                });
+                lenient().when(specificBoardGameRepo.findAll())
+                                .thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
+                                        ArrayList<SpecificBoardGame> list = new ArrayList<SpecificBoardGame>();
+                                        list.add(VALID_SPECIFIC_BOARD_GAME);
+                                        return list;
+                                });
 
                 lenient().when(personRepo.findById(anyInt()))
                                 .thenAnswer((InvocationOnMock invocation) -> {
@@ -98,9 +103,10 @@ public class BoardGameServiceTests {
                                 });
 
                 Answer<?> returnParameterAsAnswer = (InvocationOnMock invocation) -> {
-			return invocation.getArgument(0);
-		};
-		lenient().when(specificBoardGameRepo.save(any(SpecificBoardGame.class))).thenAnswer(returnParameterAsAnswer);
+                        return invocation.getArgument(0);
+                };
+                lenient().when(specificBoardGameRepo.save(any(SpecificBoardGame.class)))
+                                .thenAnswer(returnParameterAsAnswer);
                 lenient().when(boardGameRepo.save(any(BoardGame.class))).thenAnswer(returnParameterAsAnswer);
         }
 
@@ -114,6 +120,8 @@ public class BoardGameServiceTests {
                 assertEquals(VALID_DESCRIPTION, boardGame.getDescription());
                 assertEquals(VALID_PLAYERS_NEEDED, boardGame.getPlayersNeeded());
                 assertEquals(VALID_GAME_PICTURE, boardGame.getPicture());
+
+                verify(boardGameRepo, times(1)).findBoardGameByTitle(VALID_TITLE);
         }
 
         @Test
@@ -128,21 +136,28 @@ public class BoardGameServiceTests {
                 assertEquals(VALID_GAME_STATUS, specificBoardGame.getStatus());
                 assertEquals(VALID_TITLE, specificBoardGame.getBoardGame().getTitle());
                 assertEquals(VALID_OWNER, specificBoardGame.getOwner());
+                assertEquals(VALID_SPECIFIC_BOARD_GAME.getId(), specificBoardGame.getId());
+
+                verify(specificBoardGameRepo, times(1)).findSpecificBoardGameById(VALID_SPECIFIC_BOARD_GAME.getId());
         }
 
         @Test
         public void testGetAllBoardGames() {
                 List<BoardGame> boardGames = new ArrayList<BoardGame>();
                 boardGames = boardGameService.getAllBoardGames();
-                BoardGame boardGame = boardGames.get(0);
-                assertNotNull(boardGame);
+                assertEquals(1, boardGames.size());
+                assertTrue(boardGames.contains(VALID_BOARD_GAME));
+
+                verify(boardGameRepo, times(1)).findAll();
         }
 
         @Test
         public void testGetAllSpecificBoardGames() {
                 List<SpecificBoardGame> specificBoardGames = new ArrayList<SpecificBoardGame>();
                 specificBoardGames = boardGameService.getAllSpecificBoardGames();
-                SpecificBoardGame specificBoardGame = specificBoardGames.get(0);
-                assertNotNull(specificBoardGame);
+                assertEquals(1, specificBoardGames.size());
+                assertTrue(specificBoardGames.contains(VALID_SPECIFIC_BOARD_GAME));
+
+                verify(specificBoardGameRepo, times(1)).findAll();
         }
 }

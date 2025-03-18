@@ -58,6 +58,17 @@ public class PersonService {
         return personRepo.save(updatedPerson);
     }
 
+    //delete person
+    @Transactional
+    public void deletePersonById(int id) {
+        Person person = personRepo.findPersonById(id);
+        if (person == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND,
+                String.format("No person has id %d", id));
+        }
+        personRepo.deleteById(id);
+    }
+
     @Transactional
     public PersonResponseDto login(PersonLoginDto loginDto) {
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
@@ -76,6 +87,21 @@ public class PersonService {
         }
 
         return new PersonResponseDto(person);
+    }
+
+    //Maybe this should return a boolean or something
+    @Transactional
+    public void deletePerson(int id) {
+        //Get person to delete
+        Person personToDelete = findPersonById(id);
+
+        //make sure person exists
+        if (null == personToDelete) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person does not exist, it cannot be deleted");
+        }
+
+        //Delete person
+        personRepo.delete(personToDelete);
     }
 
 }

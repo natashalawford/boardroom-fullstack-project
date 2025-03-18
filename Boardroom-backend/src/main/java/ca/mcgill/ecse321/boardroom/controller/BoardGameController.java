@@ -29,7 +29,7 @@ public class BoardGameController {
 	 * 
 	 * @return List<BoardGameResponseDto> List of all board games in the system
 	 */
-	@GetMapping(value = { "/general", "/general/" })
+	@GetMapping(value = {"/general"})
 	public List<BoardGameResponseDto> getAllBoardGames() {
 		List<BoardGameResponseDto> boardGameDtos = new ArrayList<>();
 		for (BoardGame boardGame : boardGameService.getAllBoardGames()) {
@@ -44,7 +44,7 @@ public class BoardGameController {
 	 * @return List<SpecificBoardGameResponseDto> List of all specific board games
 	 *         in the system
 	 */
-	@GetMapping(value = { "/specific", "/specific/" })
+	@GetMapping(value = {"/specific"})
 	public List<SpecificBoardGameResponseDto> getAllSpecificBoardGames() {
 		List<SpecificBoardGameResponseDto> specificBoardGameDtos = new ArrayList<>();
 		for (SpecificBoardGame boardGame : boardGameService.getAllSpecificBoardGames()) {
@@ -58,7 +58,7 @@ public class BoardGameController {
 	 * 
 	 * @return BoardGame The board game with the given title
 	 */
-	@GetMapping(value = { "/general/{title}", "/general/{title}/" })
+	@GetMapping(value = {"/general/{title}"})
 	public ResponseEntity<BoardGameResponseDto> findBoardGameByTitle(@PathVariable String title) {
 		try {
 			BoardGame boardGame = boardGameService.getBoardGameByTitle(title);
@@ -73,7 +73,7 @@ public class BoardGameController {
 	 * 
 	 * @return SpecificBoardGame The specific board game with the given ID
 	 */
-	@GetMapping(value = { "/specific/{id}", "/specific/{id}/" })
+	@GetMapping(value = {"/specific/{id}"})
 	public ResponseEntity<SpecificBoardGameResponseDto> findSpecificBoardGameById(@PathVariable int id) {
 		try {
 			SpecificBoardGame specificBoardGame = boardGameService.getSpecificBoardGameById(id);

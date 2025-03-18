@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardroom.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -147,6 +148,22 @@ public class GameOwnerIntegrationTests {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
+    }
+
+    @Test
+    @Order(3)
+    public void testDeleteSpecifiBoardGame() {
+        //Arrange
+        String url = "/specificboardgame/{id}";
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url, HttpMethod.DELETE, null, Void.class, CREATED_SPECIFICBOARDGAME_ID); 
+
+        //Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        assertNull(specificBoardGameRepo.findSpecificBoardGameById(CREATED_SPECIFICBOARDGAME_ID));
     }
 
 }

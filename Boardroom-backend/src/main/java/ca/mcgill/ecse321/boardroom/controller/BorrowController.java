@@ -51,6 +51,14 @@ public class BorrowController {
         return borrowRequestDtos;
     }
 
+    //get borrow request by id
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BorrowRequestResponseDto getBorrowRequestById(@PathVariable int id) {
+        BorrowRequest br = borrowService.getBorrowRequestById(id);
+        return new BorrowRequestResponseDto(br);
+    }
+
     //delete borrow request
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

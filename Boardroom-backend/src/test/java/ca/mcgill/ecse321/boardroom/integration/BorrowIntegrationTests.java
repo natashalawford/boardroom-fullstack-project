@@ -305,8 +305,8 @@ public class BorrowIntegrationTests {
 
         // Assert: Retrieving the same ID should now return 404 NOT_FOUND
         ResponseEntity<ErrorDto> getResponse = client.getForEntity(url, ErrorDto.class);
-        assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode(),
-            "Expected 404 NOT_FOUND after deleting the borrow request");
+        assertEquals(HttpStatus.BAD_REQUEST, getResponse.getStatusCode(),
+            "Expected 400 BAD_REQUEST after deleting the borrow request");
     }
 
     

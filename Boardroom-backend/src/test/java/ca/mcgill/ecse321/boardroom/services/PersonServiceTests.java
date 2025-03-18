@@ -1,8 +1,9 @@
 package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.PersonUpdateDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -92,38 +94,74 @@ public class PersonServiceTests {
     @Test
     public void testUpdateValidPerson() {
         //Arrange
-        PersonUpdateDto personToUpdate = new PersonUpdateDto(1, VALID_NAME,
-                VALID_EMAIL,
-                VALID_PASSWORD, VALID_OWNER);
+        int id = 1;
+        PersonRequestDto personToUpdate = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_OWNER);
 
-        when(personRepo.existsById(1)).thenReturn(true);
+        when(personRepo.findPersonById(id)).thenReturn(new Person(id, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER));
         when(personRepo.save(any(Person.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         //Act
-        Person updatedPerson = personService.updatePerson(personToUpdate);
+        Person updatedPerson = personService.updatePerson(id, personToUpdate);
 
         //Assert
         assertNotNull(updatedPerson);  
         // assertEquals(1, updatedPerson.getId());
         assertEquals(VALID_NAME, updatedPerson.getName());
         assertEquals(VALID_EMAIL, updatedPerson.getEmail());
-        assertEquals(VALID_PASSWORD, updatedPerson.getPassword());
         assertEquals(VALID_OWNER, updatedPerson.isOwner());
 
-        verify(personRepo, times(1)).existsById(anyInt());
+        verify(personRepo, times(1)).findPersonById(anyInt());
         verify(personRepo, times(1)).save(any(Person.class));
     }
 
     @Test
     public void testUpdateInvalidPerson() {
         //Arrange
-        PersonUpdateDto personToUpdate = new PersonUpdateDto(2, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        int id = 2;
+        PersonRequestDto personToUpdate = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_OWNER);
 
         //Act + Assert
-        BoardroomException e = assertThrows(BoardroomException.class, () -> personService.updatePerson(personToUpdate));
+        BoardroomException e = assertThrows(BoardroomException.class, () -> personService.updatePerson(id, personToUpdate));
         
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
         assertEquals("A person with this id does not exist", e.getMessage());
+    }
+
+    //delete person by id tests begin here
+    @Test
+    public void testDeleteValidPerson() {
+        // Arrange
+        int validId = 1;
+        // Mock existing person
+        Person existingPerson = new Person(validId, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        when(personRepo.findPersonById(validId)).thenReturn(existingPerson);
+
+        // Act
+        personService.deletePersonById(validId);
+
+        // Assert
+        verify(personRepo, times(1)).findPersonById(validId);
+        verify(personRepo, times(1)).deleteById(validId);
+    }
+
+    @Test
+    public void testDeleteInvalidPerson() {
+        // Arrange
+        int invalidId = 99;
+        // Make sure repo returns null for this ID
+        when(personRepo.findPersonById(invalidId)).thenReturn(null);
+
+        // Act + Assert
+        BoardroomException ex = assertThrows(
+            BoardroomException.class,
+            () -> personService.deletePersonById(invalidId)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+        assertEquals("No person has id 99", ex.getMessage());
+
+        verify(personRepo, times(1)).findPersonById(invalidId);
+        verify(personRepo, times(0)).deleteById(anyInt()); // Should never delete
     }
 
     
@@ -137,7 +175,7 @@ public class PersonServiceTests {
         PersonLoginDto loginDto = new PersonLoginDto(VALID_EMAIL, VALID_PASSWORD);
 
         // Act
-        Person loggedInPerson = personService.login(loginDto);
+        PersonResponseDto loggedInPerson = personService.login(loginDto);
 
         // Assert
         assertNotNull(loggedInPerson);

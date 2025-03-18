@@ -3,26 +3,22 @@ package ca.mcgill.ecse321.boardroom.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class PersonCreationDto {
+public class PersonRequestDto {
     @NotBlank(message = "The name must not be blank")
     private String name;
 
-    @NotBlank(message = "The email must not be blank")
+    @NotBlank(message = "The email must not be blank")   
     private String email;
 
-    @NotBlank(message = "The password must not be blank")
-    private String password;
-
-    @NotNull(message = "The owner field must not be null")
+    @NotNull(message = "The owner must not be null")
     private boolean owner;
 
-    private PersonCreationDto() {}
+    private PersonRequestDto() {
+    }
 
-    public PersonCreationDto(String name, String email, String password,
-            boolean owner) {
+    public PersonRequestDto(String name, String email, boolean owner) {
         this.name = name;
         this.email = email;
-        this.password = password;
         this.owner = owner;
     }
 
@@ -32,10 +28,6 @@ public class PersonCreationDto {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public boolean isOwner() {

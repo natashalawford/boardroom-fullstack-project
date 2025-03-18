@@ -4,7 +4,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Event;
-import ca.mcgill.ecse321.boardroom.model.Location;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,8 +22,6 @@ public class RegistrationRepositoryTests {
     @Autowired
     private EventRepository eventRepo;
     @Autowired
-    private LocationRepository locationRepo;
-    @Autowired
     private BoardGameRepository boardGameRepo;
 
     @AfterEach
@@ -32,7 +29,6 @@ public class RegistrationRepositoryTests {
         registrationRepo.deleteAll();
         eventRepo.deleteAll();
         personRepo.deleteAll();
-        locationRepo.deleteAll();
         boardGameRepo.deleteAll();
 
     }
@@ -45,9 +41,7 @@ public class RegistrationRepositoryTests {
         person = personRepo.save(person);
         BoardGame boardGame = new BoardGame("boardGameName", "boardGameDescription", 1, 2);
         boardGame = boardGameRepo.save(boardGame);
-        Location location = new Location("locationName", "locationCity", "locationProvince");
-        location = locationRepo.save(location);
-        Event event = new Event("eventTitle", "eventDescription", date, date, 1, location, person, boardGame);
+        Event event = new Event("eventTitle", "eventDescription", date, date, 1, "location", person, boardGame);
         event = eventRepo.save(event);
         Registration registration = new Registration(new Registration.Key(event, person), date);
         registration = registrationRepo.save(registration);

@@ -2,7 +2,8 @@ package ca.mcgill.ecse321.boardroom.services;
 
 import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
-import ca.mcgill.ecse321.boardroom.dtos.PersonUpdateDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -40,22 +41,36 @@ public class PersonService {
     }
 
     @Transactional
-    public Person updatePerson(PersonUpdateDto personToUpdate) {
+    public Person updatePerson(int id, PersonRequestDto personToUpdateDto) {
+
         // First check if this person exists, if not throw error
-        if (!personRepo.existsById(personToUpdate.getId())) {
+        Person personToUpdate = personRepo.findPersonById(id);
+
+        if (null == personToUpdate) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
                     "this id does not exist");
         }
 
-        Person updatedPerson = new Person(personToUpdate.getId(),
-                personToUpdate.getName(), personToUpdate.getEmail(),
-                personToUpdate.getPassword(), personToUpdate.isOwner());
+        Person updatedPerson = new Person(id,
+                personToUpdateDto.getName(), personToUpdateDto.getEmail(),
+                personToUpdate.getPassword(), personToUpdateDto.isOwner());
 
         return personRepo.save(updatedPerson);
     }
 
+    //delete person
     @Transactional
-    public Person login(PersonLoginDto loginDto) {
+    public void deletePersonById(int id) {
+        Person person = personRepo.findPersonById(id);
+        if (person == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND,
+                String.format("No person has id %d", id));
+        }
+        personRepo.deleteById(id);
+    }
+
+    @Transactional
+    public PersonResponseDto login(PersonLoginDto loginDto) {
         if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "Email and password are required.");
         }
@@ -71,7 +86,22 @@ public class PersonService {
             throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
-        return person;
+        return new PersonResponseDto(person);
+    }
+
+    //Maybe this should return a boolean or something
+    @Transactional
+    public void deletePerson(int id) {
+        //Get person to delete
+        Person personToDelete = findPersonById(id);
+
+        //make sure person exists
+        if (null == personToDelete) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person does not exist, it cannot be deleted");
+        }
+
+        //Delete person
+        personRepo.delete(personToDelete);
     }
 
 }

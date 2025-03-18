@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardroom.services;
 import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
+import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Review;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
@@ -58,6 +59,18 @@ public class ReviewService {
             }
         }
         return reviews;
+    }
+
+    @Transactional
+    public void deleteReviewById(int id) {
+        Review review = reviewRepository.findReviewById(id);
+        if(review != null) {
+            reviewRepository.deleteById(id);
+        } else {
+            throw new BoardroomException(
+                    HttpStatus.NOT_FOUND,
+                    String.format("no review has ID %d", id));
+        }
     }
 
     private void validateReview(ReviewCreationDto review) {

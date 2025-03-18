@@ -10,16 +10,13 @@ import java.util.List;
 
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
-import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
-@Validated
 public class EventService {
         @Autowired
         private EventRepository eventRepository;
@@ -29,7 +26,7 @@ public class EventService {
         private BoardGameRepository boardGameRepository;
 
         @Transactional
-        public Event createEvent(@Valid EventCreationDto eventToCreate) {
+        public Event createEvent(EventCreationDto eventToCreate) {
                 validateEventTimes(eventToCreate.getStartDateTime(), eventToCreate.getEndDateTime());
 
                 Person personToFind = personRepository.findById(eventToCreate.getHostId()).orElseThrow(
@@ -52,7 +49,6 @@ public class EventService {
                 return eventRepository.save(event);
         }
 
-        @Transactional
         public Event findEventById(int id) {
                 Event event = eventRepository.findEventById(id);
                 if(event == null) {
@@ -63,7 +59,6 @@ public class EventService {
                 return event;
         }
 
-        @Transactional
         public List<Event> getEvents() {
                 List<Event> events = (List<Event>) eventRepository.findAll();
                 return events;
@@ -85,12 +80,14 @@ public class EventService {
                 LocalDateTime now = LocalDateTime.now();
 
                 if (startTime.isBefore(now)) {
-                        throw new IllegalArgumentException(
+                        throw new BoardroomException(
+                                        HttpStatus.BAD_REQUEST,
                                         "Start time cannot be in the past");
                 }
 
                 if (endTime.isBefore(startTime)) {
-                        throw new IllegalArgumentException(
+                        throw new BoardroomException(
+                                        HttpStatus.BAD_REQUEST,
                                         "End time must be after start time");
                 }
         }

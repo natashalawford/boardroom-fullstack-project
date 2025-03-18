@@ -152,7 +152,7 @@ public class GameOwnerIntegrationTests {
 
     @Test
     @Order(3)
-    public void testDeleteSpecifiBoardGame() {
+    public void testDeleteSpecificBoardGame() {
         //Arrange
         String url = "/specificboardgame/{id}";
 

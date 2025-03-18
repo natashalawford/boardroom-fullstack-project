@@ -112,7 +112,7 @@ public class ReviewIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertIterableEquals(
-                List.of("Rating must be at least 1 star."),
+                List.of("Rating must be between 1 and 5 stars."),
                 response.getBody().getErrors());
     }
 
@@ -158,9 +158,12 @@ public class ReviewIntegrationTests {
         // Assert
         assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
         assertNotNull(reviewResponseBody.getBody());
-        assertTrue(reviewResponseBody.getBody().size() > 0);
+        assertEquals(reviewResponseBody.getBody().size(), 1);
+
         ReviewResponseDto reviewResponse = reviewResponseBody.getBody().get(0);
 
+        assertEquals(VALID_REVIEW.getId(), reviewResponse.getId());
+        assertEquals(VALID_REVIEW.getTimestamp(), reviewResponse.getTimestamp());
         assertEquals(VALID_REVIEW.getAuthorId(), reviewResponse.getAuthorId());
         assertEquals(VALID_REVIEW.getStars(), reviewResponse.getStars());
         assertEquals(VALID_REVIEW.getComment(), reviewResponse.getComment());
@@ -177,16 +180,17 @@ public class ReviewIntegrationTests {
         String url = "/reviews/" + "Nonexistent-title";
 
         // Act
-        ResponseEntity<List<ReviewResponseDto>> reviewResponseBody = client.exchange(
+        ResponseEntity<ErrorDto> reviewResponseBody = client.exchange(
             url,
             HttpMethod.GET,
             null,
-            new ParameterizedTypeReference<List<ReviewResponseDto>>() {}
+            new ParameterizedTypeReference<ErrorDto>() {}
         );
 
-        assertEquals(HttpStatus.OK, reviewResponseBody.getStatusCode());
-        assertNotNull(reviewResponseBody.getBody());
-        assertTrue(reviewResponseBody.getBody().size() == 0);
+        assertNotNull(reviewResponseBody);
+        assertEquals(HttpStatus.NOT_FOUND, reviewResponseBody.getStatusCode());
+        
+        assertTrue(reviewResponseBody.getBody().getErrors().contains("A board game with this title does not exist"));
     }
 
     @Test
@@ -195,16 +199,18 @@ public class ReviewIntegrationTests {
         // Arrange
         String url = String.format("/reviews/%d", this.createdReviewId);
 
-        // Act: Delete the event
-        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.DELETE, null, ErrorDto.class);
+        // Act: Delete the review
+        ResponseEntity<Void> response = client.exchange(url, HttpMethod.DELETE, null, Void.class);
 
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(reviewRepository.findReviewById(this.createdReviewId));
     }
 
     @Test
     @Order(7)
     public void testDeleteReviewById_NotFound() {
-        // Act: Try to delete a non-existent event
+        // Act: Try to delete a non-existent review
         int invalidReviewId = 99999;
         ResponseEntity<ErrorDto> response = client.exchange("/reviews/" + invalidReviewId, HttpMethod.DELETE, null, ErrorDto.class);
 
@@ -212,7 +218,7 @@ public class ReviewIntegrationTests {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
         assertIterableEquals(
-                List.of("no review has ID " + invalidReviewId),
+                List.of("No review has ID " + invalidReviewId),
                 response.getBody().getErrors()
         );
     }

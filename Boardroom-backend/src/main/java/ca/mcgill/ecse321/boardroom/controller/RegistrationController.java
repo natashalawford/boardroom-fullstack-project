@@ -1,14 +1,10 @@
 package ca.mcgill.ecse321.boardroom.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.EventRegistrationResponseDto;
-import ca.mcgill.ecse321.boardroom.dtos.responses.EventResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.services.RegistrationService;
 

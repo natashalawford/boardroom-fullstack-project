@@ -136,7 +136,7 @@ public class BoardGameIntegrationTests {
         @Order(2)
         public void findBoardGames() {
                 // Arrange
-                String url = "/boardgames/general";
+                String url = "/boardgame";
 
                 // Act
                 ResponseEntity<List<BoardGameResponseDto>> response = client.exchange(
@@ -164,7 +164,7 @@ public class BoardGameIntegrationTests {
         @Order(3)
         public void findSpecificBoardGames() {
                 // Arrange
-                String url = "/boardgames/specific";
+                String url = "/specificboardgame";
 
                 // Act
                 ResponseEntity<List<SpecificBoardGameResponseDto>> response = client.exchange(
@@ -194,7 +194,7 @@ public class BoardGameIntegrationTests {
         @Order(4)
         public void findBoardGameByTitle() {
                 // Arrange
-                String url = "/boardgames/general/" + VALID_BOARD_GAME.getTitle();
+                String url = "/boardgame/" + VALID_BOARD_GAME.getTitle();
 
                 // Act
                 ResponseEntity<BoardGameResponseDto> response = client.getForEntity(url, BoardGameResponseDto.class);
@@ -213,7 +213,7 @@ public class BoardGameIntegrationTests {
         @Order(5)
         public void findBoardGameByInvalidTitle() {
                 // Arrange
-                String url = "/boardgames/general/InvalidTitle";
+                String url = "/boardgame/InvalidTitle";
 
                 // Act
                 ResponseEntity<ErrorDto> response = client.getForEntity(url, ErrorDto.class);
@@ -228,7 +228,7 @@ public class BoardGameIntegrationTests {
         @Order(6)
         public void findSpecificBoardGameById() {
                 // Arrange
-                String url = "/boardgames/specific/" + VALID_SPECIFIC_BOARD_GAME.getId();
+                String url = "/specificboardgame/" + VALID_SPECIFIC_BOARD_GAME.getId();
 
                 // Act
                 ResponseEntity<SpecificBoardGameResponseDto> response = client.getForEntity(url,
@@ -250,7 +250,7 @@ public class BoardGameIntegrationTests {
         @Order(7)
         public void findSpecificBoardGameByInvalidId() {
                 // Arrange
-                String url = "/boardgames/specific/123";
+                String url = "/specificboardgame/123";
 
                 // Act
                 ResponseEntity<ErrorDto> response = client.getForEntity(url,

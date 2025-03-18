@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
-import ca.mcgill.ecse321.boardroom.dtos.BoardGameCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.BoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.SpecificBoardGameResponseDto;
 import ca.mcgill.ecse321.boardroom.services.GameOwnerService;
@@ -21,10 +21,9 @@ import jakarta.validation.Valid;
 
 @RestController
 public class GameOwnerController {
+
     @Autowired
     GameOwnerService gameOwnerService;
-
-
 
     @PostMapping("boardgame")
     @ResponseStatus(HttpStatus.CREATED)
@@ -32,19 +31,18 @@ public class GameOwnerController {
         return new BoardGameResponseDto(gameOwnerService.createBoardGame(boardGameToCreate));
     }
 
-
     @PostMapping("specificboardgame")
     @ResponseStatus(HttpStatus.CREATED)
-    public SpecificBoardGameResponseDto createSpecificBoardGame(@RequestBody SpecificBoardGameCreationDto specificBoardGameToCreate) { 
+    public SpecificBoardGameResponseDto createSpecificBoardGame(@Valid @RequestBody SpecificBoardGameCreationDto specificBoardGameToCreate) { 
         return new SpecificBoardGameResponseDto(gameOwnerService.createSpecificBoardGame(specificBoardGameToCreate));
     }
 
     @PutMapping("specificboardgame/{id}")
-    public SpecificBoardGameResponseDto updateSpecificBoardGame(@PathVariable("id") int id, @RequestBody SpecificBoardGameRequestDto specificBoardGameToUpdate) {
+    @ResponseStatus(HttpStatus.OK)
+    public SpecificBoardGameResponseDto updateSpecificBoardGame(@PathVariable("id") int id, @Valid @RequestBody SpecificBoardGameRequestDto specificBoardGameToUpdate) {
         return new SpecificBoardGameResponseDto(gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate));
     }
 
-    //delete endpoint needed
     @DeleteMapping("specificboardgame/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSpecificBoardGame(@PathVariable("id") int id) {

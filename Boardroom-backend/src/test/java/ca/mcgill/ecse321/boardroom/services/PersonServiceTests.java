@@ -93,7 +93,7 @@ public class PersonServiceTests {
         //Assert
         PersonCreationDto personToCreate = new PersonCreationDto(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
 
-        when(personRepo.findByEmail(anyString())).thenReturn(new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER));
+        when(personRepo.existsByEmail(anyString())).thenReturn(true);
 
         //Act + Assert
         BoardroomException e = assertThrows(BoardroomException.class, () -> personService.createPerson(personToCreate));

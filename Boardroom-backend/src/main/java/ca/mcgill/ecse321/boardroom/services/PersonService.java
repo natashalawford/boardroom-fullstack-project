@@ -31,9 +31,7 @@ public class PersonService {
    @Transactional
     public Person createPerson(PersonCreationDto personToCreate) {
         //Make sure the email is not in use  
-        Person person = personRepo.findByEmail(personToCreate.getEmail());
-
-        if (null != person) {
+        if (personRepo.existsByEmail(personToCreate.getEmail())) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, String.format("This email is already in use"));
         }
 

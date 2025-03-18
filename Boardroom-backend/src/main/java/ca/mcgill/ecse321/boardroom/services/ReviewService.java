@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.boardroom.services;
 import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
-import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Review;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
@@ -14,14 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Validated
 public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
@@ -64,7 +61,7 @@ public class ReviewService {
     @Transactional
     public void deleteReviewById(int id) {
         Review review = reviewRepository.findReviewById(id);
-        if(review != null) {
+        if (review != null) {
             reviewRepository.deleteById(id);
         } else {
             throw new BoardroomException(

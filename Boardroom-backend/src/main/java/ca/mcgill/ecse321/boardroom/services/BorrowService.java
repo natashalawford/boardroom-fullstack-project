@@ -10,18 +10,14 @@ import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
-import jakarta.validation.Valid;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
-@Validated
 public class BorrowService {
 
     @Autowired
@@ -34,8 +30,7 @@ public class BorrowService {
     private SpecificBoardGameRepository specificBoardGameRepo;
 
     @Transactional
-    public BorrowRequest createBorrowRequest(@Valid BorrowRequestDtoCreation borrowRequestToCreate) {
-        // Check if person and specific board game exist
+    public BorrowRequest createBorrowRequest(BorrowRequestDtoCreation borrowRequestToCreate) {
         Person personToFind = personRepo.findById(borrowRequestToCreate.getPersonId()).orElseThrow(
                 () -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
         SpecificBoardGame specificBoardGameToFind = specificBoardGameRepo
@@ -59,13 +54,10 @@ public class BorrowService {
         return borrowRequestRepo.save(borrowRequest);
     }
 
-    // Method to view all borrow requests of a specific boardgame
-    @Transactional
     public List<BorrowRequest> viewBorrowRequestsByBoardgame(SpecificBoardGame specificBoardGame) {
         return borrowRequestRepo.findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
 
-    @Transactional
     public List<BorrowRequest> viewPendingBorrowRequests() {
         return borrowRequestRepo.findByStatus(RequestStatus.PENDING);
     }

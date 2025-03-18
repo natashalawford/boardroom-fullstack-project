@@ -83,6 +83,12 @@ CREATE DATABASE boardroom;
 ```
 4. Run `./gradlew build`
 
+## Documentation for RESTful service endpoints
+Please follow these instructions to ensure the project RESTful endpoints documentation runs on your local host.
+1. Run `./gradlew bootRun`
+2. Open `http://localhost:8080/swagger-ui.html` on your browser
+
+
 ## Link to the Deliverable 1 Wiki:
 https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-1 
 

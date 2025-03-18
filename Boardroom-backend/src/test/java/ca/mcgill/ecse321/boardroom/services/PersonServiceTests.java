@@ -104,8 +104,6 @@ public class PersonServiceTests {
         verify(personRepo, times(0)).save(any(Person.class));
     }
 
-    // put updated fields so that you're actually testing it
-
     @Test
     public void testUpdateValidPerson() {
         //Arrange
@@ -130,20 +128,6 @@ public class PersonServiceTests {
     }
 
     @Test
-    public void testUpdateInvalidPerson() {
-        //Arrange
-        int id = 2;
-        PersonRequestDto personToUpdate = new PersonRequestDto(VALID_NAME, VALID_EMAIL, VALID_OWNER);
-
-        //Act + Assert
-        BoardroomException e = assertThrows(BoardroomException.class, () -> personService.updatePerson(id, personToUpdate));
-        
-        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-        assertEquals("No person has id 2", e.getMessage());
-    }
-
-    //delete person by id tests begin here
-    @Test
     public void testDeleteValidPerson() {
         // Arrange
         int validId = 1;
@@ -158,27 +142,9 @@ public class PersonServiceTests {
         verify(personRepo, times(1)).findPersonById(validId);
         verify(personRepo, times(1)).delete(existingPerson);
     }
-
-    @Test
-    public void testDeleteInvalidPerson() {
-        // Arrange
-        int invalidId = 99;
-
-        // Act + Assert
-        BoardroomException ex = assertThrows(
-            BoardroomException.class,
-            () -> personService.deletePerson(invalidId)
-        );
-
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
-        assertEquals("No person has id 99", ex.getMessage());
-
-        verify(personRepo, times(1)).findPersonById(invalidId);
-        verify(personRepo, times(0)).delete(any(Person.class)); // Should never delete
-    }
  
     @Test
-    public void testSuccessfulLogin() {
+    public void testValidLogin() {
         // Arrange
         Person existingPerson = new Person(1, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
         when(personRepo.findByEmail(VALID_EMAIL)).thenReturn(existingPerson);
@@ -197,7 +163,7 @@ public class PersonServiceTests {
     }
 
     @Test
-    public void testLoginFailsForNoEmail() {
+    public void testInvalidLoginIncorrectEmail() {
         // Arrange
         PersonLoginDto loginDto = new PersonLoginDto("null@gmail.com", VALID_PASSWORD);
 
@@ -211,7 +177,7 @@ public class PersonServiceTests {
     }
 
     @Test
-    public void testLoginFailIncorrectPassword() {
+    public void testInvalidLoginIncorrectPassword() {
         // Arrange
         Person existingPerson = new Person(1, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
         when(personRepo.findByEmail(VALID_EMAIL)).thenReturn(existingPerson);

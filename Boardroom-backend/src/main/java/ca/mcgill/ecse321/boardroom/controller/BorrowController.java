@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
-import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoSpecific;
+import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
 import ca.mcgill.ecse321.boardroom.services.BorrowService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/borrowRequests")
@@ -27,25 +28,25 @@ public class BorrowController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BorrowRequestDtoSpecific createBorrowRequest(@RequestBody BorrowRequestDtoCreation borrowRequestToCreate){
+    public BorrowRequestResponseDto createBorrowRequest(@Valid @RequestBody BorrowRequestDtoCreation borrowRequestToCreate){
         BorrowRequest createdBorrowRequest = borrowService.createBorrowRequest(borrowRequestToCreate);
-        return new BorrowRequestDtoSpecific(createdBorrowRequest);
+        return new BorrowRequestResponseDto(createdBorrowRequest);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BorrowRequestDtoSpecific updateBorrowRequest(@PathVariable int id, @RequestBody RequestStatus status){
+    public BorrowRequestResponseDto updateBorrowRequest(@PathVariable int id, @RequestBody RequestStatus status){
         BorrowRequest updatedBorrowRequest = borrowService.updateBorrowRequestStatus(id, status);
-        return new BorrowRequestDtoSpecific(updatedBorrowRequest);
+        return new BorrowRequestResponseDto(updatedBorrowRequest);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<BorrowRequestDtoSpecific> viewPendingBorrowRequests(){
-        List<BorrowRequestDtoSpecific> borrowRequestDtos = new ArrayList<>();
+    public List<BorrowRequestResponseDto> viewPendingBorrowRequests(){
+        List<BorrowRequestResponseDto> borrowRequestDtos = new ArrayList<>();
         List<BorrowRequest> borrowRequests = borrowService.viewPendingBorrowRequests();
         for(BorrowRequest borrowRequest : borrowRequests){
-            borrowRequestDtos.add(new BorrowRequestDtoSpecific(borrowRequest));
+            borrowRequestDtos.add(new BorrowRequestResponseDto(borrowRequest));
         }
         return borrowRequestDtos;
     }

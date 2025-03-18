@@ -44,7 +44,7 @@ public class BoardGameServiceTests {
         private static final int VALID_SPECIFIC_GAME_PICTURE = 23456;
         private static final String VALID_SPECIFIC_GAME_DESCRIPTION = "Good condition";
         private static final GameStatus VALID_GAME_STATUS = GameStatus.AVAILABLE;
-        
+
         // Valid objects
         private static Person VALID_OWNER;
         private static BoardGame VALID_BOARD_GAME;

@@ -18,25 +18,25 @@ public class BoardGameService {
 
     @Autowired
     private SpecificBoardGameRepository specificBoardGameRepo;
-    
+
     public BoardGame getBoardGameByTitle(String title) {
         BoardGame boardGameToFind = boardGameRepo.findBoardGameByTitle(title);
         if (boardGameToFind == null) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "A board game type with this title does not exist");
         }
-        
+
         return boardGameToFind;
     }
-    
+
     public SpecificBoardGame getSpecificBoardGameById(int id) {
         SpecificBoardGame specificBoardGameToFind = specificBoardGameRepo.findSpecificBoardGameById(id);
         if (specificBoardGameToFind == null) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "A specific board game with this id does not exist");
         }
-        
+
         return specificBoardGameToFind;
     }
-    
+
     public List<BoardGame> getAllBoardGames() {
         return toList(boardGameRepo.findAll());
     }

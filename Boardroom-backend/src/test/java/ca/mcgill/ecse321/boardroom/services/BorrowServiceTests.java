@@ -210,13 +210,55 @@ public class BorrowServiceTests {
     @Test
     public void testDeleteValidBorrowRequest() {
         // Arrange
-        int validId = VALID_BORROW_REQUEST_ID; // e.g. 3
-        BorrowRequest mockBorrowRequest = new BorrowRequest(
-            validId, VALID_STATUS, VALID_START_DATE, VALID_END_DATE,
-            new Person(), new SpecificBoardGame()
+        int validId = VALID_BORROW_REQUEST_ID;
+
+        // Create a Person for the game’s owner
+        Person fakeOwner = new Person(
+            999,                        
+            "Jane Owner",            
+            "owner@example.com",     
+            "testOwnerPwd",         
+            true                     
         );
 
-        // Mock findById to return a valid BorrowRequest
+        // Create a BoardGame
+        BoardGame fakeBoardGame = new BoardGame(
+            "Fake Game Title",         
+            "Sample board game desc",  
+            2,                          
+            4                           
+        );
+
+        // Create a SpecificBoardGame with the above owner and BG
+        SpecificBoardGame fakeSpecificBoardGame = new SpecificBoardGame(
+            123,                       
+            "Some condition/description",
+            456,                       
+            GameStatus.AVAILABLE,       
+            fakeBoardGame,            
+            fakeOwner                 
+        );
+
+        // Create a Person for the “borrower”
+        Person fakeBorrower = new Person(
+            111,                        
+            "Alice Borrower",
+            "borrower@example.com",
+            "testBorrowerPwd",
+            false                      
+        );
+
+        // Now create the BorrowRequest with the arguments
+        BorrowRequest mockBorrowRequest = new BorrowRequest(
+            validId,                 
+            VALID_STATUS,               
+            VALID_START_DATE,
+            VALID_END_DATE,
+            fakeBorrower,            
+            fakeSpecificBoardGame     
+        );
+
+        // Mock findById to return that BorrowRequest
         when(borrowRequestRepo.findById(validId)).thenReturn(Optional.of(mockBorrowRequest));
 
         // Act
@@ -226,6 +268,7 @@ public class BorrowServiceTests {
         verify(borrowRequestRepo, times(1)).findById(validId);
         verify(borrowRequestRepo, times(1)).deleteById(validId);
     }
+
 
     @Test
     public void testDeleteInvalidBorrowRequest() {

@@ -51,6 +51,19 @@ The **BoardRoom** provides the following features:
 | Jason Rustom    | Senior Developer         | 1          | Persistence Layer, Domain Model| 12                  |
 | Nathan Reid     | Developer                | 1          | Persistence Layer              | 11                  |
 
+### Deliverable 2
+(All members contributed equally)
+
+| Team Member     | Role                     | Deliverable| Description of Work                                                      | Time Spent (hours)  |
+|-----------------|--------------------------|------------|--------------------------------------------------------------------------|---------------------|
+| Gracie Diabo    | Developer                | 2          | Service, Controller & Testing: Log In & Person Class + Report            | 20                  |
+| Janelle Tam     | Project Manager          | 2          | Service, Controller & Testing: Board Game Class + Code Review            | 22                  |
+| Natasha Lawford | Developer                | 2          | Service, Controller & Testing: Registration Class + Report               | 21                  |
+| Alison Quach    | Developer                | 2          | Service, Controller & Testing: Event & Review Classes + Report           | 21                  |
+| Malak Oualid    | Senior Developer         | 2          | Service, Controller & Testing: Lending History & Profile + Code Review   | 20                  |
+| Jason Rustom    | Senior Developer         | 2          | Service, Controller & Testing: Board Game & Toggle Account + Code Review | 22                  |
+| Nathan Reid     | Developer                | 2          | Service, Controller & Testing: Borrow Request Class + Code Review        | 21                  |
+
 ## Testing Summary
 We created a persistence test for each model class in the application, such that the test would perform read and write access for the objects, attributes, and references.
 

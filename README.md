@@ -57,7 +57,7 @@ The **BoardRoom** provides the following features:
 | Team Member     | Role                     | Deliverable| Description of Work                                                      | Time Spent (hours)  |
 |-----------------|--------------------------|------------|--------------------------------------------------------------------------|---------------------|
 | Gracie Diabo    | Developer                | 2          | Service, Controller & Testing: Log In & Person Class + Report            | 20                  |
-| Janelle Tam     | Project Manager          | 2          | Service, Controller & Testing: Board Game Class + Code Review            | 22                  |
+| Janelle Tam     | Project Manager          | 2          | Service, Controller & Testing: Board Game & Review Classes + Code Review            | 22                  |
 | Natasha Lawford | Developer                | 2          | Service, Controller & Testing: Registration Class + Report               | 21                  |
 | Alison Quach    | Developer                | 2          | Service, Controller & Testing: Event & Review Classes + Report           | 21                  |
 | Malak Oualid    | Senior Developer         | 2          | Service, Controller & Testing: Lending History & Profile + Code Review   | 20                  |

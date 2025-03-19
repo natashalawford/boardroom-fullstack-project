@@ -115,7 +115,7 @@ public class EventIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertIterableEquals(
-                List.of("End date and time must be in the future."),
+                List.of("Start time cannot be in the past"),
                 response.getBody().getErrors());
     }
 
@@ -183,6 +183,7 @@ public class EventIntegrationTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().length > 0, "There should be at least one event in the list.");
+        assertEquals(this.createdEventId, response.getBody()[0].getId());
     }
 
     @Test

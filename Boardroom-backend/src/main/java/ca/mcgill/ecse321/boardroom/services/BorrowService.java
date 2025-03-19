@@ -10,6 +10,7 @@ import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.dtos.creation.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class BorrowService {
 
     @Transactional
     public BorrowRequest createBorrowRequest(BorrowRequestDtoCreation borrowRequestToCreate) {
+        validateRequestTimes(borrowRequestToCreate.getRequestStartDate(), borrowRequestToCreate.getRequestEndDate());
+
         Person personToFind = personRepo.findById(borrowRequestToCreate.getPersonId()).orElseThrow(
                 () -> new BoardroomException(HttpStatus.NOT_FOUND, "A person with this id does not exist"));
         SpecificBoardGame specificBoardGameToFind = specificBoardGameRepo
@@ -54,11 +57,52 @@ public class BorrowService {
         return borrowRequestRepo.save(borrowRequest);
     }
 
-    public List<BorrowRequest> viewBorrowRequestsByBoardgame(SpecificBoardGame specificBoardGame) {
+    public List<BorrowRequest> viewBorrowRequestsByBoardgame(int specificBoardGameId) {
+        SpecificBoardGame specificBoardGame = specificBoardGameRepo.findById(specificBoardGameId)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A specific board game with this id (%d) does not exist", specificBoardGameId)
+            ));
         return borrowRequestRepo.findBySpecificBoardGameAndStatus(specificBoardGame, RequestStatus.RETURNED);
     }
 
     public List<BorrowRequest> viewPendingBorrowRequests() {
         return borrowRequestRepo.findByStatus(RequestStatus.PENDING);
     }
+
+    public BorrowRequest getBorrowRequestById(int id) {
+        return borrowRequestRepo.findById(id)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A borrow request with this id (%d) does not exist", id)
+            ));
+    }
+
+    @Transactional
+    public void deleteBorrowRequestById(int id) {
+        borrowRequestRepo.findById(id)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A borrow request with this id (%d) does not exist", id)
+            ));
+
+        borrowRequestRepo.deleteById(id);
+    }
+
+    private void validateRequestTimes(LocalDateTime startTime, LocalDateTime endTime) {
+                LocalDateTime now = LocalDateTime.now();
+
+                if (startTime.isBefore(now)) {
+                        throw new BoardroomException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "Start time cannot be in the past");
+                }
+
+                if (endTime.isBefore(startTime)) {
+                        throw new BoardroomException(
+                                        HttpStatus.BAD_REQUEST,
+                                        "End time must be after start time");
+                }
+    }
+
 }

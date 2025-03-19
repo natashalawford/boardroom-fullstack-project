@@ -103,11 +103,12 @@ public class EventServiceTests {
                 VALID_LOCATION, hostId, boardGameName
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
                 () -> eventService.createEvent(invalidEventDto)
         );
 
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Start time cannot be in the past", exception.getMessage());
 
         // Verify that save was never called
@@ -123,11 +124,11 @@ public class EventServiceTests {
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, hostId, boardGameName
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BoardroomException exception = assertThrows(
+                 BoardroomException.class,
                 () -> eventService.createEvent(invalidEventDto)
         );
-
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("End time must be after start time", exception.getMessage());
 
         // Verify that save was never called

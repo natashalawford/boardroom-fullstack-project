@@ -27,8 +27,8 @@ public class RegistrationService {
 
     @Autowired
     public RegistrationService(EventRepository eventRepository,
-                               PersonRepository personRepository,
-                               RegistrationRepository registrationRepository) {
+            PersonRepository personRepository,
+            RegistrationRepository registrationRepository) {
         this.eventRepository = eventRepository;
         this.personRepository = personRepository;
         this.registrationRepository = registrationRepository;
@@ -71,7 +71,8 @@ public class RegistrationService {
         for (Registration registration : existingRegistrations) {
             Event registeredEvent = registration.getKey().getEvent();
             if (eventsOverlap(registeredEvent, event)) {
-                throw new BoardroomException(HttpStatus.BAD_REQUEST, "User has a timing conflict with another registered event: " + registeredEvent.getTitle());
+                throw new BoardroomException(HttpStatus.BAD_REQUEST,
+                        "User has a timing conflict with another registered event: " + registeredEvent.getTitle());
             }
         }
 
@@ -85,15 +86,16 @@ public class RegistrationService {
     // Checks if two events overlap
     private boolean eventsOverlap(Event e1, Event e2) {
         return !(e1.getEndDateTime().isBefore(e2.getStartDateTime()) || // event 1 ending is before event 2 starts
-                 e2.getEndDateTime().isBefore(e1.getStartDateTime())); // otherwise event 2 ending is before event 1 starts
-                 // if neither of these are true, the events overlap
+                e2.getEndDateTime().isBefore(e1.getStartDateTime())); // otherwise event 2 ending is before event 1
+                                                                      // starts
+        // if neither of these are true, the events overlap
     }
 
     @Transactional
     public void unregisterFromEvent(EventRegistrationDto eventRegistrationDto) {
         int personId = eventRegistrationDto.getPersonId();
         Person person = personRepository.findPersonById(personId);
-        
+
         if (person == null) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "Person not found");
         }
@@ -108,22 +110,22 @@ public class RegistrationService {
 
         Registration registration = registrationRepository.findByKeyPersonAndKeyEvent(person, event);
 
-        // If registration is null, the user is not actually registered for this event, throw an exception
+        // If registration is null, the user is not actually registered for this event,
+        // throw an exception
         if (registration == null) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "User is not registered for this event");
         }
 
-        //otherwise, delete the registration
+        // otherwise, delete the registration
         registrationRepository.delete(registration);
     }
 
-    @Transactional
     public Registration getRegistration(int personId, int eventId) {
 
         Person person = personRepository.findPersonById(personId);
         Event event = eventRepository.findEventById(eventId);
 
-        //check if person and event exist
+        // check if person and event exist
         if (person == null) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "Person not found");
         }

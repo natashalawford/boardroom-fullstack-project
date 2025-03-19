@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.boardroom.services;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.creation.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonUpdatePasswordDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
@@ -79,4 +80,27 @@ public class PersonService {
         //Delete person
         personRepo.delete(personToDelete);
     } 
+
+    @Transactional
+    public void changePassword(int id, PersonUpdatePasswordDto passwordDto) { 
+     //dont need this, will be done in controller
+      if (passwordDto == null || passwordDto.getNewPassword() == null || passwordDto.getNewPassword().isEmpty()) {
+          throw new BoardroomException(HttpStatus.BAD_REQUEST, "Password is required");
+      }
+
+      Person person = personRepo.findPersonById(id);
+      if (person == null) {
+          throw new BoardroomException(HttpStatus.NOT_FOUND,
+              String.format("No person has id %d", id));
+      }
+
+      // Optionally, you can validate the old password here
+      if (!person.getPassword().equals(passwordDto.getOldPassword())) {
+          throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid password");
+      }
+
+      person.setPassword(passwordDto.getNewPassword());
+      personRepo.save(person);
+    }
+
 }

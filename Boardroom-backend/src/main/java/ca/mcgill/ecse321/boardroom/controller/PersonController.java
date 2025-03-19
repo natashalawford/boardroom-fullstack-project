@@ -26,7 +26,7 @@ public class PersonController {
     @Autowired
     private PersonService personService;
 
-    
+  
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public PersonResponseDto createPerson(@Valid @RequestBody PersonCreationDto personToCreate) {

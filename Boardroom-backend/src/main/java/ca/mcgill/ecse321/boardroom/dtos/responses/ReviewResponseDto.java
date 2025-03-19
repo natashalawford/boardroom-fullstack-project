@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.boardroom.dtos.responses;
 
+import java.time.LocalTime;
+
 import ca.mcgill.ecse321.boardroom.model.Review;
 
 public class ReviewResponseDto {
@@ -9,6 +11,7 @@ public class ReviewResponseDto {
     private String comment;
     private int authorId;
     private String boardGameName;
+    private LocalTime timeStamp;
 
     @SuppressWarnings("unused")
     private ReviewResponseDto() {
@@ -20,10 +23,15 @@ public class ReviewResponseDto {
         this.comment = review.getComment();
         this.authorId = review.getAuthor().getId();
         this.boardGameName = review.getBoardGame().getTitle();
+        this.timeStamp = review.getTimeStamp();
     }
 
     public int getId() {
         return id;
+    }
+
+    public LocalTime getTimestamp() {
+        return timeStamp;
     }
 
     public int getStars() {

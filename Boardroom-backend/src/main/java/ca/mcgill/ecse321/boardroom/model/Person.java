@@ -53,4 +53,8 @@ public class Person {
         return owner;
     }
 
+    public void setPassword(String passwordChange) {
+        this.password = passwordChange;
+    }
+
 }

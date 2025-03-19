@@ -92,4 +92,5 @@ Please follow these instructions to ensure the project RESTful endpoints documen
 ## Link to the Deliverable 1 Wiki:
 https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-1 
 
-
+## Link to the Deliverable 2 Wiki:
+https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-2

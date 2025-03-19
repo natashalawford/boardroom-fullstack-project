@@ -1,9 +1,9 @@
 package ca.mcgill.ecse321.boardroom.services;
 
+import ca.mcgill.ecse321.boardroom.dtos.creation.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.*;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
-import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

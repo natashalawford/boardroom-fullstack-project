@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.boardroom.dtos;
+package ca.mcgill.ecse321.boardroom.dtos.creation;
 
 import java.time.LocalDateTime;
 

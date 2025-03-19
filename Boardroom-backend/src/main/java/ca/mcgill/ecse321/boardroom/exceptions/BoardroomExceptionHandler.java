@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -17,8 +19,20 @@ public class BoardroomExceptionHandler {
     @ExceptionHandler(BoardroomException.class)
     public ResponseEntity<ErrorDto> handleEventRegistrationException(BoardroomException e) {
         return new ResponseEntity<ErrorDto>(new ErrorDto(e.getMessage()), e.getStatus());
+    }    
+
+    //Update this to make a list of errors and appending to errordto errors field
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) { 
+        ErrorDto errorDto = new ErrorDto(new ArrayList<>());
+        for (FieldError error : e.getBindingResult().getFieldErrors()) {
+            errorDto.getErrors().add(error.getDefaultMessage());
+        }
+
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
+    //Dont need this i think
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException e) {
         List<String> errors = new ArrayList<>();

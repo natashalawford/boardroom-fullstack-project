@@ -37,9 +37,9 @@ import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
-import ca.mcgill.ecse321.boardroom.dtos.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
 import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.BorrowRequestDtoCreation;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

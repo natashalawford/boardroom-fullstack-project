@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.boardroom.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -16,18 +17,25 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
-import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.BoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.SpecificBoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
+import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 
 @SpringBootTest
 @MockitoSettings
 public class GameOwnerServiceTests {
+    @Mock
+    private BoardGameRepository boardGameRepo;
+
     @Mock
     private SpecificBoardGameRepository specificBoardGameRepo;
 
@@ -41,17 +49,23 @@ public class GameOwnerServiceTests {
     private GameOwnerService gameOwnerService;
 
     //Attributes for specific board game
+    private static final int VALID_SPECIFIC_ID = 1042;
     private static final int VALID_SPECIFIC_PICTURE = 1;
     private static final String VALID_SPECIFIC_DESCRIPTION = "This is a specific board game";
     private static final GameStatus VALID_STATUS = GameStatus.AVAILABLE; 
 
+    private static final int UPDATED_VALID_SPECIFIC_PICTURE = 5; 
+    private static final String UPDATED_VALID_SPECIFIC_DESCRIPTION = "This is an updated specific board game";
+    private static final GameStatus UPDATED_VALID_STATUS = GameStatus.UNAVAILABLE;
+
     //Attributes for board game
     private static final String VALID_TITLE = "Monopoly";
     private static final String VALID_DESCRIPTION = "This is monopoly";
-    private static final int VALID_PLAYERSNEEDED = 5;
+    private static final int VALID_PLAYERS_NEEDED = 5;
     private static final int VALID_PICTURE = 2;
 
     //Attributes for owner
+    private static final int VALID_OWNER_ID = 1351;
     private static final String VALID_NAME = "John Doe";
     private static final String VALID_EMAIL = "john.doe@gmail.com";
     private static final String VALID_PASSWORD = "1234";
@@ -61,58 +75,61 @@ public class GameOwnerServiceTests {
     BoardGame VALID_BOARDGAME;
     Person VALID_GAME_OWNER;
     
-    @BeforeEach
-    public void objectInstantiation() {
-        VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
-        VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER); 
+    // @BeforeEach
+    // public void objectInstantiation() {
+    //     VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
+    //     VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER); 
+    // } 
+
+
+    //CHECK IF THERE IS REPITITION IN MOST OF THE TESTS AND USE BEFORE EACH
+
+    @Test
+    public void testCreateValidBoardGame() {
+        //Arrange
+        BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
+
+        when(boardGameRepo.existsByTitle(anyString())).thenReturn(false);
+        when(boardGameRepo.save(any(BoardGame.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
+
+        //Act
+        BoardGame createdBoardGame = gameOwnerService.createBoardGame(boardGameToCreate);
+
+
+        //Assert
+        assertNotNull(createdBoardGame);
+        assertEquals(VALID_TITLE, createdBoardGame.getTitle());
+        assertEquals(VALID_DESCRIPTION, createdBoardGame.getDescription());
+        assertEquals(VALID_PLAYERS_NEEDED, createdBoardGame.getPlayersNeeded());
+        assertEquals(VALID_PICTURE, createdBoardGame.getPicture());
+
+        verify(boardGameRepo, times(1)).existsByTitle(anyString());
+        verify(boardGameRepo, times(1)).save(any(BoardGame.class)); 
     }
-    
-    // @Test
-    // public void testFindValidSpecificBoardGame() {
-    //     //Arrange
-    //     // BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
 
-    //     // Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+    @Test
+    public void testCreateInvalidBoardGameTitleAlreadyExists() {
+        //Arrange
+        BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
 
-    //     when(specificBoardGameRepo.findSpecificBoardGameById(1)).thenReturn(new SpecificBoardGame(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_BOARDGAME, VALID_GAME_OWNER));
+        when(boardGameRepo.existsByTitle(anyString())).thenReturn(true);
+        
+        //Act + Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> gameOwnerService.createBoardGame(boardGameToCreate));
 
-    //     //Act
-    //     SpecificBoardGame specificBoardGame = boardGameService.getSpecificBoardGameById(1);
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 
-    //     //Assert
-    //     assertNotNull(specificBoardGame);
-    //     assertEquals(VALID_SPECIFIC_PICTURE, specificBoardGame.getPicture());
-    //     assertEquals(VALID_SPECIFIC_DESCRIPTION, specificBoardGame.getDescription());
-    //     assertEquals(VALID_STATUS, specificBoardGame.getStatus());
-    //     assertEquals(VALID_BOARDGAME, specificBoardGame.getBoardGame());
-    //     assertEquals(VALID_GAME_OWNER, specificBoardGame.getOwner());
+        verify(boardGameRepo, times(0)).save(any(BoardGame.class));
+    }
 
-    //     verify(specificBoardGameRepo, times(1)).findSpecificBoardGameById(anyInt());
-    // }
-
-    // @Test
-    // public void testFindInvalidSpecificBoardGame() {
-
-    // }
-    
-    
     @Test
     public void testCreateValidSpecificBoardGame() {
         //Arrange
+        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_SPECIFIC_PICTURE, VALID_DESCRIPTION, VALID_STATUS, VALID_TITLE, VALID_OWNER_ID);
 
-        // BoardGame VALID_BOARDGAME = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERSNEEDED, VALID_PICTURE);
-        // Person VALID_GAME_OWNER = new Person(VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER); 
-
-
-        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_TITLE, 1);
-
-
-        when(personService.findPersonById(anyInt())).thenReturn(VALID_GAME_OWNER);
-        
-        when(boardGameService.getBoardGameByTitle(anyString())).thenReturn(VALID_BOARDGAME);
-        
+        when(personService.findPersonById(anyInt())).thenReturn(new Person(VALID_OWNER_ID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER));
+        when(boardGameService.getBoardGameByTitle(anyString())).thenReturn(new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE));
         when(specificBoardGameRepo.save(any(SpecificBoardGame.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
-
 
         //Act
         SpecificBoardGame createdSpecificBoardGame = gameOwnerService.createSpecificBoardGame(specificBoardGameToCreate);
@@ -120,55 +137,80 @@ public class GameOwnerServiceTests {
         //Assert
         assertNotNull(createdSpecificBoardGame);
         assertEquals(VALID_SPECIFIC_PICTURE, createdSpecificBoardGame.getPicture());
-        assertEquals(VALID_SPECIFIC_DESCRIPTION, createdSpecificBoardGame.getDescription());
+        assertEquals(VALID_DESCRIPTION, createdSpecificBoardGame.getDescription());
         assertEquals(VALID_STATUS, createdSpecificBoardGame.getStatus());
-        assertEquals(VALID_BOARDGAME, createdSpecificBoardGame.getBoardGame());
-        assertEquals(VALID_GAME_OWNER, createdSpecificBoardGame.getOwner()); 
-
-        verify(personService, times(1)).findPersonById(anyInt());
-        verify(boardGameService, times(1)).getBoardGameByTitle(anyString());
-        verify(specificBoardGameRepo, times(1)).save(any(SpecificBoardGame.class));
-
+        assertEquals(VALID_TITLE, createdSpecificBoardGame.getBoardGame().getTitle());
+        assertEquals(VALID_OWNER_ID, createdSpecificBoardGame.getOwner().getId());
     }
 
     // @Test
-    // public void testCreateInvalidSpecificBoardGame1() {
+    // public void testCreate
 
-    // }
+    @Test
+    public void testCreateInvalidSpecificBoardGamePersonNotOwner() {
+        //Arrange
+        SpecificBoardGameCreationDto specificBoardGameToCreate = new SpecificBoardGameCreationDto(VALID_SPECIFIC_PICTURE, VALID_DESCRIPTION, VALID_STATUS, VALID_TITLE, VALID_OWNER_ID);
 
-    // @Test
-    // public void testCreateInvalidSpecificBoardGame2() {
+        when(personService.findPersonById(anyInt())).thenReturn(new Person(VALID_OWNER_ID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, false));
 
-    // }
+        //Act + Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> gameOwnerService.createSpecificBoardGame(specificBoardGameToCreate));
+
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+
+        verify(specificBoardGameRepo, times(0)).save(any(SpecificBoardGame.class));
+    }
 
     @Test
     public void testUpdateValidSpecificBoardGame() {
-        //Arrange 
+        //Arrange
+        BoardGame boardGame = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
+        Person person = new Person(VALID_OWNER_ID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+        SpecificBoardGameRequestDto specificBoardGameToUpdate = new SpecificBoardGameRequestDto(UPDATED_VALID_SPECIFIC_DESCRIPTION, UPDATED_VALID_SPECIFIC_PICTURE, UPDATED_VALID_STATUS);
 
-        SpecificBoardGame existingSpecificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, VALID_BOARDGAME, VALID_GAME_OWNER);
-
-        when(boardGameService.getSpecificBoardGameById(anyInt())).thenReturn(existingSpecificBoardGame);
+        when(boardGameService.getSpecificBoardGameById(anyInt())).thenReturn(new SpecificBoardGame(VALID_PICTURE, VALID_SPECIFIC_DESCRIPTION, VALID_STATUS, boardGame, person));
         when(specificBoardGameRepo.save(any(SpecificBoardGame.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
-        int id = 1;
-        SpecificBoardGameRequestDto specificBoardGameToUpdate = new SpecificBoardGameRequestDto(VALID_SPECIFIC_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS);
-    
         //Act
-        SpecificBoardGame updatedSpecificBoardGame = gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate);
+        SpecificBoardGame updatedSpecificBoardGame = gameOwnerService.updateSpecificBoardGame(1, specificBoardGameToUpdate);
 
         //Assert
         assertNotNull(updatedSpecificBoardGame);
-        assertEquals(VALID_SPECIFIC_PICTURE, updatedSpecificBoardGame.getPicture());
-        assertEquals(VALID_SPECIFIC_DESCRIPTION, updatedSpecificBoardGame.getDescription());
-        assertEquals(VALID_STATUS, updatedSpecificBoardGame.getStatus());
-        assertEquals(VALID_BOARDGAME.getTitle(), updatedSpecificBoardGame.getBoardGame().getTitle());
-        assertEquals(VALID_GAME_OWNER.getId(), updatedSpecificBoardGame.getOwner().getId());
-
-        verify(boardGameService, times(1)).getSpecificBoardGameById(anyInt());
-        verify(specificBoardGameRepo, times(1)).save(any(SpecificBoardGame.class));
+        assertEquals(UPDATED_VALID_SPECIFIC_DESCRIPTION, updatedSpecificBoardGame.getDescription());
+        assertEquals(UPDATED_VALID_SPECIFIC_PICTURE, updatedSpecificBoardGame.getPicture());
+        assertEquals(UPDATED_VALID_STATUS, updatedSpecificBoardGame.getStatus());
+        assertEquals(boardGame.getTitle(), updatedSpecificBoardGame.getBoardGame().getTitle());
+        assertEquals(person.getId(), updatedSpecificBoardGame.getOwner().getId());        
     }
 
-    // @Test
-    // public void testUpdateInvalidSpecificBoardGame() {}
+    @Test
+    public void testDeleteValidBoardGame() {
+        //Arrange
+        BoardGame boardGame = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
 
+        when(boardGameService.getBoardGameByTitle(anyString())).thenReturn(boardGame);
+
+        //Act
+        gameOwnerService.deleteBoardGame(VALID_TITLE);
+
+        //Assert
+        verify(boardGameRepo, times(1)).delete(any(BoardGame.class));
+    }
+
+    @Test 
+    public void testDeleteValidSpecificBoardGame() {
+        //Arrange
+        BoardGame boardGame = new BoardGame(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
+        Person person = new Person(VALID_OWNER_ID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_OWNER);
+
+        SpecificBoardGame specificBoardGame = new SpecificBoardGame(VALID_SPECIFIC_ID, VALID_DESCRIPTION, VALID_SPECIFIC_PICTURE, VALID_STATUS, boardGame, person);
+
+        when(boardGameService.getSpecificBoardGameById(anyInt())).thenReturn(specificBoardGame);
+
+        //Act
+        gameOwnerService.deleteSpecificBoardGame(VALID_SPECIFIC_ID);
+
+        //Assert
+        verify(specificBoardGameRepo, times(1)).delete(any(SpecificBoardGame.class));
+    }
 }

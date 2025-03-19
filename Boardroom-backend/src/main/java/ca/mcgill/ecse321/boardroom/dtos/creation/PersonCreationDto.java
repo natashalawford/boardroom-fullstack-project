@@ -1,5 +1,6 @@
-package ca.mcgill.ecse321.boardroom.dtos;
+package ca.mcgill.ecse321.boardroom.dtos.creation;
 
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

@@ -22,6 +22,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import ca.mcgill.ecse321.boardroom.dtos.creation.BoardGameCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.SpecificBoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.BoardGameCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
 import ca.mcgill.ecse321.boardroom.dtos.SpecificBoardGameCreationDto;

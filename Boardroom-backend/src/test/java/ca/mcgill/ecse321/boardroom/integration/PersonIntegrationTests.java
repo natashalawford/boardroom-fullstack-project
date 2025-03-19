@@ -165,7 +165,7 @@ public class PersonIntegrationTests {
 
         //Assert
         assertNotNull(response);
-        assertEquals("A person with this id does not exist", response.getBody().getErrors().get(0));
+        assertEquals("No person has id -1", response.getBody().getErrors().get(0));
 
     }
 
@@ -263,7 +263,7 @@ public class PersonIntegrationTests {
         //Assert
         assertNotNull(response);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("This person does not exist, it cannot be deleted", response.getBody().getErrors().get(0));
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(String.format("No person has id %d", createdPersonId), response.getBody().getErrors().get(0));
     }
 }

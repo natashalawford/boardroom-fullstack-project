@@ -73,8 +73,10 @@ public class GameOwnerIntegrationTests {
         personRepo.deleteAll();
     }
 
-    @SuppressWarnings("null")
+    //should be testing all the service tests and also the ones that you didn't test
+
     @Test
+    @SuppressWarnings("null")
     @Order(0)
     public void testCreateValidBoardGame() {
         // Arrange
@@ -96,9 +98,11 @@ public class GameOwnerIntegrationTests {
         assertEquals(VALID_PICTURE, response.getBody().getPicture());
     }
 
+
+
     @SuppressWarnings("null")
     @Test
-    @Order(1)
+    @Order(2)
     public void testCreateValidSpecificBoardGame() {
         // Arrange
         String url = "/specificboardgame";

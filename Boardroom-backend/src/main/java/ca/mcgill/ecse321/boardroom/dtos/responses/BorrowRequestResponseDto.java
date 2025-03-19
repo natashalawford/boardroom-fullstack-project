@@ -1,23 +1,35 @@
-package ca.mcgill.ecse321.boardroom.dtos;
+package ca.mcgill.ecse321.boardroom.dtos.responses;
 
 import java.time.LocalDateTime;
 
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
+import jakarta.validation.constraints.NotNull;
 
-public class BorrowRequestDtoSpecific {
-    private int id;
+public class BorrowRequestResponseDto {
+
+    @NotNull(message = "id is required")
+    private Integer id;
+
+    @NotNull(message = "status is required")
     private RequestStatus status;
-    private LocalDateTime requestStartDate;
-    private LocalDateTime requestEndDate;
-    private int personId;
-    private int specificBoardGameId;
 
-    public BorrowRequestDtoSpecific() {
-        
+    @NotNull(message = "requestStartDate is required")
+    private LocalDateTime requestStartDate;
+
+    @NotNull(message = "requestEndDate is required")
+    private LocalDateTime requestEndDate;
+
+    @NotNull(message = "personId is required")
+    private Integer personId;
+
+    @NotNull(message = "specificBoardGameId is required")
+    private Integer specificBoardGameId;
+
+    public BorrowRequestResponseDto() {
     }
     
-    public BorrowRequestDtoSpecific(BorrowRequest borrowRequest) {
+    public BorrowRequestResponseDto(BorrowRequest borrowRequest) {
         this.id = borrowRequest.getId();
         this.status = borrowRequest.getStatus();
         this.requestStartDate = borrowRequest.getRequestStartDate();

@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
-import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.EventResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
@@ -115,7 +115,7 @@ public class EventIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertIterableEquals(
-                List.of("End date and time must be in the future."),
+                List.of("Start time cannot be in the past"),
                 response.getBody().getErrors());
     }
 
@@ -183,6 +183,7 @@ public class EventIntegrationTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().length > 0, "There should be at least one event in the list.");
+        assertEquals(this.createdEventId, response.getBody()[0].getId());
     }
 
     @Test

@@ -6,4 +6,6 @@ import ca.mcgill.ecse321.boardroom.model.BoardGame;
 
 public interface BoardGameRepository extends CrudRepository<BoardGame, String> {
     public BoardGame findBoardGameByTitle(String title);
+
+    public boolean existsByTitle(String title);
 }

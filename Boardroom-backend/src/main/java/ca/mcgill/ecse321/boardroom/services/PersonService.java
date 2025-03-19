@@ -1,15 +1,14 @@
 package ca.mcgill.ecse321.boardroom.services;
 
-import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.PersonCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.PersonUpdatePasswordDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import jakarta.transaction.Transactional;
-import java.util.Optional;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,15 +22,20 @@ public class PersonService {
 
     public Person findPersonById(int id) {
         Person person = personRepo.findPersonById(id);
-        if (person == null) {
+        if (null == person) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, String.format(
                     "No person has id %d", id));
         }
         return person;
     }
 
-    @Transactional
+   @Transactional
     public Person createPerson(PersonCreationDto personToCreate) {
+        //Make sure the email is not in use  
+        if (personRepo.existsByEmail(personToCreate.getEmail())) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This email is already in use");
+        }
+
         Person newPerson = new Person(personToCreate.getName(),
                 personToCreate.getEmail(),
                 personToCreate.getPassword(),
@@ -42,66 +46,61 @@ public class PersonService {
 
     @Transactional
     public Person updatePerson(int id, PersonRequestDto personToUpdateDto) {
-
         // First check if this person exists, if not throw error
-        Person personToUpdate = personRepo.findPersonById(id);
-
-        if (null == personToUpdate) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND, "A person with " +
-                    "this id does not exist");
-        }
+        Person personToUpdate = this.findPersonById(id);
 
         Person updatedPerson = new Person(id,
                 personToUpdateDto.getName(), personToUpdateDto.getEmail(),
                 personToUpdate.getPassword(), personToUpdateDto.isOwner());
 
         return personRepo.save(updatedPerson);
+    } 
+
+    public PersonResponseDto login(PersonLoginDto loginDto) { 
+        // Find person with email
+        Person existingPerson = personRepo.findByEmail(loginDto.getEmail());
+
+        if (null == existingPerson) {
+            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
+
+        // Verify password
+        if (!existingPerson.getPassword().equals(loginDto.getPassword())) {
+            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
+
+        return new PersonResponseDto(existingPerson);
     }
 
-    //delete person
-    @Transactional
-    public void deletePersonById(int id) {
-        Person person = personRepo.findPersonById(id);
-        if (person == null) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND,
-                String.format("No person has id %d", id));
-        }
-        personRepo.deleteById(id);
-    }
-
-    @Transactional
-    public PersonResponseDto login(PersonLoginDto loginDto) {
-        if (loginDto.getEmail() == null || loginDto.getPassword() == null) {
-            throw new BoardroomException(HttpStatus.BAD_REQUEST, "Email and password are required.");
-        }
-
-        // check for valid email, then password and throw error if invalid
-        Optional<Person> optionalPerson = personRepo.findByEmail(loginDto.getEmail());
-        if (optionalPerson.isEmpty()) {
-            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
-        }
-
-        Person person = optionalPerson.get();
-        if (!person.getPassword().equals(loginDto.getPassword())) {
-            throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
-        }
-
-        return new PersonResponseDto(person);
-    }
-
-    //Maybe this should return a boolean or something
     @Transactional
     public void deletePerson(int id) {
         //Get person to delete
-        Person personToDelete = findPersonById(id);
-
-        //make sure person exists
-        if (null == personToDelete) {
-            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This person does not exist, it cannot be deleted");
-        }
+        Person personToDelete = this.findPersonById(id); 
 
         //Delete person
         personRepo.delete(personToDelete);
+    } 
+
+    @Transactional
+    public void changePassword(int id, PersonUpdatePasswordDto passwordDto) { 
+     //dont need this, will be done in controller
+      if (passwordDto == null || passwordDto.getNewPassword() == null || passwordDto.getNewPassword().isEmpty()) {
+          throw new BoardroomException(HttpStatus.BAD_REQUEST, "Password is required");
+      }
+
+      Person person = personRepo.findPersonById(id);
+      if (person == null) {
+          throw new BoardroomException(HttpStatus.NOT_FOUND,
+              String.format("No person has id %d", id));
+      }
+
+      // Optionally, you can validate the old password here
+      if (!person.getPassword().equals(passwordDto.getOldPassword())) {
+          throw new BoardroomException(HttpStatus.UNAUTHORIZED, "Invalid password");
+      }
+
+      person.setPassword(passwordDto.getNewPassword());
+      personRepo.save(person);
     }
 
 }

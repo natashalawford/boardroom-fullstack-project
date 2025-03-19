@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class SpecificBoardGameRequestDto {
-    @NotBlank(message = "")
+    @NotBlank(message = "Description must not be blank")
     private String description;
 
-    @NotNull(message = "")
+    @NotNull(message = "Picture cannot be null")
     private int picture;
 
-    @NotNull(message = "")
+    @NotNull(message = "Status cannot be null")
     private GameStatus status;
 
     private SpecificBoardGameRequestDto() {}

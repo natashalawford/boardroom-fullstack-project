@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.boardroom.dtos;
+package ca.mcgill.ecse321.boardroom.dtos.creation;
 
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -8,13 +8,13 @@ public class SpecificBoardGameCreationDto {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @NotBlank(message = "A photo of the board game is required")
+    @NotNull(message = "A photo of the board game is required")
     private int picture;
 
     @NotNull(message = "A board game status is required")
     private GameStatus gameStatus;
 
-    @NotNull(message = "A board game title is required")
+    @NotBlank(message = "A board game title is required")
     private String boardGameTitle;
 
     @NotNull(message = "A board game owner is required")

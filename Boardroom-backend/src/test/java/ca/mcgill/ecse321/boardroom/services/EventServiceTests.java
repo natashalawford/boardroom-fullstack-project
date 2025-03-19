@@ -1,12 +1,12 @@
 package ca.mcgill.ecse321.boardroom.services;
 
+import ca.mcgill.ecse321.boardroom.dtos.creation.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
-import ca.mcgill.ecse321.boardroom.dtos.EventCreationDto;
 import ca.mcgill.ecse321.boardroom.model.Event;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -103,11 +103,12 @@ public class EventServiceTests {
                 VALID_LOCATION, hostId, boardGameName
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
                 () -> eventService.createEvent(invalidEventDto)
         );
 
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Start time cannot be in the past", exception.getMessage());
 
         // Verify that save was never called
@@ -123,11 +124,11 @@ public class EventServiceTests {
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, hostId, boardGameName
         );
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BoardroomException exception = assertThrows(
+                 BoardroomException.class,
                 () -> eventService.createEvent(invalidEventDto)
         );
-
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("End time must be after start time", exception.getMessage());
 
         // Verify that save was never called

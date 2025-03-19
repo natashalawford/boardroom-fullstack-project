@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.boardroom.services;
 
-import ca.mcgill.ecse321.boardroom.dtos.ReviewCreationDto;
+import ca.mcgill.ecse321.boardroom.dtos.creation.ReviewCreationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 import ca.mcgill.ecse321.boardroom.model.*;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
@@ -8,18 +8,18 @@ import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.ReviewRepository;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@MockitoSettings
 public class ReviewServiceTests {
 
     @Mock
@@ -64,6 +65,9 @@ public class ReviewServiceTests {
                         list.add(VALID_REVIEW);
                         return list;
                 });
+        lenient().when(boardGameRepository.findBoardGameByTitle(boardGameName)).thenAnswer((@SuppressWarnings("unused") InvocationOnMock invocation) -> {
+                    return VALID_BOARD_GAME;
+            });
     }
 
     @Test
@@ -82,6 +86,7 @@ public class ReviewServiceTests {
 
         // Assert
         assertNotNull(createdReview);
+        assertEquals(VALID_REVIEW.getId(), createdReview.getId());
         assertEquals(VALID_STARS, createdReview.getStars());
         assertEquals(VALID_COMMENT, createdReview.getComment());
         assertEquals(VALID_AUTHOR, createdReview.getAuthor());
@@ -91,13 +96,13 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testCreateReviewWithInvalidStars() {
+    public void testCreateReviewWithInvalidStars_0() {
         // Arrange: Rating below 1
         ReviewCreationDto invalidReviewDto = new ReviewCreationDto(0, VALID_COMMENT, authorId, boardGameName);
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
                 () -> reviewService.createReview(invalidReviewDto)
         );
 
@@ -108,7 +113,24 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testCreateEventWithNonexistentBoardGame() {
+    public void testCreateReviewWithInvalidStars_6() {
+        // Arrange: Rating below 1
+        ReviewCreationDto invalidReviewDto = new ReviewCreationDto(6, VALID_COMMENT, authorId, boardGameName);
+
+        // Act & Assert
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> reviewService.createReview(invalidReviewDto)
+        );
+
+        assertEquals("Rating must be between 1 and 5 stars.", exception.getMessage());
+
+        // Verify that save was never called
+        verify(reviewRepository, never()).save(any(Review.class));
+    }
+
+    @Test
+    public void testCreateReviewWithNonexistentBoardGame() {
         when(personRepository.findById(authorId)).thenReturn(Optional.of(VALID_AUTHOR));
         when(boardGameRepository.findById("NonexistentGame")).thenReturn(Optional.empty());
 
@@ -128,7 +150,7 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testCreateEventWithNonexistentAuthor() {
+    public void testCreateReviewWithNonexistentAuthor() {
         when(personRepository.findById(999)).thenReturn(Optional.empty());
 
         ReviewCreationDto invalidReviewDto = new ReviewCreationDto(
@@ -150,12 +172,28 @@ public class ReviewServiceTests {
     public void testGetReviewsForBoardGame() {
         List<Review> reviews = new ArrayList<Review>();
         reviews = reviewService.getReviewsForBoardGame(VALID_BOARD_GAME.getTitle());
-        Review review = reviews.get(0);
-        assertNotNull(review);
+        assertEquals(1, reviews.size());
+        assertTrue(reviews.contains(VALID_REVIEW));
     }
 
     @Test
-    public void testDeleteEventById_Success() {
+    public void testGetReviewsForBoardGameWithInvalidTitle() {
+        // Arrange
+        String invalidTitle = "NonexistentGame";
+        lenient().when(boardGameRepository.findById(invalidTitle)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        BoardroomException exception = assertThrows(
+                BoardroomException.class,
+                () -> reviewService.getReviewsForBoardGame(invalidTitle)
+        );
+
+        assertEquals("A board game with this title does not exist", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    public void testDeleteReviewById_Success() {
         // Arrange
         int reviewId = 5;
         LocalTime now = LocalTime.now();
@@ -173,7 +211,7 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testDeleteEventById_NotFound() {
+    public void testDeleteReviewById_NotFound() {
         // Arrange
         int eventId = 99; // Nonexistent event
         when(reviewRepository.findReviewById(eventId)).thenReturn(null);
@@ -184,7 +222,7 @@ public class ReviewServiceTests {
                 () -> reviewService.deleteReviewById(eventId)
         );
 
-        assertEquals("no review has ID 99", exception.getMessage());
+        assertEquals("No review has ID 99", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
 
         verify(reviewRepository, never()).deleteById(anyInt());

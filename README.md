@@ -68,7 +68,9 @@ The **BoardRoom** provides the following features:
 We created a persistence test for each model class in the application, such that the test would perform read and write access for the objects, attributes, and references.
 
 We implemented service and integration tests to validate the core logic and overall system behavior:
+
 Service Tests: These tests focus on validating the business logic of the services. We tested various scenarios, including valid and invalid inputs, expected outputs, and exception handling.
+
 Integration Tests: These tests verify the interaction between different components, including the persistence layer and external dependencies. They ensure that database operations, API interactions, and service-layer logic work together as expected in a real-world scenario.
 
 ## Testing Configuration

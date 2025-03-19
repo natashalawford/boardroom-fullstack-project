@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -26,9 +23,6 @@ import ca.mcgill.ecse321.boardroom.dtos.ErrorDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.creation.PersonCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.PersonCreationDto;
-import ca.mcgill.ecse321.boardroom.dtos.PersonLoginDto;
-import ca.mcgill.ecse321.boardroom.dtos.PersonRequestDto;
 import ca.mcgill.ecse321.boardroom.dtos.PersonUpdatePasswordDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.PersonResponseDto;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
@@ -240,42 +234,6 @@ public class PersonIntegrationTests {
 
     @Test
     @Order(9)
-    public void testDeleteValidPerson() {
-        //Arrange
-        String url = "/people/{id}";
-
-        //Act
-        ResponseEntity<Void> response = client.exchange(url, HttpMethod.DELETE, null, Void.class, createdPersonId);
-
-        //Assert
-        assertNotNull(response);
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-
-        //Check with repo to make sure it doesn't exist
-        assertNull(personRepo.findPersonById(createdPersonId));
-
-    }
-
-    @Test
-    @SuppressWarnings("null")
-    @Order(10)
-    public void testDeleteInvalidPerson() {
-        //Arrange
-        String url = "/people/{id}";
-
-        //Act
-        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.DELETE, null, ErrorDto.class, createdPersonId);
-
-        //Assert
-        assertNotNull(response);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(String.format("No person has id %d", createdPersonId), response.getBody().getErrors().get(0));
-    }
-
-    @Test
-    @Order(11)
     public void testChangePasswordValid() {
         // Arrange
         String url = "/people/{id}/password";
@@ -293,7 +251,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(12)
+    @Order(10)
     public void testChangePasswordInvalidId() {
         // Arrange
         int nonExistentId = 9999;
@@ -314,7 +272,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(13)
+    @Order(11)
     public void testChangePasswordInvalidPassword() {
         // Arrange
         String url = "/people/{id}/password";
@@ -330,7 +288,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(14)
+    @Order(12)
     public void testChangePasswordEmptyNewPassword() {
         // Arrange
         String url = "/people/{id}/password";
@@ -347,7 +305,7 @@ public class PersonIntegrationTests {
     }
 
     @Test
-    @Order(15)
+    @Order(13)
     public void testChangePasswordNullNewPassword() {
         // Arrange
         String url = "/people/{id}/password";
@@ -362,4 +320,39 @@ public class PersonIntegrationTests {
         assertEquals("Password is required", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
     }
 
+    @Test
+    @Order(14)
+    public void testDeleteValidPerson() {
+        //Arrange
+        String url = "/people/{id}";
+
+        //Act
+        ResponseEntity<Void> response = client.exchange(url, HttpMethod.DELETE, null, Void.class, createdPersonId);
+
+        //Assert
+        assertNotNull(response);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        //Check with repo to make sure it doesn't exist
+        assertNull(personRepo.findPersonById(createdPersonId));
+
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    @Order(15)
+    public void testDeleteInvalidPerson() {
+        //Arrange
+        String url = "/people/{id}";
+
+        //Act
+        ResponseEntity<ErrorDto> response = client.exchange(url, HttpMethod.DELETE, null, ErrorDto.class, createdPersonId);
+
+        //Assert
+        assertNotNull(response);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(String.format("No person has id %d", createdPersonId), response.getBody().getErrors().get(0));
+    }
 }

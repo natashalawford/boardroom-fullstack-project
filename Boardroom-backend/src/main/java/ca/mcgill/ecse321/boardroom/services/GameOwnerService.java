@@ -33,12 +33,16 @@ public class GameOwnerService {
 
     @Transactional
     public BoardGame createBoardGame(BoardGameCreationDto boardGameToCreate) {
+        //Make sure boardgame with this title doesn't already exist
+        if (boardGameRepo.existsByTitle(boardGameToCreate.getTitle())) {
+            throw new BoardroomException(HttpStatus.BAD_REQUEST, "A board game with this title already exists");
+        }
+
         BoardGame boardGame = new BoardGame(boardGameToCreate.getTitle(),
                 boardGameToCreate.getDescription(),
                 boardGameToCreate.getPlayersNeeded(),
                 boardGameToCreate.getPicture());
         
-                //Issue with this - save updates if the title already exists - we need to use persist() so that it throws an error if its in the table already
         return boardGameRepo.save(boardGame);
     }
 
@@ -63,13 +67,9 @@ public class GameOwnerService {
 
     @Transactional
     public SpecificBoardGame updateSpecificBoardGame(int id, SpecificBoardGameRequestDto specificBoardGameToUpdate) {
-        //Make sure this specific board game exists
+        //Make sure this specific board game exists - boardgameservice will throw error
         SpecificBoardGame existingSpecificBoardGame = boardGameService.getSpecificBoardGameById(id);
-
-        if (null == existingSpecificBoardGame) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND, "This specific board game does not exist, cannot update it");
-        }
-
+ 
         //Construct new specific board game with updating attributes
         SpecificBoardGame updatedSpecificBoardGame = new SpecificBoardGame(id, specificBoardGameToUpdate.getDescription(), specificBoardGameToUpdate.getPicture(), specificBoardGameToUpdate.getStatus(), existingSpecificBoardGame.getBoardGame(), existingSpecificBoardGame.getOwner());
 
@@ -78,25 +78,16 @@ public class GameOwnerService {
 
     @Transactional
     public void deleteBoardGame(String title) {
-        //get board game to delete
+        //Get board game to delete
         BoardGame boardGameToDelete = boardGameService.getBoardGameByTitle(title);
-
-        if (null == boardGameToDelete) {
-            throw new BoardroomException(HttpStatus.BAD_REQUEST, "This board game does not exist");
-        }
-
+        //Delete board game
         boardGameRepo.delete(boardGameToDelete);
     }
 
     @Transactional
     public void deleteSpecificBoardGame(int id) {
-        //Get board game to delete
-        SpecificBoardGame specificBoardGameToDelete = specificBoardGameRepo.findSpecificBoardGameById(id);
-
-        //Make sure this board game exists
-        if (specificBoardGameToDelete == null) {
-            throw new BoardroomException(HttpStatus.NOT_FOUND, String.format("This specific board game with id %d does not exist, so it cannot be deleted.", id));
-        }
+        //Get board game to delete 
+        SpecificBoardGame specificBoardGameToDelete = boardGameService.getSpecificBoardGameById(id);
 
         //Delete specific board game
         specificBoardGameRepo.delete(specificBoardGameToDelete); 

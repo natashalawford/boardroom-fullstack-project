@@ -139,7 +139,7 @@ public class PersonServiceTests {
         personService.deletePerson(validId);
 
         // Assert
-        verify(personRepo, times(1)).findPersonById(validId);
+        verify(personService, times(1)).findPersonById(validId);
         verify(personRepo, times(1)).delete(existingPerson);
     }
  

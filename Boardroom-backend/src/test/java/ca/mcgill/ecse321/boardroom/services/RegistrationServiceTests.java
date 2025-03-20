@@ -7,7 +7,6 @@ import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
-import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -70,16 +69,15 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testRegisterForEvent_PersonNotFound() {
+    public void testInvalidRegisterForEventPersonNotFound() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(null);
 
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.registerForEvent(eventRegistrationDto));
+                () -> registrationService.registerForEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("Person not found", exception.getMessage());
@@ -88,17 +86,16 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testRegisterForEvent_EventNotFound() {
+    public void testInvalidRegisterForEventEventNotFound() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
-
+        
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(null);
 
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.registerForEvent(eventRegistrationDto));
+                () -> registrationService.registerForEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("Event not found", exception.getMessage());
@@ -107,11 +104,11 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testRegisterForEvent_EventIsFull() {
+    public void testInvalidRegisterForEventEventIsFull() {
         // Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+        
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
@@ -120,7 +117,7 @@ public class RegistrationServiceTests {
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.registerForEvent(eventRegistrationDto));
+                () -> registrationService.registerForEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("Event is full", exception.getMessage());
@@ -129,11 +126,10 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testRegisterForEvent_UserAlreadyRegistered() {
+    public void testInvalidRegisterForEventUserAlreadyRegistered() {
         // Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
@@ -142,7 +138,7 @@ public class RegistrationServiceTests {
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.registerForEvent(eventRegistrationDto));
+                () -> registrationService.registerForEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("User is already registered for this event", exception.getMessage());
@@ -151,11 +147,11 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testRegisterForEvent_Success() {
+    public void testValidRegisterForEvent() {
         // Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
@@ -163,7 +159,7 @@ public class RegistrationServiceTests {
         when(registrationRepository.existsByKeyPersonAndKeyEvent(PERSON, VALID_EVENT)).thenReturn(false);
 
         // Act
-        Registration registration = registrationService.registerForEvent(eventRegistrationDto);
+        Registration registration = registrationService.registerForEvent(PERSON_ID, EVENT_ID);
 
         // Assert
         assertNotNull(registration);
@@ -173,7 +169,7 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testRegisterForEvent_OverlappingRegisteredEvent() {
+    public void testInvalidRegisterForEventOverlappingRegisteredEvent() {
         // Arrange
         // Register first to an event that will overlap with the second event
         Person otherHost = new Person("Natasha", "natas@mail.com", "pass123", false);
@@ -181,14 +177,13 @@ public class RegistrationServiceTests {
                 VALID_END_TIME.plusHours(1), VALID_MAX_PARTICIPANTS, VALID_LOCATION, otherHost, VALID_BOARD_GAME);
         int otherEventId = 101;
 
-        EventRegistrationDto otherEventRegistrationDto = new EventRegistrationDto(PERSON_ID, otherEventId);
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(otherEventId)).thenReturn(otherEvent);
         when(registrationRepository.countByKeyEvent(otherEvent)).thenReturn(5L); // Event not full
         when(registrationRepository.existsByKeyPersonAndKeyEvent(PERSON, otherEvent)).thenReturn(false);
 
-        Registration otherRegistration = registrationService.registerForEvent(otherEventRegistrationDto);
+        Registration otherRegistration = registrationService.registerForEvent(PERSON_ID, otherEventId);
 
         assertNotNull(otherRegistration);
         assertEquals(PERSON, otherRegistration.getKey().getPerson());
@@ -201,7 +196,7 @@ public class RegistrationServiceTests {
         // Now register to an event that will overlap with the first event
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
 
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
         when(registrationRepository.countByKeyEvent(VALID_EVENT)).thenReturn(5L); // Event not full
@@ -210,7 +205,7 @@ public class RegistrationServiceTests {
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.registerForEvent(eventRegistrationDto));
+                () -> registrationService.registerForEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("User has a timing conflict with another registered event: " + otherEvent.getTitle(),
@@ -222,11 +217,11 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testUnregisterFromEvent_Success() {
+    public void testValidUnregisterFromEvent() {
         // Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
@@ -234,18 +229,18 @@ public class RegistrationServiceTests {
                 .thenReturn(new Registration(new Registration.Key(VALID_EVENT, PERSON), LocalDateTime.now()));
 
         // Act
-        registrationService.unregisterFromEvent(eventRegistrationDto);
+        registrationService.unregisterFromEvent(PERSON_ID, EVENT_ID);
 
         // Assert
         verify(registrationRepository, times(1)).delete(any(Registration.class));
     }
 
     @Test
-    public void testUnregisterFromEvent_PersonNotRegistered() {
+    public void testInvalidUnregisterFromEventPersonNotRegistered() {
         // Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
@@ -254,7 +249,7 @@ public class RegistrationServiceTests {
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.unregisterFromEvent(eventRegistrationDto));
+                () -> registrationService.unregisterFromEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("User is not registered for this event", exception.getMessage());
@@ -263,16 +258,16 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testUnregisterFromEvent_PersonNotFound() {
+    public void testInvalidUnregisterFromEvent() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(null);
 
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.unregisterFromEvent(eventRegistrationDto));
+                () -> registrationService.unregisterFromEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("Person not found", exception.getMessage());
@@ -281,9 +276,9 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void testUnregisterFromEvent_EventNotFound() {
+    public void testInvalidUnregisterFromEventEventNotFound() {
         // Arrange
-        EventRegistrationDto eventRegistrationDto = new EventRegistrationDto(PERSON_ID, EVENT_ID);
+
 
         when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
         when(eventRepository.findEventById(EVENT_ID)).thenReturn(null);
@@ -291,7 +286,7 @@ public class RegistrationServiceTests {
         // Act & Assert
         BoardroomException exception = assertThrows(
                 BoardroomException.class,
-                () -> registrationService.unregisterFromEvent(eventRegistrationDto));
+                () -> registrationService.unregisterFromEvent(PERSON_ID, EVENT_ID));
 
         assertNotNull(exception);
         assertEquals("Event not found", exception.getMessage());
@@ -300,7 +295,7 @@ public class RegistrationServiceTests {
     }
 
     @Test
-    public void getRegistration_Success() {
+    public void getValidRegistration() {
         // Arrange
         Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
                 VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
@@ -317,6 +312,55 @@ public class RegistrationServiceTests {
         assertNotNull(registration);
         assertEquals(PERSON, registration.getKey().getPerson());
         assertEquals(VALID_EVENT, registration.getKey().getEvent());
+    }
+
+    @Test
+    public void getInvalidRegistrationPersonNotFound() {
+        //Arrange
+
+        //Act + Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> registrationService.getRegistration(PERSON_ID, EVENT_ID));
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("Person not found", e.getMessage());
+
+        verify(registrationRepository, times(0)).findByKeyPersonAndKeyEvent(any(Person.class), any(Event.class));
+
+    }
+
+    @Test
+    public void getInvalidRegistrationEventNotFound() {
+        //Arrange
+        when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
+
+        //Act + Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> registrationService.getRegistration(PERSON_ID, EVENT_ID));
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("Event not found", e.getMessage());
+
+        verify(registrationRepository, times(0)).findByKeyPersonAndKeyEvent(any(Person.class), any(Event.class));
+
+    }
+
+    @Test
+    public void getInvalidRegistrationRegistrationNotFound() {
+        //Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+
+        when(personRepository.findPersonById(PERSON_ID)).thenReturn(PERSON);
+        when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
+
+
+        //Act + Assert
+        BoardroomException e = assertThrows(BoardroomException.class, () -> registrationService.getRegistration(PERSON_ID, EVENT_ID));
+
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertEquals("Registration not found", e.getMessage());
+
+        verify(registrationRepository, times(1)).findByKeyPersonAndKeyEvent(any(Person.class), any(Event.class));
+
     }
 
 }

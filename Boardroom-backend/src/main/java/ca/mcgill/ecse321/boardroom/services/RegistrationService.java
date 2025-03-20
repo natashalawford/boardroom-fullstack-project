@@ -7,7 +7,6 @@ import ca.mcgill.ecse321.boardroom.model.Registration.Key;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
-import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
 import java.time.LocalDateTime;
@@ -35,10 +34,9 @@ public class RegistrationService {
     }
 
     @Transactional
-    public Registration registerForEvent(EventRegistrationDto eventRegistrationDto) {
+    public Registration registerForEvent(int personId, int eventId) {
 
         // Get the user
-        int personId = eventRegistrationDto.getPersonId();
         Person person = personRepository.findPersonById(personId);
 
         // Check if person exists, otherwise throw an exception
@@ -47,7 +45,6 @@ public class RegistrationService {
         }
 
         // Get the event
-        int eventId = eventRegistrationDto.getEventId();
         Event event = eventRepository.findEventById(eventId);
 
         // Check if event exists, otherwise throw an exception
@@ -92,15 +89,13 @@ public class RegistrationService {
     }
 
     @Transactional
-    public void unregisterFromEvent(EventRegistrationDto eventRegistrationDto) {
-        int personId = eventRegistrationDto.getPersonId();
+    public void unregisterFromEvent(int personId, int eventId) {
         Person person = personRepository.findPersonById(personId);
 
         if (person == null) {
             throw new BoardroomException(HttpStatus.NOT_FOUND, "Person not found");
         }
         // Get the event
-        int eventId = eventRegistrationDto.getEventId();
         Event event = eventRepository.findEventById(eventId);
 
         // Check if event exists, otherwise throw an exception

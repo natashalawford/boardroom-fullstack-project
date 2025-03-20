@@ -3,55 +3,51 @@ package ca.mcgill.ecse321.boardroom.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ca.mcgill.ecse321.boardroom.dtos.EventRegistrationDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.EventRegistrationResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.services.RegistrationService;
 
 @RestController
+@RequestMapping("/registration/{personId}/{eventId}")
 public class RegistrationController {
     @Autowired
     private RegistrationService registrationService;
 
-    /**
-     * Register a person for an event.
-     * 
-     * @param eventRegistrationDto
+     
+    /** 
+     * @param personId
+     * @param eventId
      * @return EventRegistrationResponseDto
-     * 
      */
-    @PutMapping("/registration")
-    @RequestMapping("/registration")
-    public EventRegistrationResponseDto registerForEvent(@RequestBody EventRegistrationDto eventRegistrationDto) {
-        Registration registration = registrationService.registerForEvent(eventRegistrationDto);
+    @PutMapping
+    public EventRegistrationResponseDto registerForEvent(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
+        Registration registration = registrationService.registerForEvent(personId, eventId);
         return new EventRegistrationResponseDto(registration);
     }
 
-    /**
-     * Unregister a person from an event
-     * 
-     * @param eventRegistrationDto
-     * @return void
-     * 
+    
+    
+    /** 
+     * @param personId
+     * @param eventId
      */
-    @DeleteMapping("/unregistration")
-    @RequestMapping("/unregistration")
-    public void unregisterFromEvent(@RequestBody EventRegistrationDto eventRegistrationDto) {
-        registrationService.unregisterFromEvent(eventRegistrationDto);
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unregisterFromEvent(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
+        registrationService.unregisterFromEvent(personId, eventId);
     }
 
-    /**
-     * Get Registration.
-     *
-     * @param eventId
+    
+    
+    /** 
      * @param personId
-     * @return Registration
+     * @param eventId
+     * @return EventRegistrationResponseDto
      */
-    @GetMapping("/registration/{personId}/{eventId}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public EventRegistrationResponseDto getRegistration(@PathVariable int personId, @PathVariable int eventId) {
+    public EventRegistrationResponseDto getRegistration(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
         Registration registration = registrationService.getRegistration(personId, eventId);
         return new EventRegistrationResponseDto(registration);
     }
-
 }

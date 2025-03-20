@@ -25,24 +25,44 @@ public class GameOwnerController {
     @Autowired
     GameOwnerService gameOwnerService;
 
+    
+    /** 
+     * @param boardGameToCreate
+     * @return BoardGameResponseDto
+     */
     @PostMapping("boardgame")
     @ResponseStatus(HttpStatus.CREATED)
     public BoardGameResponseDto createBoardGame(@Valid @RequestBody BoardGameCreationDto boardGameToCreate) {
         return new BoardGameResponseDto(gameOwnerService.createBoardGame(boardGameToCreate));
     }
 
+    
+    /** 
+     * @param specificBoardGameToCreate
+     * @return SpecificBoardGameResponseDto
+     */
     @PostMapping("specificboardgame")
     @ResponseStatus(HttpStatus.CREATED)
     public SpecificBoardGameResponseDto createSpecificBoardGame(@Valid @RequestBody SpecificBoardGameCreationDto specificBoardGameToCreate) { 
         return new SpecificBoardGameResponseDto(gameOwnerService.createSpecificBoardGame(specificBoardGameToCreate));
     }
 
+    
+    /** 
+     * @param id
+     * @param specificBoardGameToUpdate
+     * @return SpecificBoardGameResponseDto
+     */
     @PutMapping("specificboardgame/{id}")
     @ResponseStatus(HttpStatus.OK)
     public SpecificBoardGameResponseDto updateSpecificBoardGame(@PathVariable("id") int id, @Valid @RequestBody SpecificBoardGameRequestDto specificBoardGameToUpdate) {
         return new SpecificBoardGameResponseDto(gameOwnerService.updateSpecificBoardGame(id, specificBoardGameToUpdate));
     }
 
+    
+    /** 
+     * @param id
+     */
     @DeleteMapping("specificboardgame/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSpecificBoardGame(@PathVariable("id") int id) {

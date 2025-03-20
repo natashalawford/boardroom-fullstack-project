@@ -219,7 +219,7 @@ public class EventServiceTests {
     }
 
     @Test
-    public void testDeleteEventById_Success() {
+    public void testDeleteValidEvent() {
         // Arrange
         int eventId = 42;
         Event event = new Event(
@@ -237,7 +237,7 @@ public class EventServiceTests {
     }
 
     @Test
-    public void testDeleteEventById_NotFound() {
+    public void testDeleteUnvalidEvent() {
         // Arrange
         int eventId = 99; // Nonexistent event
         when(eventRepository.findEventById(eventId)).thenReturn(null);
@@ -255,7 +255,7 @@ public class EventServiceTests {
     }
 
     @Test
-    public void testGetEvents_Success() {
+    public void testGetEvents() {
         // Arrange
         List<Event> mockEvents = new ArrayList<>();
         mockEvents.add(new Event("Game Night", "Play games", VALID_START_TIME, VALID_END_TIME, 10, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME));
@@ -273,7 +273,7 @@ public class EventServiceTests {
     }
 
     @Test
-    public void testGetEvents_EmptyList() {
+    public void testGetEventsEmptyList() {
         // Arrange
         when(eventRepository.findAll()).thenReturn(new ArrayList<>()); // No events
 

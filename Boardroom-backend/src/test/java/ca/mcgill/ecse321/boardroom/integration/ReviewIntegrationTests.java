@@ -195,7 +195,7 @@ public class ReviewIntegrationTests {
 
     @Test
     @Order(6)
-    public void testDeleteReviewById_Success() {
+    public void testDeleteValidReview() {
         // Arrange
         String url = String.format("/reviews/%d", this.createdReviewId);
 
@@ -209,7 +209,7 @@ public class ReviewIntegrationTests {
 
     @Test
     @Order(7)
-    public void testDeleteReviewById_NotFound() {
+    public void testDeleteUnvalidReview() {
         // Act: Try to delete a non-existent review
         int invalidReviewId = 99999;
         ResponseEntity<ErrorDto> response = client.exchange("/reviews/" + invalidReviewId, HttpMethod.DELETE, null, ErrorDto.class);

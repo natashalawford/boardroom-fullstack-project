@@ -141,7 +141,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(3)
-    public void testGetEventById_Success() {
+    public void testGetValidEvent() {
         // Arrange
         String url = String.format("/events/%d", this.createdEventId);
 
@@ -157,7 +157,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(4)
-    public void testGetEventById_NotFound() {
+    public void testGetUnvalidEvent() {
         // Act
         int invalidEventId = 99999;
         ResponseEntity<ErrorDto> response = client.getForEntity("/events/" + invalidEventId, ErrorDto.class);
@@ -173,7 +173,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(5)
-    public void testGetAllEvents_Success() {
+    public void testGetAllEvents() {
         // Arrange
 
         // Act: Retrieve all events
@@ -188,7 +188,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(6)
-    public void testDeleteEventById_Success() {
+    public void testDeleteValidEvent() {
         // Arrange
         String url = String.format("/events/%d", this.createdEventId);
 
@@ -202,7 +202,7 @@ public class EventIntegrationTests {
 
     @Test
     @Order(7)
-    public void testDeleteEventById_NotFound() {
+    public void testDeleteUnvalidEvent() {
         // Act: Try to delete a non-existent event
         int invalidEventId = 99999;
         ResponseEntity<ErrorDto> response = client.exchange("/events/" + invalidEventId, HttpMethod.DELETE, null, ErrorDto.class);

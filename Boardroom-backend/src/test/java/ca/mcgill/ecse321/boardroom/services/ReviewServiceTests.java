@@ -193,7 +193,7 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testDeleteReviewById_Success() {
+    public void testDeleteValidReview() {
         // Arrange
         int reviewId = 5;
         LocalTime now = LocalTime.now();
@@ -211,7 +211,7 @@ public class ReviewServiceTests {
     }
 
     @Test
-    public void testDeleteReviewById_NotFound() {
+    public void testDeleteUnvalidReview() {
         // Arrange
         int eventId = 99; // Nonexistent event
         when(reviewRepository.findReviewById(eventId)).thenReturn(null);

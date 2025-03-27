@@ -20,6 +20,7 @@ public class RegistrationController {
      * @return EventRegistrationResponseDto
      */
     @PutMapping
+    @CrossOrigin(origins = "http://localhost:5173")
     public EventRegistrationResponseDto registerForEvent(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
         Registration registration = registrationService.registerForEvent(personId, eventId);
         return new EventRegistrationResponseDto(registration);
@@ -33,6 +34,7 @@ public class RegistrationController {
      */
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CrossOrigin(origins = "http://localhost:5173")
     public void unregisterFromEvent(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
         registrationService.unregisterFromEvent(personId, eventId);
     }
@@ -46,6 +48,7 @@ public class RegistrationController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public EventRegistrationResponseDto getRegistration(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
         Registration registration = registrationService.getRegistration(personId, eventId);
         return new EventRegistrationResponseDto(registration);

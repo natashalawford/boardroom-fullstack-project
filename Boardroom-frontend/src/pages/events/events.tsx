@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EventPopup from './eventPopup';
 import { fetchEvents, Event } from '../../services/eventService'; // Import the fetchEvents function
+import monopoly from '../../assets/monopoly.png';
 
 const Events: React.FC = () => {
     // State variables for managing search, filters, events, and UI state
@@ -154,7 +155,21 @@ const Events: React.FC = () => {
                             cursor: 'pointer',
                         }}
                     >
-                        <h3 style={{ fontSize: '1.2em', margin: '10px 0', color: 'black' }}>{event.title}</h3>
+                        {/* Add image for Monopoly */}
+                        {event.boardGameName.toLowerCase() === 'monopoly' && (
+                            <img
+                                src={monopoly}
+                                alt="Monopoly"
+                                style={{
+                                    width: '100%',
+                                    height: '120px',
+                                    objectFit: 'cover',
+                                    borderRadius: '5px',
+                                    marginBottom: '5px',
+                                }}
+                            />
+                        )}
+                        <h3 style={{ fontSize: '1.2em', margin: '5px 0', color: 'black' }}>{event.title}</h3>
                         <p style={{ fontSize: '0.9em', margin: '5px 0', color: 'black' }}><strong>Game:</strong> {event.boardGameName}</p>
                         <p style={{ fontSize: '0.8em', margin: '5px 0', color: 'black' }}><strong>Date:</strong> {new Date(event.startDateTime).toLocaleDateString()}</p>
                     </div>

@@ -3,6 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { useEffect, useState } from "react";
+import BorrowRequestList from "@/Components/BorrowRequestList";
+import LendingHistoryList from "@/Components/LendingHistoryList";
 
 function AccountDetails() {
   const [existingName, setExistingName] = useState<string>();
@@ -61,6 +63,14 @@ function AccountDetails() {
         >
           Update
         </Button>
+      </div>
+
+      <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
+        <BorrowRequestList />  
+      </div>
+
+      <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
+        <LendingHistoryList />  
       </div>
     </>
   );

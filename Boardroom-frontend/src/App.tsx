@@ -6,6 +6,11 @@ import Games from './pages/games/games';
 import Events from './pages/events/events';
 //import Login from './pages/login/login';
 import User from './pages/user/user';
+import './App.css'
+
+
+import AccountDetails from '@/pages/account/AccountDetails'
+
 
 const App: React.FC = () => {
   return (
@@ -19,6 +24,7 @@ const App: React.FC = () => {
             <Route path="/events" element={<Events />} />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<User />} />
+            <Route path="/account" element={<AccountDetails />} />
           </Routes>
         </main>
       </div>

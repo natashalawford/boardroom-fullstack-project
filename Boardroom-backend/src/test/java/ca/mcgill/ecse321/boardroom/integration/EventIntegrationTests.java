@@ -39,24 +39,24 @@ public class EventIntegrationTests {
     @Autowired
     private EventRepository eventRepository;
 
-    private static final String VALID_TITLE = "Board Game Night";
-    private static final String VALID_DESCRIPTION = "A fun night with friends!";
-    private static final LocalDateTime VALID_START_TIME = LocalDateTime.now().plusDays(1);
-    private static final LocalDateTime VALID_END_TIME = LocalDateTime.now().plusDays(1).plusHours(2);
-    private static final int VALID_MAX_PARTICIPANTS = 10;
-    private static String VALID_LOCATION = "1234 rue Sainte-Catherine";
+    private static final String VALID_TITLE = "Ticket to Ride at Little Italy";
+    private static final String VALID_DESCRIPTION = "build railways across the country";
+    private static final LocalDateTime VALID_START_TIME = LocalDateTime.now().plusDays(7);
+    private static final LocalDateTime VALID_END_TIME = LocalDateTime.now().plusDays(7).plusHours(3);
+    private static final int VALID_MAX_PARTICIPANTS = 8;
+    private static String VALID_LOCATION = "7890 Little Italy";
     private static Person VALID_HOST;
     private static BoardGame VALID_BOARD_GAME;
     private int hostId;
     private String boardGameName;
-    
+
     @BeforeAll
     public void setup() {
-        VALID_HOST = new Person("Name", "name@mail.com", "securepass", false);
+        VALID_HOST = new Person("emma davis", "emma.davis@mail.com", "mysecurepass", true);
         personRepository.save(VALID_HOST);
         hostId = VALID_HOST.getId();
 
-        VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
+        VALID_BOARD_GAME = new BoardGame("Ticket to Ride", "a game of building railways", 5, 2345678);
         boardGameRepository.save(VALID_BOARD_GAME);
         boardGameName = VALID_BOARD_GAME.getTitle();
     }

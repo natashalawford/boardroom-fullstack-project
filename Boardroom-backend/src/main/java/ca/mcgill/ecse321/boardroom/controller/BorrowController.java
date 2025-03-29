@@ -3,15 +3,7 @@ package ca.mcgill.ecse321.boardroom.controller;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import ca.mcgill.ecse321.boardroom.dtos.creation.BorrowRequestDtoCreation;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
@@ -35,6 +27,7 @@ public class BorrowController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @CrossOrigin(origins = "http://localhost:5173")
     public BorrowRequestResponseDto createBorrowRequest(@Valid @RequestBody BorrowRequestDtoCreation borrowRequestToCreate){
         BorrowRequest createdBorrowRequest = borrowService.createBorrowRequest(borrowRequestToCreate);
         return new BorrowRequestResponseDto(createdBorrowRequest);
@@ -50,6 +43,7 @@ public class BorrowController {
      */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public BorrowRequestResponseDto updateBorrowRequest(@PathVariable int id, @RequestBody RequestStatus status){
         BorrowRequest updatedBorrowRequest = borrowService.updateBorrowRequestStatus(id, status);
         return new BorrowRequestResponseDto(updatedBorrowRequest);
@@ -63,6 +57,7 @@ public class BorrowController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public List<BorrowRequestResponseDto> viewPendingBorrowRequests(){
         List<BorrowRequestResponseDto> borrowRequestDtos = new ArrayList<>();
         List<BorrowRequest> borrowRequests = borrowService.viewPendingBorrowRequests();
@@ -81,6 +76,7 @@ public class BorrowController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public BorrowRequestResponseDto getBorrowRequestById(@PathVariable int id) {
         BorrowRequest br = borrowService.getBorrowRequestById(id);
         return new BorrowRequestResponseDto(br);
@@ -94,6 +90,7 @@ public class BorrowController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CrossOrigin(origins = "http://localhost:5173")
     public void deleteBorrowRequest(@PathVariable int id) {
         borrowService.deleteBorrowRequestById(id);
     }
@@ -108,6 +105,7 @@ public class BorrowController {
      */
     @GetMapping("/history/{specificBoardGameId}")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public List<BorrowRequestResponseDto> viewLendingHistoryByBoardGame(@PathVariable int specificBoardGameId) {
         List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByBoardgame(specificBoardGameId);
         List<BorrowRequestResponseDto> borrowRequestDtos = new ArrayList<>();

@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './Components/header';
+import Header from './components/header';
 import Home from './pages/home/home';
 import Games from './pages/games/games';
 import Events from './pages/events/events';
 //import Login from './pages/login/login';
 import User from './pages/user/user';
+import { NewGameForm } from './pages/games/newGameForm';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
+            <Route path="/games/new" element={<NewGameForm />} />
             <Route path="/events" element={<Events />} />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<User />} />

@@ -7,6 +7,7 @@ interface FileUploadProps {
 
 const FileUpload: React.FC<FileUploadProps> = ({ id, onChange }) => {
   return (
+    // Credits to: https://flowbite.com/docs/forms/file-input/
     <div className="flex items-center justify-center w-full">
       <label
         htmlFor={id}
@@ -29,7 +30,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ id, onChange }) => {
             />
           </svg>
           <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-            <span className="font-semibold">Click to upload</span> or drag and drop
+            <span className="font-semibold">Click to upload</span>
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             PNG, JPEG, or JPG

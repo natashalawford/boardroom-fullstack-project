@@ -3,32 +3,54 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toggleAccountType, login } from "@/services/AccountDetailsService";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
 
-  const [email] = useState<string>(userData?.email || "");
-  const [name] = useState<string>(userData?.name || "");
-  const [accountType] = useState<string>(
-    userData?.owner || "user"
+  //the initial values aren't useful if i need to login on the page, so will only be useful when login is actually implemented
+  const [name, setName] = useState<string>(userData?.name || "");
+  const [email, setEmail] = useState<string>(userData?.email || "");
+  const [accountType, setAccountType] = useState<string>(
+    userData?.owner == "true" ? "owner" : "user"
+  );
+
+  // for switch
+  const [isChecked, setIsChecked] = useState<boolean>(
+    userData?.owner == "true" ? true : false
   );
 
   // this is what is defined in the update fields
-  const [newName, setNewName] = useState<string>("");
+  const [newName, setNewName] = useState<string>(name);
   const [newPassword, setNewPassword] = useState<string>("");
 
-
-  const handleToggle = async () => {
-    await toggleAccountType(userData, accountType, setUserData);
-  }
-
+  const handleToggle = async (checked: boolean) => {
+    console.log("checked: ", checked);
+    await toggleAccountType(userData, checked.toString(), setUserData);
+    console.log("in the front", userData?.owner);
+  };
 
   const handleUpdate = async () => {
     await login("jason@gmail.com", "pw123", setUserData);
-  }
- 
+  };
+
+  // login on render -- to be removed
+  useEffect(() => {
+    login("jason@gmail.com", "pw123", setUserData);
+  }, []);
+
+  // keep info up to date
+  useEffect(() => {
+    if (userData) {
+      setEmail(userData.email);
+      setName(userData.name);
+      setNewName(userData.name);
+      setAccountType(userData.owner == "true" ? "owner" : "user");
+      setIsChecked(userData.owner == "true");
+    }
+  }, [userData]);
+
   return (
     <>
       <div className="flex flex-row justify-between items-center h-[120px] ml-10 mr-10">
@@ -37,6 +59,7 @@ function AccountDetails() {
         <div className="flex items-center">
           <label className="text-lg">{accountType}</label>
           <Switch.Root
+            checked={isChecked}
             onCheckedChange={handleToggle}
             className="ml-5 relative w-[50px] h-[30px] bg-gray-400 rounded-full shadow-lg 
                  transition-colors focus:outline-none focus:ring-2 focus:ring-black 
@@ -72,7 +95,7 @@ function AccountDetails() {
           Password
           <Input
             className={"w-50 ml-10"}
-            placeholder="Password"
+            placeholder="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />

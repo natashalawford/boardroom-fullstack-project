@@ -24,7 +24,7 @@ export interface UserRequest {
 export const login = async (
   email: string,
   password: string,
-  setUserData: (user: User | null) => void
+  setUserData: (user: User) => void
 ): Promise<void> => {
   const loginDto = {
     email: email,
@@ -62,7 +62,7 @@ export const login = async (
 export const toggleAccountType = async (
   user: User | null,
   owner: string,
-  setUserData: (user: User | null) => void
+  setUserData: (user: User) => void
 ): Promise<void> => {
   if (user == null) {
     return;
@@ -76,7 +76,7 @@ export const toggleAccountType = async (
   };
 
   try {
-    const response = await fetch(`/people/${user.id}`, {
+    const response = await fetch(`http://localhost:8080/people/${user.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -91,9 +91,11 @@ export const toggleAccountType = async (
 
     const updatedUserResponse: UserResponse = await response.json();
 
+    console.log("in the service", updatedUserResponse.owner);
+
     const updatedUser: User = {
       ...updatedUserResponse,
-      owner: updatedUserResponse.owner == true ? "true" : "false",
+      owner: updatedUserResponse.owner ? "true" : "false",
     };
 
     // update info

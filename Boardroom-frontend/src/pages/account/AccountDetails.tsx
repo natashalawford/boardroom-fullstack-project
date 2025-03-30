@@ -2,7 +2,6 @@ import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toggleAccountType, login } from "@/services/AccountDetailsService";
-
 import BorrowRequestList from "@/Components/BorrowRequestList";
 import LendingHistoryList from "@/Components/LendingHistoryList";
 import { useContext, useEffect, useState } from "react";

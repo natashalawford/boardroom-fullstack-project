@@ -7,8 +7,6 @@ import Events from './pages/events/events';
 //import Login from './pages/login/login';
 import User from './pages/user/user';
 import './App.css'
-
-
 import AccountDetails from '@/pages/account/AccountDetails'
 
 

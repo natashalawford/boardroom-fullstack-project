@@ -1,66 +1,130 @@
-
+// used for info on frontend
 export interface User {
   id: number;
-  email: string;
-  // this is a string for display, before sending it to services turn it into boolean
-  owner: string;
   name: string;
+  email: string;
+  owner: string;
 }
 
-export interface UserRequest extends User {
-    password: string;
+// used for response from backend
+interface UserResponse {
+  id: number;
+  name: string;
+  email: string;
+  owner: boolean;
 }
 
+// used for request to backend
+export interface UserRequest {
+  name: string;
+  email: string;
+  owner: boolean;
+}
 
-// i actually dont need to fetch, it should be done on login
+export const login = async (
+  email: string,
+  password: string,
+  setUserData: (user: User | null) => void
+): Promise<void> => {
+  const loginDto = {
+    email: email,
+    password: password,
+  };
 
+  try {
+    const response = await fetch(`http://localhost:8080/people/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(loginDto),
+    });
 
-export const toggleAccountType = async (
-    user: User | null,
-    setUserData: (user: User | null) => void
-): Promise<User | void> => {
-
-    if (user == null) return
-    
-    // toggle the account type 
-    const updatedUser: User = { 
-      ... user 
+    if (!response.ok) {
+      const error = await response.json();
+      console.error(error);
+      //   throw new Error(error.errors.join(", "));
     }
-    
-    
-    // update context
-    setUserData(updatedUser);
-    
-    
+
+    const userResponse = await response.json();
+
+    const user: User = {
+      ...userResponse,
+      owner: userResponse.owner ? "true" : "false",
+    };
+
+    setUserData(user);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
+export const toggleAccountType = async (
+  user: User | null,
+  owner: string,
+  setUserData: (user: User | null) => void
+): Promise<void> => {
+  if (user == null) {
+    return;
+  }
 
-// you can still pass in user for the owner and id since those aren't changed and email
-export const updateAccountInfo = async (
-    user: User | null,
-    name: string,
-    password: string,
-    setUserData: (user: User | null) => void
-): Promise<User | void> => {
+  // create request for backend
+  const updatedData: UserRequest = {
+    name: user.name,
+    email: user.email,
+    owner: owner == "true" ? true : false,
+  };
 
-    if (user == null) return
+  try {
+    const response = await fetch(`/people/${user.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    });
 
-
-    // do the fetch before updating here, fetch should be in the .then()
-
-
-    const updatedUser: UserRequest = {
-       ... user,
-       name,
-       password 
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.errors.join(", "));
     }
 
+    const updatedUserResponse: UserResponse = await response.json();
 
-    // update context
+    const updatedUser: User = {
+      ...updatedUserResponse,
+      owner: updatedUserResponse.owner == true ? "true" : "false",
+    };
+
+    // update info
     setUserData(updatedUser);
-}
 
-// services/AccountDetailsService.ts
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// you can still pass in user for the owner and id since those aren't changed and email
+// export const updateAccountInfo = async (
+//   user: User | null,
+//   name: string,
+//   password: string,
+//   setUserData: (user: User | null) => void
+// ): Promise<User | void> => {
+//   if (user == null) return;
+
+//   // do the fetch before updating here, fetch should be in the .then()
+
+//   const updatedUser: UserRequest = {
+//     ...user,
+//     name,
+//     password,
+//   };
+
+//   // update context
+//   setUserData(updatedUser);
+// };
+
 
 export async function getBorrowRequestsByPersonAndStatus(personId: number, status: string) {
     const response = await fetch(`http://localhost:8080/borrowRequests/pending/${personId}`, {
@@ -93,8 +157,4 @@ export async function getBorrowRequestsByPersonAndStatus(personId: number, statu
   
     return await response.json();
   }
-  
-
-  
-  
   

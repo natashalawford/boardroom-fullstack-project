@@ -1,15 +1,16 @@
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toggleAccountType, updateAccountInfo } from "@/services/AccountDetailsService";
+import { toggleAccountType, login } from "@/services/AccountDetailsService";
 
 import BorrowRequestList from "@/Components/BorrowRequestList";
 import LendingHistoryList from "@/Components/LendingHistoryList";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/auth/UserAuth";
+import { useAuth } from "@/auth/UserAuth";
 
 function AccountDetails() {
-  const { userData, setUserData } = useContext(AuthContext);
+  const { userData, setUserData } = useAuth();
 
   const [email] = useState<string>(userData?.email || "");
   const [name] = useState<string>(userData?.name || "");
@@ -23,12 +24,12 @@ function AccountDetails() {
 
 
   const handleToggle = async () => {
-    await toggleAccountType(userData, setUserData);
+    await toggleAccountType(userData, accountType, setUserData);
   }
 
 
   const handleUpdate = async () => {
-    await updateAccountInfo(userData, newName, newPassword, setUserData);
+    await login("jason@gmail.com", "pw123", setUserData);
   }
  
   return (

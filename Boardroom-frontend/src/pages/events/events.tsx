@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import EventPopup from './eventPopup';
+import EventCreationPopup from './eventCreationPopup'; // Import the event creation popup
 import { fetchEvents, Event } from '../../services/eventService'; // Import the fetchEvents function
 import monopoly from '../../assets/monopoly.png';
 
@@ -13,6 +14,7 @@ const Events: React.FC = () => {
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [selectedGame, setSelectedGame] = useState(''); // Filter by game
     const [selectedDate, setSelectedDate] = useState(''); // Filter by date
+    const [showCreatePopup, setShowCreatePopup] = useState(false); // State for create event popup
 
     // Fetch events from the backend when the component mounts
     useEffect(() => {
@@ -65,7 +67,11 @@ const Events: React.FC = () => {
     }, [selectedGame, selectedDate, searchQuery]);
 
     const handleCreateEvent = () => {
-        console.log('Redirect to Create Event popup');
+        setShowCreatePopup(true); // Show the create event popup
+    };
+
+    const handleCloseCreatePopup = () => {
+        setShowCreatePopup(false); // Close the create event popup
     };
 
     // Open the popup for the selected event
@@ -179,6 +185,8 @@ const Events: React.FC = () => {
             {selectedEvent && (
                 <EventPopup event={selectedEvent} onClose={handleClosePopup} />
             )}
+            {/* Show popup for creating a new event */}
+            {showCreatePopup && <EventCreationPopup onClose={handleCloseCreatePopup} />}
         </div>
     );
 };

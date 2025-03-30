@@ -48,7 +48,7 @@ public class PersonIntegrationTests {
 
     @AfterAll
     public void resetDatabase() {
-        personRepo.deleteAll();
+        //personRepo.deleteAll();
     }
 
     @Test

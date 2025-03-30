@@ -105,4 +105,13 @@ public class BorrowService {
                 }
     }
 
+    public List<BorrowRequest> viewBorrowRequestsByPersonAndStatus(int personId, RequestStatus status) {
+        Person person = personRepo.findById(personId)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A person with this id (%d) does not exist", personId)
+            ));
+        return borrowRequestRepo.findByPersonAndStatus(person, status);
+    }
+
 }

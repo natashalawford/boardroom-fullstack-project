@@ -59,3 +59,42 @@ export const updateAccountInfo = async (
     // update context
     setUserData(updatedUser);
 }
+
+// services/AccountDetailsService.ts
+
+export async function getBorrowRequestsByPersonAndStatus(personId: number, status: string) {
+    const response = await fetch(`http://localhost:8080/borrowRequests/pending/${personId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(status),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Failed to fetch borrow requests');
+    }
+  
+    return await response.json();
+  }
+
+  export async function updateBorrowRequestStatus(id: number, status: string) {
+    const response = await fetch(`http://localhost:8080/borrowRequests/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(status), // assuming your RequestStatus class wraps it like { status: "APPROVED" }
+    });
+  
+    if (!response.ok) {
+      throw new Error("Failed to update borrow request status");
+    }
+  
+    return await response.json();
+  }
+  
+
+  
+  
+  

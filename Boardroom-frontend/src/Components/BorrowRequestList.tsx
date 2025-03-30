@@ -1,74 +1,41 @@
+import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { getBorrowRequestsByPersonAndStatus } from "../services/AccountDetailsService"; // adjust import path if needed
+import { updateBorrowRequestStatus } from "../services/AccountDetailsService";
 
-const mockRequests = [
-  {
-    id: 1,
-    borrower: "Alice",
-    game: "Catan",
-    borrowDate: "2025-03-01",
-    returnDate: "2025-03-10",
-  },
-  {
-    id: 2,
-    borrower: "Bob",
-    game: "Carcassonne",
-    borrowDate: "2025-03-05",
-    returnDate: "2025-03-12",
-  },
-  {
-    id: 3,
-    borrower: "Charlie",
-    game: "Ticket to Ride",
-    borrowDate: "2025-03-08",
-    returnDate: "2025-03-15",
-  },
-  {
-    id: 1,
-    borrower: "Alice",
-    game: "Catan",
-    borrowDate: "2025-03-01",
-    returnDate: "2025-03-10",
-  },
-  {
-    id: 2,
-    borrower: "Bob",
-    game: "Carcassonne",
-    borrowDate: "2025-03-05",
-    returnDate: "2025-03-12",
-  },
-  {
-    id: 3,
-    borrower: "Charlie",
-    game: "Ticket to Ride",
-    borrowDate: "2025-03-08",
-    returnDate: "2025-03-15",
-  },
-  {
-    id: 1,
-    borrower: "Alice",
-    game: "Catan",
-    borrowDate: "2025-03-01",
-    returnDate: "2025-03-10",
-  },
-  {
-    id: 2,
-    borrower: "Bob",
-    game: "Carcassonne",
-    borrowDate: "2025-03-05",
-    returnDate: "2025-03-12",
-  },
-  {
-    id: 3,
-    borrower: "Charlie",
-    game: "Ticket to Ride",
-    borrowDate: "2025-03-08",
-    returnDate: "2025-03-15",
-  },
-];
+
+type BorrowRequest = {
+  id: number;
+  status: string;
+  requestStartDate: string;
+  requestEndDate: string;
+  personName: string;
+  specificBoardGameTitle: string,
+};
 
 const BorrowRequestList = () => {
+  const [requests, setRequests] = useState<BorrowRequest[]>([]);
+
+  useEffect(() => {
+    // replace `1` with actual person ID if needed
+    getBorrowRequestsByPersonAndStatus(1, "PENDING")
+      .then(setRequests)
+      .catch(console.error);
+  }, []);
+
+  const handleStatusUpdate = (id: number, status: string) => {
+    updateBorrowRequestStatus(id, status)
+      .then(() => {
+        // Refresh the list after updating
+        return getBorrowRequestsByPersonAndStatus(1, "PENDING");
+      })
+      .then(setRequests)
+      .catch(console.error);
+  };
+  
+
   return (
     <>
       <h2 className="text-lg font-semibold mb-2">Borrow Requests</h2>
@@ -85,23 +52,29 @@ const BorrowRequestList = () => {
               </tr>
             </thead>
             <tbody>
-              {mockRequests.map((req) => (
+              {requests.map((req) => (
                 <tr key={req.id} className="bg-muted rounded-md">
-                  <td className="px-8 py-2">{req.borrower}</td>
-                  <td className="px-8 py-2">{req.game}</td>
-                  <td className="px-8 py-2">{req.borrowDate}</td>
-                  <td className="px-8 py-2">{req.returnDate}</td>
-                  <td className="px-8 py-2 flex justify-center gap-2">
+                  <td className="px-8 py-2 border-t border-gray-200">{req.personName}</td>
+                  <td className="px-8 py-2 border-t border-gray-200">{req.specificBoardGameTitle}</td>
+                  <td className="px-8 py-2 border-t border-gray-200">
+                  {new Date(req.requestStartDate).toISOString().split("T")[0]}
+                  </td>
+                  <td className="px-8 py-2 border-t border-gray-200">
+                  {new Date(req.requestEndDate).toISOString().split("T")[0]}
+                  </td>
+                  <td className="px-8 py-2 border-t border-gray-200 flex justify-center gap-2">
                   <Button
                     variant="outline"
                     className="hover:bg-gray-700 hover:text-white w-30 self-end"
-                    >
+                    onClick={() => handleStatusUpdate(req.id, "ACCEPTED")}
+                  >
                     Accept
                   </Button>
                   <Button
                     variant="outline"
                     className="hover:bg-gray-700 hover:text-white w-30 self-end"
-                    >
+                    onClick={() => handleStatusUpdate(req.id, "DECLINED")}
+                  >
                     Decline
                   </Button>
                   </td>

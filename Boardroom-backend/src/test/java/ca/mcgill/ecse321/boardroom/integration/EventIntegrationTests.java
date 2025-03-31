@@ -63,9 +63,9 @@ public class EventIntegrationTests {
 
     @AfterAll
     public void cleanup() {
-        // eventRepository.deleteAll();
-        // boardGameRepository.deleteAll();
-        // personRepository.deleteAll();
+        eventRepository.deleteAll();
+        boardGameRepository.deleteAll();
+        personRepository.deleteAll();
     }
 
     @Test

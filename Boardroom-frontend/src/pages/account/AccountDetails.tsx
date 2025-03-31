@@ -57,7 +57,7 @@ function AccountDetails() {
 
   // login on render -- to be removed
   useEffect(() => {
-    login("jason@gmail.com", "pw123", setUserData);
+    login("jason@gmail.com", "pw1234", setUserData);
   }, []);
 
   // keep info up to date
@@ -86,7 +86,7 @@ function AccountDetails() {
                  data-[state=checked]:bg-gray-700"
           >
             <Switch.Thumb
-              className="block w-[25px] h-[25px] bg-white rounded-full shadow-md 
+              className="block w-[25px] h-[25px] bg-white rounded-full shadow-md  
                    transition-transform duration-100 transform translate-x-[2px] 
                    data-[state=checked]:translate-x-[23px]"
             />

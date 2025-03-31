@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import userImage from '../assets/user.png';
 import diceImage from '../assets/dice.png';
+import { Button } from '@/components/ui/button';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Header: React.FC = () => {
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '97%',
+        width: '100%',
         height: '70px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -30,9 +31,9 @@ const Header: React.FC = () => {
         onClick={() => navigate('/')}
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-        <button onClick={() => navigate('/games')}>Games</button>
-        <button onClick={() => navigate('/events')}>Events</button>
-        <button onClick={() => navigate('/login')}>Login</button>
+        <Button variant='default' onClick={() => navigate('/games')} className='mr-2'>Games</Button>
+        <Button variant='default' onClick={() => navigate('/events')} className='mr-2'>Events</Button>
+        <Button variant='default' onClick={() => navigate('/login')} className='mr-2'>Login</Button>
         <img
           src={userImage}
           alt="User Profile"

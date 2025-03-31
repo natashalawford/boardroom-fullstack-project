@@ -25,11 +25,16 @@ import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
 // Services
-import { saveBoardGame, BoardGame } from '../../services/boardGameService'
+import {
+  saveSpecificBoardGame,
+  SpecificBoardGame
+} from '../../services/boardGameService'
 import { useNavigate } from 'react-router-dom'
 
 const formSchema = z.object({
-  title: z.string().min(1, { message: 'Title is required.' }),
+  boardGame: z
+    .string()
+    .min(1, { message: 'Board game selection is required.' }),
   image: z.preprocess(
     val => {
       // If it's a FileList and has at least one File, extract that file
@@ -38,22 +43,19 @@ const formSchema = z.object({
       }
       return val
     },
-    z.instanceof(File, { message: 'Image of board game is required' }) // Validate that the processed value is a File or undefined
+    z.instanceof(File, { message: 'Image of board game is required.' }) // Validate that the processed value is a File or undefined
   ),
-  description: z.string().min(1, { message: 'Description is required.' }),
-  playersNeeded: z.preprocess(
-    value => (typeof value === 'string' ? parseInt(value, 10) : value),
-    z.number().min(1, { message: 'Number of players needed is required.' })
-  )
+  gameStatus: z.string().min(1, { message: 'Game status is required.' }),
+  description: z.string().min(1, { message: 'Description is required.' })
 })
 
-export function NewGameForm () {
+export function NewSpecificGameForm () {
   const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '',
+      boardGame: '',
       description: ''
     }
   })
@@ -62,9 +64,9 @@ export function NewGameForm () {
   function onSubmit (values: z.infer<typeof formSchema>) {
     // Logging the form values
     console.log('Form Values:', values)
-    console.log('Title:', values.title)
+    console.log('Board game:', values.boardGame)
+    console.log('Game status:', values.gameStatus)
     console.log('Description:', values.description)
-    console.log('Players Needed:', values.playersNeeded)
 
     // Accessing the uploaded file
     if (values.image instanceof File) {
@@ -73,22 +75,22 @@ export function NewGameForm () {
       console.log('Image Size:', values.image.size)
     }
 
-    const newBoardGame: BoardGame = {
-      title: values.title,
+    const newBoardGame: SpecificBoardGame = {
+      boardGame: values.boardGame,
+      gameStatus: values.gameStatus,
       description: values.description,
-      playersNeeded: values.playersNeeded,
       picture: 123 // TODO: replace with actual image URL or ID after upload
     }
-    saveBoardGame(newBoardGame)
+    saveSpecificBoardGame(newBoardGame)
       .then(() => {
-        toast('Board game saved.', )
+        toast('Board game saved.')
         setTimeout(() => {
-          navigate('/games'); // Navigate after the toast is displayed
-        }, 500);
+          navigate('/games') // Navigate after the toast is displayed
+        }, 500)
       })
       .catch(error => {
-        console.error('Error saving board game: ', error.message)
-        toast(`Error saving board game: ${error.message}`) // Display the error message in the toast
+        console.error('Error saving your board game: ', error.message)
+        toast(`Error saving your board game: ${error.message}`) // Display the error message in the toast
       })
   }
 
@@ -96,7 +98,7 @@ export function NewGameForm () {
     <div className='h-screen w-screen flex justify-center items-center'>
       <Card className='w-[700px] mx-auto p-10'>
         <CardTitle className='font-bold text-xl'>
-          Add a new board game
+          Add a copy of your board game
         </CardTitle>
         <ScrollArea className='h-[400px] w-full'>
           <Form {...form}>
@@ -106,7 +108,7 @@ export function NewGameForm () {
             >
               <FormField
                 control={form.control}
-                name='title'
+                name='boardGame'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Board Game Title</FormLabel>
@@ -143,24 +145,7 @@ export function NewGameForm () {
 
               <FormField
                 control={form.control}
-                name='description'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder='One to two line description of the board game'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='playersNeeded'
+                name='gameStatus'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Minimum number of players needed</FormLabel>
@@ -175,6 +160,23 @@ export function NewGameForm () {
                           )
                         }
                         //{...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='One to two line description of your copy of the board game (e.g. condition, missing pieces, etc.)'
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />

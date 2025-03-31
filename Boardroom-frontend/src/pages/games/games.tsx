@@ -1,12 +1,13 @@
 import React from 'react';
+import GameGrid from "../../Components/gamegrid";
 
 const Games: React.FC = () => {
     return (
         <div>
-            <h1>Games Page</h1>
-            <p>Welcome to the Games Page! Here you can explore and play various games.</p>
+          <h1>Available Games</h1>
+          <GameGrid />
         </div>
-    );
-};
+      );
+    };
 
 export default Games;

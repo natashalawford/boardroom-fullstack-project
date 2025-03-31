@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 interface EventPopupProps {
     event: {
@@ -12,11 +12,13 @@ interface EventPopupProps {
         maxParticipants: number;
         hostId: number;
     };
+    personId: number; // Add personId as a prop
     onClose: () => void;
 }
 
-const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
+const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => {
     const popupRef = useRef<HTMLDivElement>(null);
+    const [message, setMessage] = useState<string | null>(null); // For success/error messages
 
     const handleOverlayClick = (e: React.MouseEvent) => {
         if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
@@ -24,9 +26,24 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
         }
     };
 
-    const handleRegister = () => {
-        console.log(`Registering for event with ID: ${event.id}`);
-        // Add registration logic here
+    const handleRegister = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/registration/${personId}/${event.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to register for the event');
+            }
+
+            setMessage('Successfully registered for the event!');
+        } catch (error: any) {
+            setMessage(`Error: ${error.message}`);
+        }
     };
 
     return (
@@ -55,7 +72,6 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
                     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
                 }}
             >
-                
                 <h2>{event.title}</h2>
                 <p><strong>Game:</strong> {event.boardGameName}</p>
                 <p><strong>Description:</strong> {event.description}</p>
@@ -64,8 +80,9 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
                 <p><strong>End:</strong> {new Date(event.endDateTime).toLocaleString()}</p>
                 <p><strong>Max Participants:</strong> {event.maxParticipants}</p>
                 <p><strong>Host ID:</strong> {event.hostId}</p>
-                <div style={{ display: 'flex',  marginTop: '10px', justifyContent: 'right' }}>
-                    <button onClick={handleRegister}
+                <div style={{ display: 'flex', marginTop: '10px', justifyContent: 'right' }}>
+                    <button
+                        onClick={handleRegister}
                         style={{
                             padding: '10px 20px',
                             backgroundColor: '#30BCED',
@@ -78,6 +95,19 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
                         Register for Event
                     </button>
                 </div>
+                {message && (
+                    <div
+                        style={{
+                            marginTop: '20px',
+                            padding: '10px',
+                            backgroundColor: message.startsWith('Error') ? 'red' : 'green',
+                            color: '#fff',
+                            borderRadius: '5px',
+                        }}
+                    >
+                        {message}
+                    </div>
+                )}
             </div>
         </div>
     );

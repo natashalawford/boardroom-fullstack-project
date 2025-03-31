@@ -7,6 +7,7 @@ import Events from './pages/events/events';
 //import Login from './pages/login/login';
 import User from './pages/user/user';
 import { NewGameForm } from './pages/games/newGameForm';
+import { NewSpecificGameForm } from './pages/games/newSpecificGameForm';
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
             <Route path="/games/new" element={<NewGameForm />} />
+            <Route path="/games/new/specific" element={<NewSpecificGameForm />} />
             <Route path="/events" element={<Events />} />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<User />} />

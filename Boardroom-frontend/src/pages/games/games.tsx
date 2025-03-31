@@ -14,6 +14,10 @@ const Games: React.FC = () => {
                 <Button variant='default' onClick={() => navigate('/games/new')} className='mr-2'>
                     Add New Game
                 </Button>
+
+                <Button variant='default' onClick={() => navigate('/games/new/specific')} className='mr-2'>
+                    Add Your Copy of a Game
+                </Button>
             </div>
         </div>
     );

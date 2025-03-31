@@ -16,8 +16,11 @@ const Games: React.FC = () => {
                     Add New Game
                 </Button>
             </div>
-        </div>
-      );
+            <div className='pt-3'>
+                    <GameGrid />
+                </div>
+            </div>
+        );
     };
 
 export default Games;

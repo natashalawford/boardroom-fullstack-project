@@ -1,10 +1,26 @@
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toggleAccountType, login } from "@/services/AccountDetailsService";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogClose,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  toggleAccountType,
+  login,
+  updateAccountInfo,
+  updatePassword
+} from "@/services/AccountDetailsService";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
+import { Label } from "@/components/ui/label";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
@@ -23,16 +39,20 @@ function AccountDetails() {
 
   // this is what is defined in the update fields
   const [newName, setNewName] = useState<string>(name);
+
+  const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
 
   const handleToggle = async (checked: boolean) => {
-    console.log("checked: ", checked);
     await toggleAccountType(userData, checked.toString(), setUserData);
-    console.log("in the front", userData?.owner);
   };
 
+  const passwordUpdate = async () => {
+    await updatePassword(userData, oldPassword, newPassword, setUserData);
+  }
+
   const handleUpdate = async () => {
-    await login("jason@gmail.com", "pw123", setUserData);
+    await updateAccountInfo(userData, newName, setUserData);
   };
 
   // login on render -- to be removed
@@ -74,24 +94,69 @@ function AccountDetails() {
         </div>
       </div>
 
+
       <p className="ml-20 mb-10 text-4xl">Hello, {name}</p>
 
-      <div className="flex flex-col ml-20 w-100">
+      <div className="flex flex-col ml-20 w-100 borderd rounded-lg">
         <div className="flex justify-between items-center mb-5">
           Email
-          <Input disabled value={email} className="w-50 ml-10" />
+          <Input disabled value={email} className="w-90 ml-10" />
         </div>
 
         <div className="flex justify-between items-center mb-5">
           Name
           <Input
-            className={"w-50 ml-10"}
+            className={"w-90 ml-10"}
             placeholder="Name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
         </div>
-        <div className="flex justify-between items-center mb-7">
+
+        <Dialog>
+          <DialogTrigger className="flex shrink self-center mb-10">
+            <Button
+              variant="outline"
+              className="hover:bg-gray-700 hover:text-white w-50"
+            >
+              Update Password
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] bg-white">
+            <DialogHeader>
+              <DialogTitle>Update Password</DialogTitle>
+              <DialogDescription>
+                Make changes to your password here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label>Old Password</Label>
+                <Input className="col-span-3" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)}/>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label>New Password</Label>
+                <Input className="col-span-3" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  className="hover:bg-gray-700 hover:text-white"
+                  variant="outline"
+                  type="submit"
+                  onClick={passwordUpdate}
+                >
+                  Save
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* <div className="flex justify-between items-center mb-7">
           Password
           <Input
             className={"w-50 ml-10"}
@@ -99,7 +164,7 @@ function AccountDetails() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
-        </div>
+        </div> */}
 
         <Button
           variant="outline"

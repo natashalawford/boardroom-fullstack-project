@@ -6,6 +6,13 @@ export interface User {
   owner: string;
 }
 
+// used for request to backend
+export interface UserRequest {
+  name: string;
+  email: string;
+  owner: boolean;
+}
+
 // used for response from backend
 interface UserResponse {
   id: number;
@@ -14,11 +21,9 @@ interface UserResponse {
   owner: boolean;
 }
 
-// used for request to backend
-export interface UserRequest {
-  name: string;
-  email: string;
-  owner: boolean;
+interface PasswordRequest {
+  oldPassword: string;
+  newPassword: string;
 }
 
 export const login = async (
@@ -91,8 +96,6 @@ export const toggleAccountType = async (
 
     const updatedUserResponse: UserResponse = await response.json();
 
-    console.log("in the service", updatedUserResponse.owner);
-
     const updatedUser: User = {
       ...updatedUserResponse,
       owner: updatedUserResponse.owner ? "true" : "false",
@@ -105,23 +108,87 @@ export const toggleAccountType = async (
   }
 };
 
+export const updatePassword = async (
+  user: User | null,
+  oldPassword: string,
+  newPassword: string,
+  setUserData: (user: User) => void
+): Promise<User | void> => {
+  if (user == null || oldPassword == "" || newPassword == "") {
+    return;
+  }
+
+  const passwordRequest: PasswordRequest = {
+    oldPassword: oldPassword,
+    newPassword: newPassword,
+  };
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/people/${user.id}/password`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(passwordRequest),
+      }
+    );
+
+    if (!response.ok) {
+      const errorMessage = await response.json();
+      throw new Error(errorMessage.errors.join(", "));
+    }
+
+    const updatedPasswordResponse: UserResponse = await response.json();
+
+    const updatedPasswordUser: User = {
+      ...updatedPasswordResponse,
+      owner: updatedPasswordResponse.owner ? "true" : "false",
+    };
+
+    setUserData(updatedPasswordUser);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // you can still pass in user for the owner and id since those aren't changed and email
-// export const updateAccountInfo = async (
-//   user: User | null,
-//   name: string,
-//   password: string,
-//   setUserData: (user: User | null) => void
-// ): Promise<User | void> => {
-//   if (user == null) return;
+export const updateAccountInfo = async (
+  user: User | null,
+  name: string,
+  setUserData: (user: User) => void
+): Promise<User | void> => {
+  if (user == null) return;
 
-//   // do the fetch before updating here, fetch should be in the .then()
+  // do the fetch before updating here, fetch should be in the .then()
+  const userToUpdate: UserRequest = {
+    name: name,
+    email: user.email,
+    owner: user.owner == "true" ? true : false,
+  };
 
-//   const updatedUser: UserRequest = {
-//     ...user,
-//     name,
-//     password,
-//   };
+  try {
+    const response = await fetch(`http://localhost:8080/people/${user.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userToUpdate),
+    });
 
-//   // update context
-//   setUserData(updatedUser);
-// };
+    if (!response.ok) {
+      const errorMessage = await response.json();
+      throw new Error(errorMessage.errors.join(", "));
+    }
+
+    const updatedAccountResponse: UserResponse = await response.json();
+
+    const updatedAccountUser: User = {
+      ...updatedAccountResponse,
+      owner: updatedAccountResponse.owner ? "true" : "false",
+    };
+
+    setUserData(updatedAccountUser);
+  } catch (error) {}
+};

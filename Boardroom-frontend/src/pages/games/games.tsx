@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button'
-import GameGrid from "../../Components/gamegrid";
+import GameGrid from "../../components/gamegrid";
 
 const Games: React.FC = () => {
     const navigate = useNavigate();

@@ -73,8 +73,8 @@ public class PersonController {
     @PutMapping("{id}/password")
     @ResponseStatus(HttpStatus.OK)
     @CrossOrigin(origins = "http://localhost:5173")
-    public void changePassword(@PathVariable("id") int id, @RequestBody PersonUpdatePasswordDto passwordDto) {
-        personService.changePassword(id, passwordDto);
+    public PersonResponseDto changePassword(@PathVariable("id") int id, @RequestBody PersonUpdatePasswordDto passwordDto) {
+        return new PersonResponseDto(personService.changePassword(id, passwordDto));
     }
     
     /** 

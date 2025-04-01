@@ -3,9 +3,11 @@ import { useParams } from 'react-router-dom';
 
 interface SpecificGame {
   id: number;
-  location: string;
-  condition: string;
-  availability: boolean;
+  description: string;
+  picture: number;
+  status: string;
+  boardGameTitle: string;
+  ownerId: number;
 }
 
 const SpecificGames: React.FC = () => {
@@ -17,7 +19,7 @@ const SpecificGames: React.FC = () => {
   useEffect(() => {
     const fetchSpecificGames = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/specificgames`);
+        const response = await fetch(`http://localhost:8080/specificboardgame?title=${title}`);
         if (!response.ok) {
           throw new Error("Failed to fetch specific games");
         }
@@ -50,9 +52,12 @@ const SpecificGames: React.FC = () => {
             key={game.id}
             className="border rounded-lg p-4 shadow-md"
           >
-            <p><strong>Location:</strong> {game.location}</p>
-            <p><strong>Condition:</strong> {game.condition}</p>
-            <p><strong>Availability:</strong> {game.availability ? "Available" : "Not Available"}</p>
+            <p><strong>ID:</strong> {game.id}</p>
+            <p><strong>Description:</strong> {game.description}</p>
+            <p><strong>Picture:</strong> {game.picture}</p>
+            <p><strong>Status:</strong> {game.status}</p>
+            <p><strong>Board Game Title:</strong> {game.boardGameTitle}</p>
+            <p><strong>Owner ID:</strong> {game.ownerId}</p>
           </div>
         ))}
       </div>

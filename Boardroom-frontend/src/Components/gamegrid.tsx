@@ -119,7 +119,7 @@ const GameGrid: React.FC = () => {
               {/* Borrow Button */}
               <Button
                 className="bg-green-500 hover:bg-green-600 text-white"
-                onClick={() => (window.location.href = `/specificboardgame`)}
+                onClick={() => (window.location.href = `/specificboardgames/${selectedGame?.title}`)}
               >
                 Borrow
               </Button>

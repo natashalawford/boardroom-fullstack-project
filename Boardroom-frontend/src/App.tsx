@@ -23,7 +23,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
             <Route path="/games/new" element={<NewGameForm />} />
-            <Route path="/specificboardgame" element={<SpecificGames />} />
+            <Route path="/specificboardgames/:title" element={<SpecificGames />} />
             <Route path="/events" element={<Events />} />
             <Route path="/games/new/specific" element={<NewSpecificGameForm />} />
             {/*<Route path="/login" element={<Login />} /> */}

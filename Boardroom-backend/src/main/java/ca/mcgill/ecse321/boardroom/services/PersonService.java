@@ -82,7 +82,7 @@ public class PersonService {
     } 
 
     @Transactional
-    public void changePassword(int id, PersonUpdatePasswordDto passwordDto) { 
+    public Person changePassword(int id, PersonUpdatePasswordDto passwordDto) { 
      //dont need this, will be done in controller
       if (passwordDto == null || passwordDto.getNewPassword() == null || passwordDto.getNewPassword().isEmpty()) {
           throw new BoardroomException(HttpStatus.BAD_REQUEST, "Password is required");
@@ -100,7 +100,7 @@ public class PersonService {
       }
 
       person.setPassword(passwordDto.getNewPassword());
-      personRepo.save(person);
+      return personRepo.save(person);
     }
 
 }

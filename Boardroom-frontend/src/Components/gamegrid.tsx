@@ -1,99 +1,108 @@
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import React, { useEffect, useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface Game {
-  title: string;
-  description: string;
-  playersNeeded: number;
-  picture: number;
+  title: string
+  description: string
+  playersNeeded: number
+  picture: number
 }
 
 const GameGrid: React.FC = () => {
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-  const [showReviewBox, setShowReviewBox] = useState<boolean>(false);
-  const [reviewText, setReviewText] = useState<string>("");
+  const [games, setGames] = useState<Game[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
+  const [showReviewBox, setShowReviewBox] = useState<boolean>(false)
+  const [reviewText, setReviewText] = useState<string>('')
 
   useEffect(() => {
     const loadGames = async () => {
-      setLoading(true);
-      setError("");
+      setLoading(true)
+      setError('')
       try {
-        const response = await fetch("http://localhost:8080/boardgame");
+        const response = await fetch('http://localhost:8080/boardgame')
         if (!response.ok) {
-          throw new Error("Failed to fetch games");
+          throw new Error('Failed to fetch games')
         }
-        const data = await response.json();
-        setGames(data);
+        const data = await response.json()
+        setGames(data)
       } catch (err: any) {
-        setError(err.message || "An error occurred");
+        setError(err.message || 'An error occurred')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    loadGames();
-  }, []);
+    loadGames()
+  }, [])
 
   const submitReview = async () => {
     if (!reviewText.trim()) {
-      alert("Review cannot be empty!");
-      return;
+      alert('Review cannot be empty!')
+      return
     }
 
     try {
-      const response = await fetch("http://localhost:8080/reviews", {
-        method: "POST",
+      const response = await fetch('http://localhost:8080/reviews', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           gameTitle: selectedGame?.title,
-          review: reviewText,
-        }),
-      });
+          review: reviewText
+        })
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to submit review");
+        throw new Error('Failed to submit review')
       }
 
-      alert("Review submitted successfully!");
-      setShowReviewBox(false);
-      setReviewText("");
+      alert('Review submitted successfully!')
+      setShowReviewBox(false)
+      setReviewText('')
     } catch (err) {
       if (err instanceof Error) {
-        alert(err.message || "An error occurred while submitting the review");
+        alert(err.message || 'An error occurred while submitting the review')
       } else {
-        alert("An unknown error occurred while submitting the review");
+        alert('An unknown error occurred while submitting the review')
       }
     }
-  };
+  }
 
   if (loading) {
-    return <p className="text-center text-gray-500">Loading games...</p>;
+    return <p className='text-center text-gray-500'>Loading games...</p>
   }
 
   if (error) {
-    return <p className="text-center text-red-500">Error: {error}</p>;
+    return <p className='text-center text-red-500'>Error: {error}</p>
   }
 
   return (
-    <div className="p-4">
+    <div className='p-4'>
       {/* Game Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {games.map((game, index) => (
           <div
             key={index}
-            className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer"
-            style={{ backgroundImage: `url(http://localhost:8080/images/${game.picture})` }}
+            className='relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer'
+            style={{
+              backgroundImage: `url(http://localhost:8080/images/${game.picture})`
+            }}
             onClick={() => setSelectedGame(game)}
           >
             {/* Title Overlay */}
-            <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">
+            <div className='absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm'>
               {game.title}
             </div>
           </div>
@@ -102,23 +111,32 @@ const GameGrid: React.FC = () => {
 
       {/* Popup for More Info */}
       {selectedGame && (
-        <Dialog open={!!selectedGame} onOpenChange={() => setSelectedGame(null)}>
+        <Dialog
+          open={!!selectedGame}
+          onOpenChange={() => setSelectedGame(null)}
+        >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{selectedGame.title}</DialogTitle>
+              <DialogTitle className='text-center'>
+                {selectedGame.title}
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <p>
-                <strong>Description:</strong> {selectedGame.description}
-              </p>
-              <p>
-                <strong>Number of Players:</strong> {selectedGame.playersNeeded}
-              </p>
+            <div className='flex items-start space-x-4'>
+              <div className='flex-1 space-y-1'>
+                <p>
+                  <strong>Description:</strong> {selectedGame.description}
+                </p>
+                <p>
+                  <strong>Number of Players:</strong>{' '}
+                  {selectedGame.playersNeeded}
+                </p>
+              </div>
             </div>
-            <DialogFooter className="flex flex-col space-y-4">
+            <ScrollArea className='max-h-60 overflow-y-auto'>Review</ScrollArea>
+            <DialogFooter className='flex flex-col space-y-4'>
               {/* Borrow Button */}
               <Button
-                className="bg-green-500 hover:bg-green-600 text-white"
+                className='bg-green-500 hover:bg-green-600 text-white'
                 onClick={() => (window.location.href = `/specificboardgame`)}
               >
                 Borrow
@@ -126,7 +144,7 @@ const GameGrid: React.FC = () => {
 
               {/* Add Review Button */}
               <Button
-                className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                className='bg-yellow-500 hover:bg-yellow-600 text-black'
                 onClick={() => setShowReviewBox(!showReviewBox)}
               >
                 Add Review
@@ -134,19 +152,22 @@ const GameGrid: React.FC = () => {
 
               {/* Review Box */}
               {showReviewBox && (
-                <div className="space-y-2">
+                <div className='space-y-2'>
                   <Textarea
-                    placeholder="Write your review here..."
+                    placeholder='Write your review here...'
                     value={reviewText}
-                    onChange={(e) => setReviewText(e.target.value)}
+                    onChange={e => setReviewText(e.target.value)}
                   />
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white" onClick={submitReview}>
+                  <Button
+                    className='bg-blue-500 hover:bg-blue-600 text-white'
+                    onClick={submitReview}
+                  >
                     Submit Review
                   </Button>
                 </div>
               )}
 
-              <Button variant="outline" onClick={() => setSelectedGame(null)}>
+              <Button variant='outline' onClick={() => setSelectedGame(null)}>
                 Close
               </Button>
             </DialogFooter>
@@ -154,7 +175,7 @@ const GameGrid: React.FC = () => {
         </Dialog>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default GameGrid;
+export default GameGrid

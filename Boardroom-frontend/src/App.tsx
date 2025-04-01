@@ -7,7 +7,6 @@ import Events from "./pages/events/events";
 import AccountDetails from "./pages/account/AccountDetails";
 //import Login from './pages/login/login';
 import User from './pages/user/user';
-import { NewGameForm } from './pages/games/newGameForm';
 import SpecificGames from './pages/games/specificBoardGames';
 import { NewSpecificGameForm } from './pages/games/newSpecificGameForm';
 
@@ -22,7 +21,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
-            <Route path="/games/new" element={<NewGameForm />} />
             <Route path="/specificboardgame" element={<SpecificGames />} />
             <Route path="/events" element={<Events />} />
             <Route path="/games/new/specific" element={<NewSpecificGameForm />} />

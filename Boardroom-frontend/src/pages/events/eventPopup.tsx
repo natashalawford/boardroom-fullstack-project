@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import {useAuth} from '../../auth/UserAuth';
 
 interface EventPopupProps {
     event: {
@@ -17,6 +18,7 @@ interface EventPopupProps {
 }
 
 const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => {
+    const { userData } = useAuth();
     const popupRef = useRef<HTMLDivElement>(null);
     const [message, setMessage] = useState<string | null>(null); // For success/error messages
 
@@ -27,8 +29,15 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => 
     };
 
     const handleRegister = async () => {
+        setMessage(null); // Clear previous messages
+
+        if (!userData || !userData.id) {
+            setMessage('Error: You must be logged in to register for an event.');
+            return;
+        }
+
         try {
-            const response = await fetch(`http://localhost:8080/registration/${personId}/${event.id}`, {
+            const response = await fetch(`http://localhost:8080/registration/${userData.id}/${event.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -37,7 +46,9 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => 
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to register for the event');
+                const errorMessage = errorData.errors?.[0] || 'Failed to register for the event';
+                console.error('Error response:', errorData);
+                throw new Error(errorMessage || 'Failed to register for the event');
             }
 
             setMessage('Successfully registered for the event!');

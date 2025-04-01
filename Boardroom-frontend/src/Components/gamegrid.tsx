@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import monopoly from '../assets/monopoly.png';
+import { Review } from './review'
 
 interface Game {
   title: string
@@ -144,7 +145,14 @@ const GameGrid: React.FC = () => {
                 />
               </div>
             </div>
-            <ScrollArea className='max-h-60 overflow-y-auto'>Review</ScrollArea>
+            <ScrollArea className='max-h-60 overflow-y-auto'>
+              <Review
+                stars={4}
+                comment='Great game!'
+                authorId={1}
+                timeStamp='2023-10-01'
+              />
+            </ScrollArea>
             <DialogFooter className='flex flex-col space-y-4'>
               {/* Borrow Button */}
               <Button

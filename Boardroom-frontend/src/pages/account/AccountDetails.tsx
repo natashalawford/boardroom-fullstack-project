@@ -55,7 +55,11 @@ function AccountDetails() {
 
     if (errorMessage != null) {
       toast(errorMessage.errorMessage);
-    }
+    } 
+    // TODO  don't have this on toggle because it might get spammed ASK GROUP
+    // else {
+    //   toast("Success")
+    // }
   };
 
   const passwordUpdate = async () => {
@@ -63,6 +67,8 @@ function AccountDetails() {
 
     if (errorMessage != null) {
       toast(errorMessage.errorMessage);
+    } else {
+      toast("Success")
     }
   };
 
@@ -71,6 +77,8 @@ function AccountDetails() {
 
     if (errorMessage != null) {
       toast(errorMessage.errorMessage);
+    } else {
+      toast("Success")
     }
   };
 

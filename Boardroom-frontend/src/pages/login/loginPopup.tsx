@@ -11,8 +11,8 @@ import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
 import { Label } from '@/Components/ui/label'
 
-// Import the real functions from your loginService
 import { loginUser, createUser } from '@/services/loginService'
+import { useAuth } from '@/auth/UserAuth'  // <--- import your AuthContext hook
 
 interface LoginPopupProps {
   isOpen: boolean
@@ -20,7 +20,6 @@ interface LoginPopupProps {
 }
 
 export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
-  // Toggle between Login and Create Account
   const [isLoginMode, setIsLoginMode] = useState(true)
 
   const [email, setEmail] = useState('')
@@ -31,9 +30,12 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
+  // Pull in setUserData from AuthContext
+  const { setUserData } = useAuth()
+
+  // If user closes the dialog forcibly (ESC or outside click)
   const handleOpenChange = (openValue: boolean) => {
     if (!openValue) {
-      // The user closed the popup, so reset form
       resetForm()
       onClose()
     }
@@ -49,7 +51,6 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
     setSuccessMessage('')
   }
 
-  // submit
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setErrorMessage('')
@@ -59,6 +60,14 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       if (isLoginMode) {
         const userResponse = await loginUser(email, password)
         setSuccessMessage(`Welcome back, ${userResponse.name}!`)
+        // Store the user in the global auth context
+        setUserData({
+          id: userResponse.id,
+          name: userResponse.name,
+          email: userResponse.email,
+          // If your front-end expects "owner" as string:
+          owner: userResponse.owner ? 'true' : 'false',
+        })
       } else {
         const newUser = await createUser({
           name,
@@ -67,11 +76,19 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           owner: isOwner,
         })
         setSuccessMessage(`Account created for ${newUser.name}!`)
+        setUserData({
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          owner: newUser.owner ? 'true' : 'false',
+        })
       }
 
-      // If successful, close the popup and reset
-      onClose()
-      resetForm()
+      // Show success message for 2s, then close
+      setTimeout(() => {
+        onClose()
+        resetForm()
+      }, 2000)
     } catch (err: any) {
       console.error(err)
       setErrorMessage(err.message || 'Something went wrong.')
@@ -98,7 +115,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             <p className="text-green-500 text-sm mt-2">{successMessage}</p>
           )}
 
-          {/* If creating an account, show the Name and "Owner" fields */}
+          {/* If creating an account, show the Name and Owner checkbox */}
           {!isLoginMode && (
             <div className="mt-4">
               <Label htmlFor="name">Name</Label>
@@ -134,7 +151,6 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* If creating an account, show "isOwner" checkbox */}
           {!isLoginMode && (
             <div className="mt-4 flex items-center space-x-2">
               <Label htmlFor="isOwner">I want to be a Game Owner</Label>
@@ -152,7 +168,10 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             <Button type="submit" className="text-black">
               {isLoginMode ? 'Login' : 'Create Account'}
             </Button>
-            <Button variant="secondary" onClick={() => setIsLoginMode(!isLoginMode)}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsLoginMode(!isLoginMode)}
+            >
               {isLoginMode ? 'Need an account?' : 'Already have an account?'}
             </Button>
           </DialogFooter>

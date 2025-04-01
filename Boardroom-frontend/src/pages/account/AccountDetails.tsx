@@ -1,6 +1,8 @@
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   toggleAccountType,
-  login,
   updateAccountInfo,
   updatePassword,
 } from "@/services/AccountDetailsService";
@@ -43,6 +44,8 @@ function AccountDetails() {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
 
+
+
   const handleToggle = async (checked: boolean) => {
     const errorMessage = await toggleAccountType(
       userData,
@@ -51,22 +54,25 @@ function AccountDetails() {
     );
 
     if (errorMessage != null) {
-      // have some usestate to say if theres an error, with the error message and then check for it in the return but look at how the popup works exactly
+      toast(errorMessage.errorMessage);
     }
   };
 
   const passwordUpdate = async () => {
-    await updatePassword(userData, oldPassword, newPassword, setUserData);
+    const errorMessage = await updatePassword(userData, oldPassword, newPassword, setUserData);
+
+    if (errorMessage != null) {
+      toast(errorMessage.errorMessage);
+    }
   };
 
   const handleUpdate = async () => {
-    await updateAccountInfo(userData, newName, setUserData);
-  };
+    const errorMessage = await updateAccountInfo(userData, newName, setUserData);
 
-  // login on render -- to be removed
-  useEffect(() => {
-    login("jason@gmail.com", "pw1234", setUserData);
-  }, []);
+    if (errorMessage != null) {
+      toast(errorMessage.errorMessage);
+    }
+  };
 
   // keep info up to date
   useEffect(() => {
@@ -189,6 +195,7 @@ function AccountDetails() {
           Update
         </Button>
       </div>
+      <Toaster />
     </>
   );
 }

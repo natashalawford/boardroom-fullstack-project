@@ -5,13 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {useAuth} from '../../auth/UserAuth'
 
 // Define color scheme constants
-const TEXT_COLOR = '#fff';
-const BACKGROUND_COLOR = '#303036';
+const TEXT_COLOR = '#000';
+const BACKGROUND_COLOR = '#fff';
 const CLOSE_BUTTON_COLOR = '#ccc';
 const CLOSE_BUTTON_TEXT_COLOR = '#000';
 const CREATE_BUTTON_COLOR = '#30BCED';
 const CREATE_BUTTON_TEXT_COLOR = '#fff';
-const INPUT_BORDER_COLOR = '#ccc';
+const INPUT_BORDER_COLOR = '#808080';
 
 // Validation schema using zod
 const formSchema = z.object({
@@ -97,7 +97,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                 }}
             >
                 <div>{userData?.id}</div>
-                <h2 style={{ color: TEXT_COLOR, marginBottom: '20px' }}>Create New Event</h2>
+                <h2 style={{ color: TEXT_COLOR, marginBottom: '20px', fontWeight: 'bold' }}>Create New Event</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ color: TEXT_COLOR }}>Title:</label>
@@ -154,6 +154,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 borderRadius: '5px',
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
+                                colorScheme: 'light',
                             }}
                         />
                         {errors.startDateTime && <p style={{ color: 'red' }}>{errors.startDateTime.message}</p>}
@@ -169,6 +170,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 borderRadius: '5px',
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
+                                colorScheme: 'light',
                             }}
                         />
                         {errors.endDateTime && <p style={{ color: 'red' }}>{errors.endDateTime.message}</p>}
@@ -213,6 +215,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 border: 'none',
                                 borderRadius: '5px',
                                 cursor: 'pointer',
+                                
                             }}
                         >
                             Create

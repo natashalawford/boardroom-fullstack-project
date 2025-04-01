@@ -5,7 +5,7 @@ import { User } from "@/services/AccountDetailsService"
 
 interface AuthContextType {
     userData: User | null,
-    setUserData: (user: User) => void
+    setUserData: (user: User | null) => void
 }
 
 
@@ -24,7 +24,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     
     const [userData, setUser] = useState<User|null>(null);
 
-    const setUserData = (user: User) => {
+    const setUserData = (user: User | null) => {
         setUser(user) 
     }
 

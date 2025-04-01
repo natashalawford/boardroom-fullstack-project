@@ -11,8 +11,8 @@ import { Button } from '@/Components/ui/button'
 import { Input } from '@/Components/ui/input'
 import { Label } from '@/Components/ui/label'
 
-import { loginUser, createUser } from '@/services/loginService'
-import { useAuth } from '@/auth/UserAuth'  // <--- import your AuthContext hook
+import { loginUser, createUser, logout } from '@/services/loginService'
+import { useAuth } from '@/auth/UserAuth' 
 
 interface LoginPopupProps {
   isOpen: boolean
@@ -20,6 +20,7 @@ interface LoginPopupProps {
 }
 
 export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
+  // Toggle btwn Login and Create Account
   const [isLoginMode, setIsLoginMode] = useState(true)
 
   const [email, setEmail] = useState('')
@@ -27,13 +28,13 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const [name, setName] = useState('')
   const [isOwner, setIsOwner] = useState(false)
 
+  // Error & Success messages
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
-  // Pull in setUserData from AuthContext
-  const { setUserData } = useAuth()
+  // Auth Context
+  const { userData, setUserData } = useAuth()
 
-  // If user closes the dialog forcibly (ESC or outside click)
   const handleOpenChange = (openValue: boolean) => {
     if (!openValue) {
       resetForm()
@@ -58,17 +59,18 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
     try {
       if (isLoginMode) {
+        // LOGIN
         const userResponse = await loginUser(email, password)
         setSuccessMessage(`Welcome back, ${userResponse.name}!`)
-        // Store the user in the global auth context
+
         setUserData({
           id: userResponse.id,
           name: userResponse.name,
           email: userResponse.email,
-          // If your front-end expects "owner" as string:
           owner: userResponse.owner ? 'true' : 'false',
         })
       } else {
+        // CREATE ACCOUNT
         const newUser = await createUser({
           name,
           email,
@@ -84,7 +86,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         })
       }
 
-      // Show success message for 2s, then close
+      // Show success message for 2s, then close popup
       setTimeout(() => {
         onClose()
         resetForm()
@@ -95,87 +97,113 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
     }
   }
 
+  // If the user is logged in, we can show a logout button
+  // otherwise we show the Login/Create Account form
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>{isLoginMode ? 'Login' : 'Create Account'}</DialogTitle>
-            <DialogDescription>
-              {isLoginMode
-                ? 'Enter your credentials below to log in.'
-                : 'Fill in your details to create a new account.'}
-            </DialogDescription>
-          </DialogHeader>
-
-          {errorMessage && (
-            <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
-          )}
-          {successMessage && (
-            <p className="text-green-500 text-sm mt-2">{successMessage}</p>
-          )}
-
-          {/* If creating an account, show the Name and Owner checkbox */}
-          {!isLoginMode && (
-            <div className="mt-4">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          )}
-
-          <div className="mt-4">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className="mt-4">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          {!isLoginMode && (
-            <div className="mt-4 flex items-center space-x-2">
-              <Label htmlFor="isOwner">I want to be a Game Owner</Label>
-              <Input
-                id="isOwner"
-                type="checkbox"
-                checked={isOwner}
-                onChange={(e) => setIsOwner(e.target.checked)}
-                className="h-4 w-4"
-              />
-            </div>
-          )}
-
-          <DialogFooter className="mt-6">
-            <Button type="submit" className="text-black">
-              {isLoginMode ? 'Login' : 'Create Account'}
-            </Button>
+        {userData ? (
+          <div className="py-4">
+            <h2 className="text-xl font-bold mb-4">
+              You are logged in as {userData.name}
+            </h2>
             <Button
-              variant="secondary"
-              onClick={() => setIsLoginMode(!isLoginMode)}
+              variant="destructive"
+              onClick={() => {
+                logout(setUserData)
+                setSuccessMessage('Logged out successfully!')
+                setTimeout(() => {
+                  onClose()
+                  resetForm()
+                }, 1000)
+              }}
             >
-              {isLoginMode ? 'Need an account?' : 'Already have an account?'}
+              Logout
             </Button>
-          </DialogFooter>
-        </form>
+            {successMessage && (
+              <p className="text-green-500 text-sm mt-2">{successMessage}</p>
+            )}
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>{isLoginMode ? 'Login' : 'Create Account'}</DialogTitle>
+              <DialogDescription>
+                {isLoginMode
+                  ? 'Enter your credentials below to log in.'
+                  : 'Fill in your details to create a new account.'}
+              </DialogDescription>
+            </DialogHeader>
+
+            {errorMessage && (
+              <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+            )}
+            {successMessage && (
+              <p className="text-green-500 text-sm mt-2">{successMessage}</p>
+            )}
+
+            {/* If creating an account, show the Name and Owner checkbox */}
+            {!isLoginMode && (
+              <div className="mt-4">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+            )}
+
+            <div className="mt-4">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="mt-4">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            {!isLoginMode && (
+              <div className="mt-4 flex items-center space-x-2">
+                <Label htmlFor="isOwner">I want to be a Game Owner</Label>
+                <Input
+                  id="isOwner"
+                  type="checkbox"
+                  checked={isOwner}
+                  onChange={(e) => setIsOwner(e.target.checked)}
+                  className="h-4 w-4"
+                />
+              </div>
+            )}
+
+            <DialogFooter className="mt-6">
+              <Button type="submit" className="text-black">
+                {isLoginMode ? 'Login' : 'Create Account'}
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setIsLoginMode(!isLoginMode)}
+              >
+                {isLoginMode ? 'Need an account?' : 'Already have an account?'}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

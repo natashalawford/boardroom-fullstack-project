@@ -15,7 +15,7 @@ import {
   toggleAccountType,
   login,
   updateAccountInfo,
-  updatePassword
+  updatePassword,
 } from "@/services/AccountDetailsService";
 
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ function AccountDetails() {
   const [name, setName] = useState<string>(userData?.name || "");
   const [email, setEmail] = useState<string>(userData?.email || "");
   const [accountType, setAccountType] = useState<string>(
-    userData?.owner == "true" ? "owner" : "user"
+    userData?.owner == "true" ? "Owner" : "User"
   );
 
   // for switch
@@ -44,12 +44,16 @@ function AccountDetails() {
   const [newPassword, setNewPassword] = useState<string>("");
 
   const handleToggle = async (checked: boolean) => {
-    await toggleAccountType(userData, checked.toString(), setUserData);
+    const errorMessage = await toggleAccountType(userData, checked.toString(), setUserData);
+
+    if (errorMessage != null) {
+      // have some usestate to say if theres an error, with the error message and then check for it in the return but look at how the popup works exactly
+    }
   };
 
   const passwordUpdate = async () => {
     await updatePassword(userData, oldPassword, newPassword, setUserData);
-  }
+  };
 
   const handleUpdate = async () => {
     await updateAccountInfo(userData, newName, setUserData);
@@ -66,7 +70,7 @@ function AccountDetails() {
       setEmail(userData.email);
       setName(userData.name);
       setNewName(userData.name);
-      setAccountType(userData.owner == "true" ? "owner" : "user");
+      setAccountType(userData.owner == "true" ? "Owner" : "User");
       setIsChecked(userData.owner == "true");
     }
   }, [userData]);
@@ -93,7 +97,6 @@ function AccountDetails() {
           </Switch.Root>
         </div>
       </div>
-
 
       <p className="ml-20 mb-10 text-4xl">Hello, {name}</p>
 
@@ -133,11 +136,19 @@ function AccountDetails() {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label>Old Password</Label>
-                <Input className="col-span-3" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)}/>
+                <Input
+                  className="col-span-3"
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label>New Password</Label>
-                <Input className="col-span-3" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
+                <Input
+                  className="col-span-3"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
               </div>
             </div>
 

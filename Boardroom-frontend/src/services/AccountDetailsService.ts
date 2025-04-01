@@ -26,6 +26,10 @@ interface PasswordRequest {
   newPassword: string;
 }
 
+export interface ErrorMessage {
+  errorMessage: string;
+}
+
 export const login = async (
   email: string,
   password: string,
@@ -68,7 +72,7 @@ export const toggleAccountType = async (
   user: User | null,
   owner: string,
   setUserData: (user: User) => void
-): Promise<void> => {
+): Promise<void | ErrorMessage> => {
   if (user == null) {
     return;
   }
@@ -104,7 +108,11 @@ export const toggleAccountType = async (
     // update info
     setUserData(updatedUser);
   } catch (error) {
-    console.error(error);
+    const errorMessage: ErrorMessage = {
+      errorMessage: String(error)
+    }
+
+    return errorMessage;
   }
 };
 

@@ -31,7 +31,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
 // Services
-import { saveBoardGame, BoardGame } from '../../services/boardGameService'
+import { saveBoardGame, BoardGame } from '../services/boardGameService'
 
 const formSchema = z.object({
   title: z.string().min(1, { message: 'Title is required.' }),

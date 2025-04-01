@@ -8,7 +8,7 @@ import AccountDetails from "./pages/account/AccountDetails";
 //import Login from './pages/login/login';
 import User from './pages/user/user';
 import SpecificGames from './pages/games/specificBoardGames';
-import { NewSpecificGameForm } from './pages/games/newSpecificGameForm';
+import { NewSpecificGameForm } from './components/newSpecificGameFormButton';
 
 const App: React.FC = () => {
   return (

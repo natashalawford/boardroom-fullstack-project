@@ -1,14 +1,9 @@
 import React from 'react'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import GameGrid from '../../components/gamegrid'
-import { NewGameForm } from './newGameForm'
-import { NewSpecificGameForm } from './newSpecificGameForm'
+import { NewGameForm } from '../../components/newGameFormButton'
+import { NewSpecificGameForm } from '../../components/newSpecificGameFormButton'
 
 const Games: React.FC = () => {
-  const [isGameOpen, openCreateGame] = useState(false)
-  const [isSpecificGameOpen, openCreateSpecificGame] = useState(false)
-
   return (
     <div className='font-roboto p-8'>
       <h1 className='font-semibold'>Games Page</h1>

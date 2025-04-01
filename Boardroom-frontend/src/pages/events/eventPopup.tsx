@@ -76,7 +76,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => 
             <div
                 ref={popupRef}
                 style={{
-                    backgroundColor: '#303036',
+                    backgroundColor: '#fff',
                     padding: '20px',
                     borderRadius: '10px',
                     width: '400px',

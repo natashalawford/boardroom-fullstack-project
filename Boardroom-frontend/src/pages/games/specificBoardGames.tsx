@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/auth/UserAuth"; // Import the useAuth hook
 import { toast } from "sonner";
@@ -30,7 +43,9 @@ const SpecificGames: React.FC = () => {
   useEffect(() => {
     const fetchSpecificGames = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/specificboardgame?title=${title}`);
+        const response = await fetch(
+          `http://localhost:8080/specificboardgame?title=${title}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch specific games");
         }
@@ -46,81 +61,84 @@ const SpecificGames: React.FC = () => {
     fetchSpecificGames();
   }, [title]);
 
-   
-  
   const handleBorrowRequest = async () => {
-    
     // if (!userData || !userData.id) {
     //   toast.error("User is not authenticated or personId is missing.");
     //   return;
     // }
-  
+
     // Check if both start and end dates are provided
-  if (!startDate || !endDate) {
-    toast.error("Please select both start and end dates.");
-    return;
-  }
-
-  // Check if the start date is in the past
-  const now = new Date();
-  const selectedStartDate = new Date(startDate);
-  if (selectedStartDate.getTime() < now.setHours(0, 0, 0, 0)) {
-    toast.error("Start date cannot be in the past.");
-    return;
-  }
-
-  // Check if a game is selected
-  if (!selectedGame) {
-    toast.error("No game selected for borrowing.");
-    return;
-  }
-
-  // Format the start and end dates
-  const today = now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-  const formattedStartDate =
-    startDate === today
-      ? `${startDate}T${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:00`
-      : `${startDate}T00:00:00`;
-  const formattedEndDate = `${endDate}T00:00:00`;
-
-  // Prepare the payload
-  const payload = {
-    status: "PENDING", // Default status
-    requestStartDate: formattedStartDate,
-    requestEndDate: formattedEndDate,
-    personId: 4752,
-    //personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
-    specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
-  };
-
-  console.log("Payload being sent:", payload); // Log the payload for debugging
-
-  try {
-    const response = await fetch("http://localhost:8080/borrowRequests", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text(); // Get error details from the backend
-      const errorJson = JSON.parse(errorText); // Parse the JSON error response
-      const errorMessage = errorJson.errors?.join(", ") || "An unknown error occurred."; // Format the error message
-      toast.error(`Failed to create borrow request: ${errorMessage}`);
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates.");
       return;
     }
 
-    toast.success("Borrow request submitted successfully!");
-    setIsDialogOpen(false); // Close the dialog
-  } catch (err: any) {
-    console.error("Error:", err); // Log the error for debugging
-    toast.error("An error occurred while submitting the borrow request.");
-  }
-};
+    // Check if the start date is in the past
+    const now = new Date();
+    const selectedStartDate = new Date(startDate);
+    if (selectedStartDate.getTime() < now.setHours(0, 0, 0, 0)) {
+      toast.error("Start date cannot be in the past.");
+      return;
+    }
+
+    // Check if a game is selected
+    if (!selectedGame) {
+      toast.error("No game selected for borrowing.");
+      return;
+    }
+
+    // Format the start and end dates
+    const today = now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    const formattedStartDate =
+      startDate === today
+        ? `${startDate}T${now.getHours().toString().padStart(2, "0")}:${now
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}:00`
+        : `${startDate}T00:00:00`;
+    const formattedEndDate = `${endDate}T00:00:00`;
+
+    // Prepare the payload
+    const payload = {
+      status: "PENDING", // Default status
+      requestStartDate: formattedStartDate,
+      requestEndDate: formattedEndDate,
+      personId: 4752,
+      //personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
+      specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
+    };
+
+    console.log("Payload being sent:", payload); // Log the payload for debugging
+
+    try {
+      const response = await fetch("http://localhost:8080/borrowRequests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Get error details from the backend
+        const errorJson = JSON.parse(errorText); // Parse the JSON error response
+        const errorMessage =
+          errorJson.errors?.join(", ") || "An unknown error occurred."; // Format the error message
+        toast.error(`Failed to create borrow request: ${errorMessage}`);
+        return;
+      }
+
+      toast.success("Borrow request submitted successfully!");
+      setIsDialogOpen(false); // Close the dialog
+    } catch (err: any) {
+      console.error("Error:", err); // Log the error for debugging
+      toast.error("An error occurred while submitting the borrow request.");
+    }
+  };
   if (loading) {
-    return <p className="text-center text-gray-500">Loading specific games...</p>;
+    return (
+      <p className="text-center text-gray-500">Loading specific games...</p>
+    );
   }
 
   if (error) {
@@ -132,44 +150,53 @@ const SpecificGames: React.FC = () => {
       <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
       <div className="space-y-6">
         {specificGames.map((game) => (
-          <Card key={game.id} className="flex flex-row items-center space-x-4 p-4 hover:shadow-lg transition-shadow">
+          <Card
+            key={game.id}
+            className="flex flex-col md:flex-row items-stretch md:items-center space-y-4 md:space-y-0 md:space-x-6 p-4 hover:shadow-lg transition-shadow"
+          >
             {/* Image Section */}
-            <div className="w-1/3">
+            <div className="w-full md:w-1/2">
               <img
-                src={`http://localhost:8080/images/${game.picture}`}
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
+                // src={`http://localhost:8080/images/${game.picture}`}
                 alt={game.boardGameTitle}
                 className="rounded-lg object-cover w-full h-40"
               />
             </div>
 
-            {/* Details Section */}
-            <CardContent className="w-2/3">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold">{game.boardGameTitle}</CardTitle>
-                <CardDescription className="text-gray-700">{game.description}</CardDescription>
-              </CardHeader>
-              <div className="mt-2">
-                <p className="text-sm">
-                  <strong>Status:</strong> {game.status}
-                </p>
-                <p className="text-sm">
-                  <strong>Owner ID:</strong> {game.ownerId}
-                </p>
-              </div>
+            {/* Details and Button Section */}
+            <div className="w-full md:w-1/2 flex flex-col justify-between space-y-4">
+              <CardContent className="flex flex-col flex-grow justify-between">
+                <div className="flex flex-col flex-grow justify-end">
+                  <CardTitle className="text-xl font-bold text-left">
+                    {game.boardGameTitle}
+                  </CardTitle>
+                  <CardDescription className="text-gray-700">
+                    {game.description}
+                  </CardDescription>
+                </div>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">
+                    <strong>Status:</strong>{" "}
+                    {game.status.charAt(0).toUpperCase() +
+                      game.status.slice(1).toLowerCase()}
+                  </p>
+                </div>
+              </CardContent>
 
-              {/* Borrow Button */}
-              <div className="mt-4">
+              {/* Borrow Button (full width) */}
+              <CardFooter className="w-full">
                 <Button
-                  className="bg-green-500 hover:bg-green-600 text-white"
+                  className="bg-green-500 hover:bg-green-600 text-white w-full"
                   onClick={() => {
                     setSelectedGame(game);
-                    setIsDialogOpen(true); // Open the dialog
+                    setIsDialogOpen(true);
                   }}
                 >
                   Borrow
                 </Button>
-              </div>
-            </CardContent>
+              </CardFooter>
+            </div>
           </Card>
         ))}
       </div>
@@ -196,7 +223,10 @@ const SpecificGames: React.FC = () => {
               />
             </div>
             <DialogFooter className="mt-4">
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white" onClick={handleBorrowRequest}>
+              <Button
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={handleBorrowRequest}
+              >
                 Submit Request
               </Button>
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

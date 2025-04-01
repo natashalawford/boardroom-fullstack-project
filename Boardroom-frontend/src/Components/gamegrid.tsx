@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -83,38 +89,43 @@ const GameGrid: React.FC = () => {
 
   return (
     <div className="p-4">
- {/* Game Grid */}
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-  {games.map((game, index) => (
-    <div
-      key={index}
-      className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden group"
-      style={{ backgroundImage: `url(http://localhost:8080/images/${game.picture})` }}
-    >
-      {/* Title Overlay */}
-      <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">
-        {game.title}
-      </div>
+      {/* Game Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {games.map((game, index) => (
+          <div
+            key={index}
+            className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden group"
+            style={{
+              backgroundImage: `url(http://localhost:8080/images/${game.picture})`,
+            }}
+          >
+            {/* Title Overlay */}
+            <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">
+              {game.title}
+            </div>
 
-      {/* Translucent Effect */}
-      <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-50 transition-opacity"></div>
+            {/* Translucent Effect */}
+            <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-50 transition-opacity"></div>
 
-      {/* Centered More Info Button */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200"
-          onClick={() => setSelectedGame(game)}
-        >
-          More Info
-        </Button>
+            {/* Centered More Info Button */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200"
+                onClick={() => setSelectedGame(game)}
+              >
+                More Info
+              </Button>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
 
       {/* Popup for More Info */}
       {selectedGame && (
-        <Dialog open={!!selectedGame} onOpenChange={() => setSelectedGame(null)}>
+        <Dialog
+          open={!!selectedGame}
+          onOpenChange={() => setSelectedGame(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{selectedGame.title}</DialogTitle>
@@ -131,7 +142,9 @@ const GameGrid: React.FC = () => {
               {/* Borrow Button */}
               <Button
                 className="bg-green-500 hover:bg-green-600 text-white"
-                onClick={() => (window.location.href = `/specificboardgames/${selectedGame?.title}`)}
+                onClick={() =>
+                  (window.location.href = `/specificboardgames/${selectedGame?.title}`)
+                }
               >
                 Borrow
               </Button>
@@ -152,7 +165,10 @@ const GameGrid: React.FC = () => {
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
                   />
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white" onClick={submitReview}>
+                  <Button
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                    onClick={submitReview}
+                  >
                     Submit Review
                   </Button>
                 </div>

@@ -5,9 +5,9 @@ import Home from "./pages/home/home";
 import Games from "./pages/games/games";
 import Events from "./pages/events/events";
 import AccountDetails from "./pages/account/AccountDetails";
-import { NewGameForm } from './pages/games/newGameForm';
-import SpecificGames from './pages/games/specificBoardGames';
-import { NewSpecificGameForm } from './pages/games/newSpecificGameForm';
+import { NewGameForm } from "./pages/games/newGameForm";
+import SpecificGames from "./pages/games/specificBoardGames";
+import { NewSpecificGameForm } from "./pages/games/newSpecificGameForm";
 import { Toaster } from "sonner";
 
 const App: React.FC = () => {
@@ -33,9 +33,15 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
             <Route path="/games/new" element={<NewGameForm />} />
-            <Route path="/specificboardgames/:title" element={<SpecificGames />} />
+            <Route
+              path="/specificboardgames/:title"
+              element={<SpecificGames />}
+            />
             <Route path="/events" element={<Events />} />
-            <Route path="/games/new/specific" element={<NewSpecificGameForm />} />
+            <Route
+              path="/games/new/specific"
+              element={<NewSpecificGameForm />}
+            />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<AccountDetails />} />
           </Routes>

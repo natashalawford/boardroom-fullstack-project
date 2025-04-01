@@ -29,7 +29,7 @@ const App: React.FC = () => {
         style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
       >
         <Header />
-        <main style={{ flex: 1, paddingTop: "60px" }}>
+        <main style={{ flex: 1, paddingTop: "60px"}}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />

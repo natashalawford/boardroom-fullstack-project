@@ -21,15 +21,26 @@ export const fetchReviewsForBoardGame = async (
     const errorResponse = await response.json();
     throw new Error(
       errorResponse.errors?.[0] ||
-        "Something went wrong when fetching the board games"
+        "Something went wrong when fetching the reviews"
     );
   }
 
   const reviews = await response.json();
 
-  // Convert the timeStamp to a readable string
-  return reviews.map((review: ReviewResponse) => ({
-    ...review,
-    timeStamp: format(new Date(review.timeStamp), "MMMM dd, yyyy"), // e.g., "March 31, 2025"
-  }));
+  return reviews.map((review: ReviewResponse) => {
+    let formattedDate = "Invalid Date"; // Default in case formatting fails
+
+    if (review.timeStamp) {
+      try {
+        const parsedDate = new Date(review.timeStamp);
+        if (!isNaN(parsedDate.getTime())) {
+          formattedDate = format(parsedDate, "MMMM dd, yyyy");
+        }
+      } catch (error) {
+        console.error("Date parsing error:", error);
+      }
+    }
+
+    return { ...review, timeStamp: formattedDate };
+  });
 };

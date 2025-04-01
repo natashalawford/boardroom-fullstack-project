@@ -9,7 +9,7 @@ interface ReviewProps {
 
 export const Review: React.FC<ReviewProps> = ({ stars, comment, authorId, timeStamp }) => {
     return (
-        <div className="p-4 rounded-lg mb-4 shadow-md">
+        <div className="p-5 rounded-lg mb-4 shadow-md">
             <div className="flex justify-between items-center">
                 <span className="font-semibold">{`Author ID: ${authorId}`}</span>
                 <span className="text-gray-500">{timeStamp}</span>

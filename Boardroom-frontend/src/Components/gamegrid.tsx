@@ -10,7 +10,9 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import monopoly from '../assets/monopoly.png';
+
 import { Review } from './review'
+import { fetchReviewsForBoardGame, ReviewResponse } from '../services/reviewService';
 
 interface Game {
   title: string;
@@ -26,6 +28,7 @@ const GameGrid: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [showReviewBox, setShowReviewBox] = useState<boolean>(false);
   const [reviewText, setReviewText] = useState<string>("");
+  const [reviews, setReviews] = useState<ReviewResponse[]>([]);
 
   useEffect(() => {
     const loadGames = async () => {
@@ -47,6 +50,24 @@ const GameGrid: React.FC = () => {
 
     loadGames();
   }, []);
+
+  
+  useEffect(() => {
+    if (selectedGame) {
+      const loadReviews = async () => {
+        try {
+          console.log("Fetching reviews for:", selectedGame.title);
+          const fetchedReviews = await fetchReviewsForBoardGame(selectedGame.title);
+          setReviews(fetchedReviews);
+          console.log("Fetched reviews:", fetchedReviews);
+        } catch (err) {
+          console.error("Error fetching reviews:", err);
+          setReviews([]);
+        }
+      };
+      loadReviews();
+    }
+  }, [selectedGame]);
 
   const submitReview = async () => {
     if (!reviewText.trim()) {
@@ -132,7 +153,7 @@ const GameGrid: React.FC = () => {
           open={!!selectedGame}
           onOpenChange={() => setSelectedGame(null)}
         >
-          <DialogContent>
+          <DialogContent className='z-200'>
             <DialogHeader>
               <DialogTitle className="text-center font-bold pt-1">
                 {selectedGame.title}
@@ -158,13 +179,23 @@ const GameGrid: React.FC = () => {
                 />
               </div>
             </div>
-            <ScrollArea className='max-h-60 overflow-y-auto'>
-              <Review
-                stars={4}
-                comment='Great game!'
-                authorId={1}
-                timeStamp='2023-10-01'
-              />
+            <div className="font-bold text-lg text-center">
+              Reviews
+            </div>
+            <ScrollArea className='max-h-45 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3'>
+              {reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <Review
+                    key={review.id}
+                    stars={review.stars}
+                    comment={review.comment}
+                    authorId={review.authorId}
+                    timeStamp={review.timeStamp}
+                   />
+                ))
+              ) : (
+                <p className="text-center text-gray-500">No reviews yet.</p>
+              )}
             </ScrollArea>
             <DialogFooter className='flex flex-col space-y-4'>
               {/* Borrow Button */}
@@ -202,9 +233,6 @@ const GameGrid: React.FC = () => {
                 </div>
               )}
 
-              <Button variant="outline" onClick={() => setSelectedGame(null)}>
-                Close
-              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

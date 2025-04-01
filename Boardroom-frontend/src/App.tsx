@@ -25,6 +25,7 @@ const App: React.FC = () => {
             <Route path="/games/new" element={<NewGameForm />} />
             <Route path="/specificboardgame" element={<SpecificGames />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/games/new/specific" element={<NewSpecificGameForm />} />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<AccountDetails />} />
           </Routes>

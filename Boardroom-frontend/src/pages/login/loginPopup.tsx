@@ -12,7 +12,8 @@ import { Input } from '@/Components/ui/input'
 import { Label } from '@/Components/ui/label'
 
 import { loginUser, createUser, logout } from '@/services/loginService'
-import { useAuth } from '@/auth/UserAuth' 
+import { useAuth } from '@/auth/UserAuth'
+import { useNavigate } from 'react-router-dom'
 
 interface LoginPopupProps {
   isOpen: boolean
@@ -20,7 +21,7 @@ interface LoginPopupProps {
 }
 
 export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
-  // Toggle btwn Login and Create Account
+  // Toggle between Login and Create Account modes
   const [isLoginMode, setIsLoginMode] = useState(true)
 
   const [email, setEmail] = useState('')
@@ -28,12 +29,14 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const [name, setName] = useState('')
   const [isOwner, setIsOwner] = useState(false)
 
-  // Error & Success messages
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
-  // Auth Context
+  // Get auth context for global user data
   const { userData, setUserData } = useAuth()
+
+  // Nav hook to go to home page on logout
+  const navigate = useNavigate()
 
   const handleOpenChange = (openValue: boolean) => {
     if (!openValue) {
@@ -62,7 +65,6 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         // LOGIN
         const userResponse = await loginUser(email, password)
         setSuccessMessage(`Welcome back, ${userResponse.name}!`)
-
         setUserData({
           id: userResponse.id,
           name: userResponse.name,
@@ -85,8 +87,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           owner: newUser.owner ? 'true' : 'false',
         })
       }
-
-      // Show success message for 2s, then close popup
+      // Show success message for 2s, then close the popup
       setTimeout(() => {
         onClose()
         resetForm()
@@ -97,12 +98,11 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
     }
   }
 
-  // If the user is logged in, we can show a logout button
-  // otherwise we show the Login/Create Account form
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         {userData ? (
+          // Logged inn View - show a Logout button
           <div className="py-4">
             <h2 className="text-xl font-bold mb-4">
               You are logged in as {userData.name}
@@ -115,6 +115,8 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                 setTimeout(() => {
                   onClose()
                   resetForm()
+                  navigate('/')          // redirect to home page
+                  window.location.reload() // refresh the page content
                 }, 1000)
               }}
             >
@@ -125,6 +127,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             )}
           </div>
         ) : (
+          // Not logged in - show the Login/Create form
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>{isLoginMode ? 'Login' : 'Create Account'}</DialogTitle>
@@ -142,7 +145,6 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               <p className="text-green-500 text-sm mt-2">{successMessage}</p>
             )}
 
-            {/* If creating an account, show the Name and Owner checkbox */}
             {!isLoginMode && (
               <div className="mt-4">
                 <Label htmlFor="name">Name</Label>

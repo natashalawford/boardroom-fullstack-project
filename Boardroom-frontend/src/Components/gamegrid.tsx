@@ -83,22 +83,34 @@ const GameGrid: React.FC = () => {
 
   return (
     <div className="p-4">
-      {/* Game Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {games.map((game, index) => (
-          <div
-            key={index}
-            className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer"
-            style={{ backgroundImage: `url(http://localhost:8080/images/${game.picture})` }}
-            onClick={() => setSelectedGame(game)}
-          >
-            {/* Title Overlay */}
-            <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">
-              {game.title}
-            </div>
-          </div>
-        ))}
+ {/* Game Grid */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  {games.map((game, index) => (
+    <div
+      key={index}
+      className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden group"
+      style={{ backgroundImage: `url(http://localhost:8080/images/${game.picture})` }}
+    >
+      {/* Title Overlay */}
+      <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">
+        {game.title}
       </div>
+
+      {/* Translucent Effect */}
+      <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-50 transition-opacity"></div>
+
+      {/* Centered More Info Button */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200"
+          onClick={() => setSelectedGame(game)}
+        >
+          More Info
+        </Button>
+      </div>
+    </div>
+  ))}
+</div>
 
       {/* Popup for More Info */}
       {selectedGame && (

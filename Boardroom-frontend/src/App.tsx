@@ -5,15 +5,25 @@ import Home from "./pages/home/home";
 import Games from "./pages/games/games";
 import Events from "./pages/events/events";
 import AccountDetails from "./pages/account/AccountDetails";
-//import Login from './pages/login/login';
-import User from './pages/user/user';
 import { NewGameForm } from './pages/games/newGameForm';
 import SpecificGames from './pages/games/specificBoardGames';
 import { NewSpecificGameForm } from './pages/games/newSpecificGameForm';
+import { Toaster } from "sonner";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <Toaster
+        position="top-center"
+        richColors
+        toastOptions={{
+          className: "bg-white text-black",
+          style: {
+            background: "#FFFFFF",
+            color: "#000000",
+          },
+        }}
+      />
       <div
         style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
       >

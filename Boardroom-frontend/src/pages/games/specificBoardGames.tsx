@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/auth/UserAuth"; // Import the useAuth hook
+import { toast } from "sonner";
 
 interface SpecificGame {
   id: number;
@@ -23,6 +25,7 @@ const SpecificGames: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(""); // Start date input
   const [endDate, setEndDate] = useState<string>(""); // End date input
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog state
+  const { userData } = useAuth(); // Get userData from AuthContext
 
   useEffect(() => {
     const fetchSpecificGames = async () => {
@@ -43,62 +46,79 @@ const SpecificGames: React.FC = () => {
     fetchSpecificGames();
   }, [title]);
 
-    const handleBorrowRequest = async () => {
-    if (!startDate || !endDate) {
-      alert("Please specify both start and end dates.");
-      return;
-    }
+   
   
-    if (!selectedGame) {
-      alert("No game selected for borrowing.");
-      return;
-    }
+  const handleBorrowRequest = async () => {
+    
+    // if (!userData || !userData.id) {
+    //   toast.error("User is not authenticated or personId is missing.");
+    //   return;
+    // }
   
-    // Get the current date and time
-    const now = new Date();
-    const today = now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-  
-    // Append time to the start date
-    const formattedStartDate =
-      startDate === today
-        ? `${startDate}T${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:00` // Use current time if start date is today
-        : `${startDate}T00:00:00`;
-  
-    // Append time to the end date
-    const formattedEndDate = `${endDate}T00:00:00`;
-  
-    const payload = {
-      status: "PENDING", // Default status
-      requestStartDate: formattedStartDate,
-      requestEndDate: formattedEndDate,
-      personId: 4752, // Replace with the actual person ID
-      specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
-    };
-  
-    console.log("Payload being sent:", payload); // Log the payload for debugging
-  
-    try {
-      const response = await fetch("http://localhost:8080/borrowRequests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-  
-      if (!response.ok) {
-        const errorText = await response.text(); // Get error details from the backend
-        throw new Error(`Failed to create borrow request: ${errorText}`);
-      }
-  
-      alert("Borrow request submitted successfully!");
-      setIsDialogOpen(false); // Close the dialog
-    } catch (err: any) {
-      console.error("Error:", err); // Log the error for debugging
-      alert(err.message || "An error occurred while submitting the borrow request");
-    }
+    // Check if both start and end dates are provided
+  if (!startDate || !endDate) {
+    toast.error("Please select both start and end dates.");
+    return;
+  }
+
+  // Check if the start date is in the past
+  const now = new Date();
+  const selectedStartDate = new Date(startDate);
+  if (selectedStartDate.getTime() < now.setHours(0, 0, 0, 0)) {
+    toast.error("Start date cannot be in the past.");
+    return;
+  }
+
+  // Check if a game is selected
+  if (!selectedGame) {
+    toast.error("No game selected for borrowing.");
+    return;
+  }
+
+  // Format the start and end dates
+  const today = now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  const formattedStartDate =
+    startDate === today
+      ? `${startDate}T${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:00`
+      : `${startDate}T00:00:00`;
+  const formattedEndDate = `${endDate}T00:00:00`;
+
+  // Prepare the payload
+  const payload = {
+    status: "PENDING", // Default status
+    requestStartDate: formattedStartDate,
+    requestEndDate: formattedEndDate,
+    personId: 4752,
+    //personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
+    specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
   };
 
+  console.log("Payload being sent:", payload); // Log the payload for debugging
+
+  try {
+    const response = await fetch("http://localhost:8080/borrowRequests", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text(); // Get error details from the backend
+      const errorJson = JSON.parse(errorText); // Parse the JSON error response
+      const errorMessage = errorJson.errors?.join(", ") || "An unknown error occurred."; // Format the error message
+      toast.error(`Failed to create borrow request: ${errorMessage}`);
+      return;
+    }
+
+    toast.success("Borrow request submitted successfully!");
+    setIsDialogOpen(false); // Close the dialog
+  } catch (err: any) {
+    console.error("Error:", err); // Log the error for debugging
+    toast.error("An error occurred while submitting the borrow request.");
+  }
+};
   if (loading) {
     return <p className="text-center text-gray-500">Loading specific games...</p>;
   }

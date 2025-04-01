@@ -49,7 +49,6 @@ import {
   SpecificBoardGame,
   fetchBoardGames
 } from '../services/boardGameService'
-import { useNavigate } from 'react-router-dom'
 
 type GameStatus = {
   value: string

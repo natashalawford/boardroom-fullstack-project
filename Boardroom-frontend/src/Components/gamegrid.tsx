@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import monopoly from '../assets/monopoly.png';
 
 interface Game {
   title: string
@@ -97,7 +98,9 @@ const GameGrid: React.FC = () => {
             key={index}
             className='relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer'
             style={{
-              backgroundImage: `url(http://localhost:8080/images/${game.picture})`
+              backgroundImage: `url(${monopoly})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
             }}
             onClick={() => setSelectedGame(game)}
           >
@@ -117,12 +120,12 @@ const GameGrid: React.FC = () => {
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className='text-center'>
+              <DialogTitle className='text-center font-bold pt-1'>
                 {selectedGame.title}
               </DialogTitle>
             </DialogHeader>
-            <div className='flex items-start space-x-4'>
-              <div className='flex-1 space-y-1'>
+            <div className='flex items-start space-x-2 p-4'>
+              <div className='flex-1 space-y-1 self-center'>
                 <p>
                   <strong>Description:</strong> {selectedGame.description}
                 </p>
@@ -130,6 +133,15 @@ const GameGrid: React.FC = () => {
                   <strong>Number of Players:</strong>{' '}
                   {selectedGame.playersNeeded}
                 </p>
+              </div>
+
+              {/* Right Section: Image */}
+              <div className='w-48 h-30 flex-shrink-0'>
+                <img
+                  alt='Board Game'
+                  src={monopoly}
+                  className='w-full h-full object-cover rounded-lg shadow-md'
+                />
               </div>
             </div>
             <ScrollArea className='max-h-60 overflow-y-auto'>Review</ScrollArea>

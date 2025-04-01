@@ -5,9 +5,10 @@ import Home from "./pages/home/home";
 import Games from "./pages/games/games";
 import Events from "./pages/events/events";
 import AccountDetails from "./pages/account/AccountDetails";
-import { NewGameForm } from "./pages/games/newGameForm";
+import { NewGameForm } from "./components/newGameFormButton";
 import SpecificGames from "./pages/games/specificBoardGames";
-import { NewSpecificGameForm } from "./pages/games/newSpecificGameForm";
+import { NewSpecificGameForm } from "./components/newSpecificGameFormButton";
+
 import { Toaster } from "sonner";
 
 const App: React.FC = () => {

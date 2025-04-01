@@ -34,7 +34,7 @@ public class GameOwnerService {
     @Transactional
     public BoardGame createBoardGame(BoardGameCreationDto boardGameToCreate) {
         //Make sure boardgame with this title doesn't already exist
-        if (boardGameRepo.existsByTitle(boardGameToCreate.getTitle())) {
+        if (boardGameRepo.existsByTitleIgnoreCase(boardGameToCreate.getTitle())) {
             throw new BoardroomException(HttpStatus.BAD_REQUEST, "A board game with this title already exists");
         }
 

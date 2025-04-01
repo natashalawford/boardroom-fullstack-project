@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import monopoly from "../assets/monopoly.png";
 
 interface Game {
   title: string;
@@ -94,10 +96,13 @@ const GameGrid: React.FC = () => {
         {games.map((game, index) => (
           <div
             key={index}
-            className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden group"
+            className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer"
             style={{
-              backgroundImage: `url(http://localhost:8080/images/${game.picture})`,
+              backgroundImage: `url(${monopoly})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
+            onClick={() => setSelectedGame(game)}
           >
             {/* Title Overlay */}
             <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">
@@ -128,16 +133,31 @@ const GameGrid: React.FC = () => {
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{selectedGame.title}</DialogTitle>
+              <DialogTitle className="text-center font-bold pt-1">
+                {selectedGame.title}
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <p>
-                <strong>Description:</strong> {selectedGame.description}
-              </p>
-              <p>
-                <strong>Number of Players:</strong> {selectedGame.playersNeeded}
-              </p>
+            <div className="flex items-start space-x-2 p-4">
+              <div className="flex-1 space-y-1 self-center">
+                <p>
+                  <strong>Description:</strong> {selectedGame.description}
+                </p>
+                <p>
+                  <strong>Number of Players:</strong>{" "}
+                  {selectedGame.playersNeeded}
+                </p>
+              </div>
+
+              {/* Right Section: Image */}
+              <div className="w-48 h-30 flex-shrink-0">
+                <img
+                  alt="Board Game"
+                  src={monopoly}
+                  className="w-full h-full object-cover rounded-lg shadow-md"
+                />
+              </div>
             </div>
+            <ScrollArea className="max-h-60 overflow-y-auto">Review</ScrollArea>
             <DialogFooter className="flex flex-col space-y-4">
               {/* Borrow Button */}
               <Button

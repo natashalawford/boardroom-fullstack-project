@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {useAuth} from '../../auth/UserAuth'
 
 // Define color scheme constants
 const TEXT_COLOR = '#fff';
@@ -22,8 +23,6 @@ const formSchema = z.object({
     maxParticipants: z
         .preprocess((value) => (typeof value === 'string' ? parseInt(value, 10) : value), z.number().min(1, { message: 'Max participants must be at least 1.' })),
     location: z.string().min(1, { message: 'Location is required.' }),
-    hostId: z
-        .preprocess((value) => (typeof value === 'string' ? parseInt(value, 10) : value), z.number().min(1, { message: 'Host ID is required.' })),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -33,6 +32,7 @@ interface EventCreationPopupProps {
 }
 
 const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
+    const { userData } = useAuth();
     const {
         register,
         handleSubmit,
@@ -44,19 +44,26 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
     const [message, setMessage] = React.useState<string | null>(null); // For success/error messages
 
     const onSubmit = async (data: FormData) => {
+
         setMessage(null); // Clear previous messages
+        const eventData = {
+            ...data,
+            hostId: userData?.id // Ensure userData has an 'id' property
+        };
         try {
             const response = await fetch('http://localhost:8080/events', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(eventData),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create event');
+                const errorMessage = errorData.errors?.[0] || 'Failed to create event';
+                console.error('Error response:', errorData);
+                throw new Error(errorMessage || 'Failed to create event');
             }
 
             setMessage('Event created successfully!');
@@ -89,6 +96,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
                 }}
             >
+                <div>{userData?.id}</div>
                 <h2 style={{ color: TEXT_COLOR, marginBottom: '20px' }}>Create New Event</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div style={{ marginBottom: '10px' }}>
@@ -194,21 +202,6 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                             }}
                         />
                         {errors.location && <p style={{ color: 'red' }}>{errors.location.message}</p>}
-                    </div>
-                    <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Host ID:</label>
-                        <input
-                            type="number"
-                            {...register('hostId')}
-                            style={{
-                                width: '100%',
-                                padding: '5px',
-                                borderRadius: '5px',
-                                border: `1px solid ${INPUT_BORDER_COLOR}`,
-                                marginTop: '5px',
-                            }}
-                        />
-                        {errors.hostId && <p style={{ color: 'red' }}>{errors.hostId.message}</p>}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
                         <button

@@ -186,7 +186,7 @@ const Events: React.FC = () => {
                 <EventPopup event={selectedEvent} onClose={handleClosePopup} />
             )}
             {/* Show popup for creating a new event */}
-            {showCreatePopup && <EventCreationPopup onClose={handleCloseCreatePopup} />}
+            {showCreatePopup && <EventCreationPopup onClose={handleCloseCreatePopup}/>}
         </div>
     );
 };

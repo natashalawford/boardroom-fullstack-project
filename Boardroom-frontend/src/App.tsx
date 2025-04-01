@@ -5,14 +5,26 @@ import Home from "./pages/home/home";
 import Games from "./pages/games/games";
 import Events from "./pages/events/events";
 import AccountDetails from "./pages/account/AccountDetails";
-//import Login from './pages/login/login';
-import User from './pages/user/user';
-import SpecificGames from './pages/games/specificBoardGames';
-import { NewSpecificGameForm } from './components/newSpecificGameFormButton';
+import { NewGameForm } from "./components/newGameFormButton";
+import SpecificGames from "./pages/games/specificBoardGames";
+import { NewSpecificGameForm } from "./components/newSpecificGameFormButton";
+
+import { Toaster } from "sonner";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <Toaster
+        position="top-center"
+        richColors
+        toastOptions={{
+          className: "bg-white text-black",
+          style: {
+            background: "#FFFFFF",
+            color: "#000000",
+          },
+        }}
+      />
       <div
         style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
       >
@@ -21,9 +33,16 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
-            <Route path="/specificboardgame" element={<SpecificGames />} />
+            <Route path="/games/new" element={<NewGameForm />} />
+            <Route
+              path="/specificboardgames/:title"
+              element={<SpecificGames />}
+            />
             <Route path="/events" element={<Events />} />
-            <Route path="/games/new/specific" element={<NewSpecificGameForm />} />
+            <Route
+              path="/games/new/specific"
+              element={<NewSpecificGameForm />}
+            />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<AccountDetails />} />
           </Routes>

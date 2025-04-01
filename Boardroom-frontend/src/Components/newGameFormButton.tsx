@@ -27,7 +27,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import FileUpload from '@/components/imageUpload'
 import { ArrowDownToLine } from 'lucide-react'
-import { Toaster } from '@/components/ui/sonner'
+
 import { toast } from 'sonner'
 
 // Services
@@ -100,7 +100,7 @@ export function NewGameForm () {
     <div className='flex justify-center items-center'>
       <Dialog
         open={isDialogOpen}
-        onOpenChange={open => {
+        onOpenChange={(open: boolean | ((prevState: boolean) => boolean)) => {
           setIsDialogOpen(open)
           if (!open) form.reset() // Reset the form whenever the dialog is closed
         }}
@@ -214,7 +214,7 @@ export function NewGameForm () {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-      <Toaster />
+   
     </div>
   )
 }

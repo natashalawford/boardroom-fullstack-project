@@ -44,7 +44,11 @@ function AccountDetails() {
   const [newPassword, setNewPassword] = useState<string>("");
 
   const handleToggle = async (checked: boolean) => {
-    const errorMessage = await toggleAccountType(userData, checked.toString(), setUserData);
+    const errorMessage = await toggleAccountType(
+      userData,
+      checked.toString(),
+      setUserData
+    );
 
     if (errorMessage != null) {
       // have some usestate to say if theres an error, with the error message and then check for it in the return but look at how the popup works exactly

@@ -1,48 +1,66 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import userImage from '../assets/user.png';
-import diceImage from '../assets/dice.png';
-import { Button } from '@/Components/ui/button';
-import { LoginPopup } from '@/pages/login/loginPopup'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import userImage from "../assets/user.png";
+import diceImage from "../assets/dice.png";
+import { Button } from "@/components/ui/button";
+import { LoginPopup } from "@/pages/login/loginPopup";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
 
-  const [showLoginPopup, setShowLoginPopup] = useState(false) //state for login pop open or not
+  const [showLoginPopup, setShowLoginPopup] = useState(false); //state for login pop open or not
 
   return (
     <header
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '70px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '0 20px',
-        backgroundColor: '#303036',
+        width: "100%",
+        height: "70px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 20px",
+        backgroundColor: "#303036",
         zIndex: 1000,
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
       }}
     >
       <img
         src={diceImage}
         alt="Logo"
-        style={{ width: '50px', height: '50px', cursor: 'pointer' }}
-        onClick={() => navigate('/')}
+        style={{ width: "50px", height: "50px", cursor: "pointer" }}
+        onClick={() => navigate("/")}
       />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-        <Button variant='default' onClick={() => navigate('/games')} className='mr-2'>Games</Button>
-        <Button variant='default' onClick={() => navigate('/events')} className='mr-2'>Events</Button>
-         {/* When clicked, open the Login popup instead of navigating */}
-        <Button variant='default' onClick={() => setShowLoginPopup(true)} className='mr-2'>Login</Button>
+      <div style={{ display: "flex", alignItems: "center", gap: "25px" }}>
+        <Button
+          variant="default"
+          onClick={() => navigate("/games")}
+          className="mr-2"
+        >
+          Games
+        </Button>
+        <Button
+          variant="default"
+          onClick={() => navigate("/events")}
+          className="mr-2"
+        >
+          Events
+        </Button>
+        {/* When clicked, open the Login popup instead of navigating */}
+        <Button
+          variant="default"
+          onClick={() => setShowLoginPopup(true)}
+          className="mr-2"
+        >
+          Login
+        </Button>
         <img
           src={userImage}
           alt="User Profile"
-          style={{ width: '40px', height: '40px', cursor: 'pointer' }}
-          onClick={() => navigate('/user')}
+          style={{ width: "40px", height: "40px", cursor: "pointer" }}
+          onClick={() => navigate("/user")}
         />
       </div>
 
@@ -51,7 +69,6 @@ const Header: React.FC = () => {
         isOpen={showLoginPopup}
         onClose={() => setShowLoginPopup(false)}
       />
-
     </header>
   );
 };

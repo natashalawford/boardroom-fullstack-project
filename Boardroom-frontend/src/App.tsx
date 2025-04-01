@@ -6,8 +6,8 @@ import Games from "./pages/games/games";
 import Events from "./pages/events/events";
 import AccountDetails from "./pages/account/AccountDetails";
 //import Login from './pages/login/login';
-import User from './pages/user/user';
-import { NewGameForm } from './pages/games/newGameForm';
+import User from "./pages/user/user";
+import { NewGameForm } from "./pages/games/newGameForm";
 
 const App: React.FC = () => {
   return (

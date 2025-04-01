@@ -182,7 +182,7 @@ const GameGrid: React.FC = () => {
             <div className="font-bold text-lg text-center">
               Reviews
             </div>
-            <ScrollArea className='max-h-45 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3'>
+            <ScrollArea className='max-h-60 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3'>
               {reviews.length > 0 ? (
                 reviews.map((review) => (
                   <Review

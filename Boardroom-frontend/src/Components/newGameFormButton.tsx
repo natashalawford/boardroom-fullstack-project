@@ -27,7 +27,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import FileUpload from '@/components/imageUpload'
 import { ArrowDownToLine } from 'lucide-react'
-import { Toaster } from '@/components/ui/sonner'
+
 import { toast } from 'sonner'
 
 // Services
@@ -214,7 +214,7 @@ export function NewGameForm () {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-      <Toaster />
+   
     </div>
   )
 }

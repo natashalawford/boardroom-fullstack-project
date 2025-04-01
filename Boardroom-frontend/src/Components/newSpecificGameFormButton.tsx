@@ -39,7 +39,6 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import FileUpload from '@/components/imageUpload'
 import { ArrowDownToLine, Check, ChevronsUpDown } from 'lucide-react'
-import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
@@ -360,7 +359,6 @@ export function NewSpecificGameForm () {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-      <Toaster />
     </div>
   )
 }

@@ -39,33 +39,38 @@ const SpecificGames: React.FC = () => {
   const [endDate, setEndDate] = useState<string>(""); // End date input
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog state
   const { userData } = useAuth(); // Get userData from AuthContext
+  console.log("User Data:", userData); // Log userData for debugging
 
-  useEffect(() => {
-    const fetchSpecificGames = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/specificboardgame?title=${title}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch specific games");
-        }
-        const data = await response.json();
-        setSpecificGames(data);
-      } catch (err: any) {
-        setError(err.message || "An error occurred");
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  const fetchSpecificGames = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/specificboardgame`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch specific games");
       }
-    };
+      const data = await response.json();
 
-    fetchSpecificGames();
-  }, [title]);
+      // Filter the specific games to match the selected board game title
+      const filteredGames = data.filter(
+        (game: SpecificGame) => game.boardGameTitle === title
+      );
+
+      setSpecificGames(filteredGames);
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSpecificGames();
+}, [title]);
 
   const handleBorrowRequest = async () => {
-    // if (!userData || !userData.id) {
-    //   toast.error("User is not authenticated or personId is missing.");
-    //   return;
-    // }
+    if (!userData || !userData.id) {
+      toast.error("User is not authenticated or personId is missing.");
+      return;
+    }
 
     // Check if both start and end dates are provided
     if (!startDate || !endDate) {
@@ -103,8 +108,8 @@ const SpecificGames: React.FC = () => {
       status: "PENDING", // Default status
       requestStartDate: formattedStartDate,
       requestEndDate: formattedEndDate,
-      personId: 4752,
-      //personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
+      //personId: 4752,
+      personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
       specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
     };
 
@@ -147,59 +152,57 @@ const SpecificGames: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
-      <div className="space-y-6">
-        {specificGames.map((game) => (
-          <Card
-            key={game.id}
-            className="flex flex-col md:flex-row items-stretch md:items-center space-y-4 md:space-y-0 md:space-x-6 p-4 hover:shadow-lg transition-shadow"
-          >
-            {/* Image Section */}
-            <div className="w-full md:w-1/2">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
-                // src={`http://localhost:8080/images/${game.picture}`}
-                alt={game.boardGameTitle}
-                className="rounded-lg object-cover w-full h-40"
-              />
+    <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
+    <div className="grid md:grid-cols-3 gap-6">
+      {specificGames.map((game) => (
+        <Card
+          key={game.id}
+          className="flex flex-col items-stretch p-4 hover:shadow-lg transition-shadow"
+        >
+          {/* Image Section */}
+          <div className="aspect-w-1 aspect-h-1">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
+              alt={game.boardGameTitle}
+              className="rounded-lg object-cover w-full h-40"
+            />
+          </div>
+  
+          {/* Details Section */}
+          <CardContent className="flex flex-col flex-grow justify-between space-y-4">
+            <div>
+              <CardTitle className="text-xl font-bold text-left">
+                {game.boardGameTitle}
+              </CardTitle>
+              <CardDescription className="text-gray-700">
+                {game.description}
+              </CardDescription>
             </div>
-
-            {/* Details and Button Section */}
-            <div className="w-full md:w-1/2 flex flex-col justify-between space-y-4">
-              <CardContent className="flex flex-col flex-grow justify-between">
-                <div className="flex flex-col flex-grow justify-end">
-                  <CardTitle className="text-xl font-bold text-left">
-                    {game.boardGameTitle}
-                  </CardTitle>
-                  <CardDescription className="text-gray-700">
-                    {game.description}
-                  </CardDescription>
-                </div>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600">
-                    <strong>Status:</strong>{" "}
-                    {game.status.charAt(0).toUpperCase() +
-                      game.status.slice(1).toLowerCase()}
-                  </p>
-                </div>
-              </CardContent>
-
-              {/* Borrow Button (full width) */}
-              <CardFooter className="w-full">
-                <Button
-                  className="bg-green-500 hover:bg-green-600 text-white w-full"
-                  onClick={() => {
-                    setSelectedGame(game);
-                    setIsDialogOpen(true);
-                  }}
-                >
-                  Borrow
-                </Button>
-              </CardFooter>
+            <div className="mt-2">
+              <p className="text-sm text-gray-600">
+                <strong>Status:</strong>{" "}
+                {game.status.charAt(0).toUpperCase() + game.status.slice(1).toLowerCase()}
+              </p>
             </div>
-          </Card>
-        ))}
-      </div>
+          </CardContent>
+  
+          {/* Borrow Button (Full Width of Grid Item) */}
+          <div className="w-full mt-4">
+            <Button
+              className="bg-green-500 hover:bg-green-600 text-white w-full"
+              onClick={() => {
+                setSelectedGame(game);
+                setIsDialogOpen(true);
+              }}
+            >
+              Borrow
+            </Button>
+          </div>
+        </Card>
+      ))}
+    </div>
+
+  
 
       {/* Borrow Request Dialog */}
       {isDialogOpen && selectedGame && (

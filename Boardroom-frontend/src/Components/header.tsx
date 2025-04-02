@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import userImage from '../assets/user.png';
 import diceImage from '../assets/dice.png';
-import { Button } from '@/Components/ui/button';
+import { Button } from '@/components/ui/button';
 import { LoginPopup } from '@/pages/login/loginPopup'
 
 const Header: React.FC = () => {

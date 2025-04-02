@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useState, useEffect } from 'react'
+import { useAuth } from "@/auth/UserAuth";
 
 // UI components
 import { Button } from '@/components/ui/button'
@@ -86,6 +87,11 @@ export function NewSpecificGameForm () {
   >([])
   const [loading, setLoading] = useState(true)
 
+  // User details
+  const { userData, setUserData } = useAuth();
+  const [name, setName] = useState<string>(userData?.name || "");
+  const [email, setEmail] = useState<string>(userData?.email || "");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -134,12 +140,20 @@ export function NewSpecificGameForm () {
       console.log('Image Size:', values.image.size)
     }
 
-    const newBoardGame: SpecificBoardGame = {
-      boardGame: values.boardGame,
-      gameStatus: values.gameStatus,
-      description: values.description,
-      picture: 123 // TODO: replace with actual image URL or ID after upload
+    // Check if logged in
+    if (!userData || !userData.id) {
+      toast.error('User is not authenticated or personId is missing.')
+      return
     }
+
+    const newBoardGame: SpecificBoardGame = {
+      picture: 123, // TODO: replace with actual image URL or ID after upload
+      description: values.description,
+      gameStatus: values.gameStatus,
+      boardGameTitle: values.boardGame,
+      personId: userData?.id,
+    }
+
     saveSpecificBoardGame(newBoardGame)
       .then(() => {
         toast('Board game saved.')

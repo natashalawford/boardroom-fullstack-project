@@ -57,7 +57,7 @@ function AccountDetails() {
 
   // login on render -- to be removed
   useEffect(() => {
-    login("jason@gmail.com", "pw1234", setUserData);
+    login("johndoe@example.com", "securepassword", setUserData);
   }, []);
 
   // keep info up to date

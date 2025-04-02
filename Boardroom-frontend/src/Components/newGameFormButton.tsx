@@ -82,7 +82,8 @@ export function NewGameForm () {
       title: values.title,
       description: values.description,
       playersNeeded: values.playersNeeded,
-      picture: 123 // TODO: replace with actual image URL or ID after upload
+      picture: Math.floor(Math.random() * 3) + 1, // random int between 1 and 3
+      // TODO: replace with actual image URL or ID after upload
     }
     saveBoardGame(newBoardGame)
       .then(() => {

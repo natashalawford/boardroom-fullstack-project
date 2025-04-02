@@ -14,6 +14,16 @@ import monopoly from '../assets/monopoly.png';
 import { Review } from './review'
 import { fetchReviewsForBoardGame, ReviewResponse } from '../services/reviewService';
 
+import dice from "../assets/dice.png";
+import user from "../assets/user.png";
+
+const gameImages: { [key: number]: string } = {
+  1: monopoly,
+  2: dice,
+  3: user,
+};
+
+
 interface Game {
   title: string;
   description: string;
@@ -120,7 +130,7 @@ const GameGrid: React.FC = () => {
             key={index}
             className="relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer"
             style={{
-              backgroundImage: `url(${monopoly})`,
+              backgroundImage: `url(${gameImages[game.picture] || monopoly})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -174,7 +184,7 @@ const GameGrid: React.FC = () => {
               <div className="w-48 h-30 flex-shrink-0">
                 <img
                   alt="Board Game"
-                  src={monopoly}
+                  src={gameImages[selectedGame.picture] || monopoly}
                   className="w-full h-full object-cover rounded-lg shadow-md"
                 />
               </div>

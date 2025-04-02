@@ -38,14 +38,14 @@ interface Game {
 
 const GameGrid: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
-  const { userData } = useAuth(); 
+  const { userData } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [showReviewBox, setShowReviewBox] = useState<boolean>(false);
   const [reviewText, setReviewText] = useState<string>("");
   const [reviews, setReviews] = useState<ReviewResponse[]>([]);
-  const [stars, setStars] = useState<number>(0); // State for star rating
+  const [stars, setStars] = useState<number>(0); 
 
   useEffect(() => {
     const loadGames = async () => {
@@ -93,7 +93,7 @@ const GameGrid: React.FC = () => {
       return;
     }
 
-    if (stars < 0 || stars > 5) {
+    if (stars < 1 || stars > 5) {
       toast.error("Please select a star rating between 1 and 5!");
       return;
     }
@@ -112,19 +112,21 @@ const GameGrid: React.FC = () => {
         }),
       });
 
-         if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage = errorData.message || "Failed to submit review";
-      toast.error(errorMessage); 
-    
-    }
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.message || "Failed to submit review";
+        toast.error(errorMessage);
+        return;
+      }
       toast.success("Review submitted successfully!");
       setShowReviewBox(false);
       setReviewText("");
-      setStars(0); 
+      setStars(0);
     } catch (err) {
       if (err instanceof Error) {
-        toast.error(err.message || "An error occurred while submitting the review");
+        toast.error(
+          err.message || "An error occurred while submitting the review"
+        );
       } else {
         toast.error("An unknown error occurred while submitting the review");
       }
@@ -227,24 +229,39 @@ const GameGrid: React.FC = () => {
               )}
             </ScrollArea>
             <DialogFooter>
-              {/* Review Box */}
               
+              <div className="w-full flex flex-col space-y-2">
+                {/* Review Box */}
+                {showReviewBox && (
+                  <>
+                    <select
+                      value={stars}
+                      onChange={(e) => setStars(Number(e.target.value))}
+                      className="w-full border border-gray-300 rounded-lg p-2"
+                    >
+                      <option value={0}>Select Star Rating</option>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <option key={star} value={star}>
+                          {star} Star{star > 1 ? "s" : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <Textarea
+                      placeholder="Write your review here..."
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-2"
+                    />
+                    <Button
+                      className="bg-blue-500 hover:bg-blue-600 text-white w-full"
+                      onClick={submitReview}
+                    >
+                      Submit Review
+                    </Button>
+                  </>
+                )}
 
-              {showReviewBox && (
-                <div className="w-full flex flex-col space-y-2">
-                  <select
-                    value={stars}
-                    onChange={(e) => setStars(Number(e.target.value))}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                  >
-                    <option value={0}>Select Star Rating</option>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <option key={star} value={star}>
-                        {star} Star{star > 1 ? "s" : ""}
-                      </option>
-                    ))}
-                  </select>
-                {/* Buttons Row (Now Below the Review Box) */}
+                {/* Buttons Row */}
                 <div className="flex justify-between w-full space-x-3">
                   <Button
                     className="bg-green-500 hover:bg-green-600 text-white flex-1"
@@ -265,7 +282,8 @@ const GameGrid: React.FC = () => {
                     {showReviewBox ? "Cancel Review" : "Add Review"}
                   </Button>
                 </div>
-              </div>
+                </div>
+            
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -38,33 +38,33 @@ const SpecificGames: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(""); // Start date input
   const [endDate, setEndDate] = useState<string>(""); // End date input
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog state
-  const { userData } = useAuth(); // Get userData from AuthContext
-  console.log("User Data:", userData); // Log userData for debugging
+  const { userData } = useAuth();
+  const [pendingRequests, setPendingRequests] = useState<number[]>([]); // Array of game IDs with pending requests
 
-useEffect(() => {
-  const fetchSpecificGames = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/specificboardgame`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch specific games");
+  useEffect(() => {
+    const fetchSpecificGames = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/specificboardgame`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch specific games");
+        }
+        const data = await response.json();
+
+        // Filter the specific games to match the selected board game title
+        const filteredGames = data.filter(
+          (game: SpecificGame) => game.boardGameTitle === title
+        );
+
+        setSpecificGames(filteredGames);
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
+    };
 
-      // Filter the specific games to match the selected board game title
-      const filteredGames = data.filter(
-        (game: SpecificGame) => game.boardGameTitle === title
-      );
-
-      setSpecificGames(filteredGames);
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchSpecificGames();
-}, [title]);
+    fetchSpecificGames();
+  }, [title]);
 
   const handleBorrowRequest = async () => {
     if (!userData || !userData.id) {
@@ -134,6 +134,10 @@ useEffect(() => {
       }
 
       toast.success("Borrow request submitted successfully!");
+
+      // Add the game ID to the pendingRequests state
+      setPendingRequests((prev) => [...prev, selectedGame.id]);
+
       setIsDialogOpen(false); // Close the dialog
     } catch (err: any) {
       console.error("Error:", err); // Log the error for debugging
@@ -152,57 +156,72 @@ useEffect(() => {
 
   return (
     <div className="p-4">
-    <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
-    <div className="grid md:grid-cols-3 gap-6">
-      {specificGames.map((game) => (
-        <Card
-          key={game.id}
-          className="flex flex-col items-stretch p-4 hover:shadow-lg transition-shadow"
-        >
-          {/* Image Section */}
-          <div className="aspect-w-1 aspect-h-1">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
-              alt={game.boardGameTitle}
-              className="rounded-lg object-cover w-full h-40"
-            />
-          </div>
-  
-          {/* Details Section */}
-          <CardContent className="flex flex-col flex-grow justify-between space-y-4">
-            <div>
-              <CardTitle className="text-xl font-bold text-left">
-                {game.boardGameTitle}
-              </CardTitle>
-              <CardDescription className="text-gray-700">
-                {game.description}
-              </CardDescription>
+      <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
+      <div className="grid md:grid-cols-3 gap-6">
+        {specificGames.map((game) => (
+          <Card
+            key={game.id}
+            className="flex flex-col items-stretch p-4 hover:shadow-lg transition-shadow"
+          >
+            {/* Image Section */}
+            <div className="aspect-w-1 aspect-h-1">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
+                alt={game.boardGameTitle}
+                className="rounded-lg object-cover w-full h-40"
+              />
             </div>
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">
-                <strong>Status:</strong>{" "}
-                {game.status.charAt(0).toUpperCase() + game.status.slice(1).toLowerCase()}
-              </p>
-            </div>
-          </CardContent>
-  
-          {/* Borrow Button (Full Width of Grid Item) */}
-          <div className="w-full mt-4">
-            <Button
-              className="bg-green-500 hover:bg-green-600 text-white w-full"
-              onClick={() => {
-                setSelectedGame(game);
-                setIsDialogOpen(true);
-              }}
-            >
-              Borrow
-            </Button>
-          </div>
-        </Card>
-      ))}
-    </div>
 
-  
+            {/* Details Section */}
+            <CardContent className="flex flex-col flex-grow justify-between space-y-4">
+              <div>
+                <CardTitle className="text-xl font-bold text-left">
+                  {game.boardGameTitle}
+                </CardTitle>
+                <CardDescription className="text-gray-700">
+                  {game.description}
+                </CardDescription>
+              </div>
+              <div className="mt-2">
+                <p className="text-sm text-gray-600">
+                  <strong>Status:</strong>{" "}
+                  {game.status.charAt(0).toUpperCase() +
+                    game.status.slice(1).toLowerCase()}
+                </p>
+              </div>
+            </CardContent>
+
+            {/* Borrow Button (Full Width of Grid Item) */}
+            <div className="w-full mt-4">
+              {game.status.toLowerCase() !== "available" ? (
+                <Button
+                  className="bg-gray-500 text-white w-full cursor-not-allowed"
+                  disabled
+                >
+                  Not Available
+                </Button>
+              ) : pendingRequests.includes(game.id) ? (
+                <Button
+                  className="bg-gray-500 text-white w-full cursor-not-allowed"
+                  disabled
+                >
+                  Pending
+                </Button>
+              ) : (
+                <Button
+                  className="bg-green-500 hover:bg-green-600 text-white w-full"
+                  onClick={() => {
+                    setSelectedGame(game);
+                    setIsDialogOpen(true);
+                  }}
+                >
+                  Borrow
+                </Button>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
 
       {/* Borrow Request Dialog */}
       {isDialogOpen && selectedGame && (

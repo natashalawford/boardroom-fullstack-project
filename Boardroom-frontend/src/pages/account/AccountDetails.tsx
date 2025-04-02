@@ -45,6 +45,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import OwnedGamesList from "@/Components/ownedGamesList";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
@@ -274,6 +275,9 @@ function AccountDetails() {
 
       <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
         <LendingHistoryList />  
+      </div>
+      <div>
+        <OwnedGamesList />
       </div>
       <Toaster />
     </>

@@ -1,3 +1,4 @@
+"use client";
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,24 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
 import { Label } from "@/components/ui/label";
 
+import {
+  updateNameFormSchema,
+  updatePasswordFormSchema,
+} from "./AccountDetailFormSchemas";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
 
@@ -44,8 +63,6 @@ function AccountDetails() {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
 
-
-
   const handleToggle = async (checked: boolean) => {
     const errorMessage = await toggleAccountType(
       userData,
@@ -55,39 +72,70 @@ function AccountDetails() {
 
     if (errorMessage != null) {
       toast(errorMessage.errorMessage);
-    } 
+    }
     // TODO  don't have this on toggle because it might get spammed ASK GROUP
     // else {
     //   toast("Success")
     // }
   };
 
-  const passwordUpdate = async () => {
-    const errorMessage = await updatePassword(userData, oldPassword, newPassword, setUserData);
+  const updateNameForm = useForm<z.infer<typeof updateNameFormSchema>>({
+    resolver: zodResolver(updateNameFormSchema),
+    defaultValues: {
+      name: newName,
+    },
+  });
+
+  // there should never really be any errors here
+ async  function handleUpdate(values: z.infer<typeof updateNameFormSchema>) {
+    const errorMessage = await updateAccountInfo(userData, values.name, setUserData);
 
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast(errorMessage.errorMessage)
     } else {
       toast("Success")
     }
-  };
+  }
 
-  const handleUpdate = async () => {
-    const errorMessage = await updateAccountInfo(userData, newName, setUserData);
+  // const handleUpdate = async () => {
+  //   const errorMessage = await updateAccountInfo(userData, newName, setUserData);
 
-    if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
-    } else {
-      toast("Success")
-    }
-  };
+  //   if (errorMessage != null) {
+  //     toast(errorMessage.errorMessage);
+  //   } else {
+  //     toast("Success")
+  //   }
+  // };
+
+  const updatePasswordForm = useForm<z.infer<typeof updatePasswordFormSchema>>({
+    resolver: zodResolver(updatePasswordFormSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+    },
+  });
+
+  function passwordUpdate(values: z.infer<typeof updatePasswordFormSchema>) {
+    console.log(values);
+  }
+
+  // const passwordUpdate = async () => {
+  //   const errorMessage = await updatePassword(userData, oldPassword, newPassword, setUserData);
+
+  //   if (errorMessage != null) {
+  //     toast(errorMessage.errorMessage);
+  //   } else {
+  //     toast("Success")
+  //   }
+  // };
 
   // keep info up to date
   useEffect(() => {
     if (userData) {
       setEmail(userData.email);
       setName(userData.name);
-      setNewName(userData.name);
+      updateNameForm.setValue("name", userData.name);
+      // setNewName(userData.name);
       setAccountType(userData.owner == "true" ? "Owner" : "User");
       setIsChecked(userData.owner == "true");
     }
@@ -121,10 +169,10 @@ function AccountDetails() {
       <div className="flex flex-col ml-20 w-100 borderd rounded-lg">
         <div className="flex justify-between items-center mb-5">
           Email
-          <Input disabled value={email} className="w-90 ml-10" />
+          <Input disabled value={email} className="w-80" />
         </div>
 
-        <div className="flex justify-between items-center mb-5">
+        {/* <div className="flex justify-between items-center mb-5">
           Name
           <Input
             className={"w-90 ml-10"}
@@ -132,7 +180,31 @@ function AccountDetails() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
-        </div>
+        </div> */}
+
+        <Form {...updateNameForm}>
+          <form onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
+            <FormField
+            control={updateNameForm.control}
+            name="name"
+            render={({ field }) => (
+            <FormItem className="flex justify-between items-center mb-5">
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input
+                  className={"w-80"}
+                  placeholder="Name"
+                  // value={newName}
+                  // onChange={(e) => setNewName(e.target.value)}
+                  { ... field }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+)} />
+            {/* <Button type="submit">Submit</Button> */}
+          </form>
+        </Form>
 
         <Dialog>
           <DialogTrigger className="flex shrink self-center mb-10">
@@ -157,7 +229,7 @@ function AccountDetails() {
                 <Input
                   className="col-span-3"
                   value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
+                  // onChange={(e) => setOldPassword(e.target.value)}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -195,13 +267,26 @@ function AccountDetails() {
           />
         </div> */}
 
-        <Button
+        <Form {...updateNameForm}>
+          <form className="flex justify-end" onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
+            <Button
+            type="submit"
+              variant="outline"
+              className="hover:bg-gray-700 hover:text-white w-30"
+              // onClick={handleUpdate}
+            >
+              Update
+            </Button>
+          </form>
+        </Form>
+
+        {/* <Button
           variant="outline"
           className="hover:bg-gray-700 hover:text-white w-30 self-end"
           onClick={handleUpdate}
         >
           Update
-        </Button>
+        </Button> */}
       </div>
       <Toaster />
     </>

@@ -221,7 +221,7 @@ const GameGrid: React.FC = () => {
                     stars={review.stars}
                     comment={review.comment}
                     authorId={review.authorId}
-                    timeStamp={review.timeStamp}
+                    timestamp={review.timestamp}
                   />
                 ))
               ) : (

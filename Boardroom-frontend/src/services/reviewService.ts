@@ -6,7 +6,15 @@ export interface ReviewResponse {
   comment: string;
   authorId: number;
   boardgameName: string;
-  timeStamp: string;
+  timestamp: string;
+}
+
+export interface ReviewCreation {
+  id: number;
+  stars: number;
+  comment: string;
+  authorId: number;
+  boardgameName: string;
 }
 
 const API_BASE_URL = "http://localhost:8080";
@@ -26,21 +34,36 @@ export const fetchReviewsForBoardGame = async (
   }
 
   const reviews = await response.json();
+  console.log("Reviews", reviews);
 
   return reviews.map((review: ReviewResponse) => {
-    let formattedDate = "Invalid Date"; // Default in case formatting fails
-
-    if (review.timeStamp) {
-      try {
-        const parsedDate = new Date(review.timeStamp);
-        if (!isNaN(parsedDate.getTime())) {
-          formattedDate = format(parsedDate, "MMMM dd, yyyy");
-        }
-      } catch (error) {
-        console.error("Date parsing error:", error);
-      }
+    try {
+      console.log("Timestamp", review.timestamp);
+      review.timestamp = formatLocalTimeWithDateFns(review.timestamp);
+    } catch (error) {
+      console.error("Date parsing error:", error);
     }
 
-    return { ...review, timeStamp: formattedDate };
+    return { ...review };
   });
 };
+
+function formatLocalTimeWithDateFns(localTime: string): string {
+  try {
+    const [hours, minutes, secondsWithMilliseconds] = localTime.split(":");
+    const [seconds, milliseconds] = secondsWithMilliseconds.split(".");
+
+    const date = new Date();
+    date.setHours(
+      parseInt(hours, 10),
+      parseInt(minutes, 10),
+      parseInt(seconds, 10),
+      parseInt(milliseconds, 10)
+    );
+
+    return format(date, "hh:mm:ss a"); // Format as "01:26:42 AM"
+  } catch (error) {
+    console.error("Error formatting local time:", error);
+    return "Invalid Time";
+  }
+}

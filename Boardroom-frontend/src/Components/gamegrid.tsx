@@ -19,15 +19,21 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/auth/UserAuth";
 
-import dice from "../assets/dice.png";
-import user from "../assets/user.png";
+// import dice from "../assets/dice.png";
+// import user from "../assets/user.png";
+import image1 from "../assets/games/image1.jpg";
+import image2 from "../assets/games/image2.jpg";
+import image3 from "../assets/games/image3.jpg";
+import image4 from "../assets/games/image4.jpg";
+import image5 from "../assets/games/image5.jpg";
 
 const gameImages: { [key: number]: string } = {
-  1: monopoly,
-  2: dice,
-  3: user,
+  1: image1,
+  2: image2,
+  3: image3,
+  4: image4,
+  5: image5
 };
-
 
 interface Game {
   title: string;
@@ -225,7 +231,7 @@ const GameGrid: React.FC = () => {
                   />
                 ))
               ) : (
-                <p className="text-center text-gray-500">No reviews yet.</p>
+                <p className="text-center text-gray-500 p-3">No reviews yet.</p>
               )}
             </ScrollArea>
             <DialogFooter>

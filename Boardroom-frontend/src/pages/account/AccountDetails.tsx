@@ -60,8 +60,9 @@ function AccountDetails() {
   // this is what is defined in the update fields
   const [newName, setNewName] = useState<string>(name);
 
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  // const [oldPassword, setOldPassword] = useState<string>("");
+  // const [newPassword, setNewPassword] = useState<string>("");
 
   const handleToggle = async (checked: boolean) => {
     const errorMessage = await toggleAccountType(
@@ -87,25 +88,19 @@ function AccountDetails() {
   });
 
   // there should never really be any errors here
- async  function handleUpdate(values: z.infer<typeof updateNameFormSchema>) {
-    const errorMessage = await updateAccountInfo(userData, values.name, setUserData);
+  async function handleUpdate(values: z.infer<typeof updateNameFormSchema>) {
+    const errorMessage = await updateAccountInfo(
+      userData,
+      values.name,
+      setUserData
+    );
 
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage)
+      toast(errorMessage.errorMessage);
     } else {
-      toast("Success")
+      toast("Success");
     }
   }
-
-  // const handleUpdate = async () => {
-  //   const errorMessage = await updateAccountInfo(userData, newName, setUserData);
-
-  //   if (errorMessage != null) {
-  //     toast(errorMessage.errorMessage);
-  //   } else {
-  //     toast("Success")
-  //   }
-  // };
 
   const updatePasswordForm = useForm<z.infer<typeof updatePasswordFormSchema>>({
     resolver: zodResolver(updatePasswordFormSchema),
@@ -115,19 +110,22 @@ function AccountDetails() {
     },
   });
 
-  function passwordUpdate(values: z.infer<typeof updatePasswordFormSchema>) {
-    console.log(values);
+  async function passwordUpdate(
+    values: z.infer<typeof updatePasswordFormSchema>
+  ) {
+    const errorMessage = await updatePassword(
+      userData,
+      values.oldPassword,
+      values.newPassword,
+      setUserData
+    );
+    if (errorMessage != null) {
+      toast(errorMessage.errorMessage);
+    } else {
+      setIsDialogOpen(false);
+      toast("Success");
+    }
   }
-
-  // const passwordUpdate = async () => {
-  //   const errorMessage = await updatePassword(userData, oldPassword, newPassword, setUserData);
-
-  //   if (errorMessage != null) {
-  //     toast(errorMessage.errorMessage);
-  //   } else {
-  //     toast("Success")
-  //   }
-  // };
 
   // keep info up to date
   useEffect(() => {
@@ -172,42 +170,37 @@ function AccountDetails() {
           <Input disabled value={email} className="w-80" />
         </div>
 
-        {/* <div className="flex justify-between items-center mb-5">
-          Name
-          <Input
-            className={"w-90 ml-10"}
-            placeholder="Name"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-        </div> */}
-
         <Form {...updateNameForm}>
           <form onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
             <FormField
-            control={updateNameForm.control}
-            name="name"
-            render={({ field }) => (
-            <FormItem className="flex justify-between items-center mb-5">
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input
-                  className={"w-80"}
-                  placeholder="Name"
-                  // value={newName}
-                  // onChange={(e) => setNewName(e.target.value)}
-                  { ... field }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-)} />
-            {/* <Button type="submit">Submit</Button> */}
+              control={updateNameForm.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="mb-5">
+                  <div className="flex justify-between">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input className={"w-80"} placeholder="Name" {...field} />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-[85px] leading-none"/>
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end mb-5">
+              <Button
+                type="submit"
+                variant="outline"
+                className="hover:bg-gray-700 hover:text-white w-30 "
+              >
+                Update
+              </Button>
+            </div>
           </form>
         </Form>
 
-        <Dialog>
-          <DialogTrigger className="flex shrink self-center mb-10">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild className="flex shrink self-center mb-10">
             <Button
               variant="outline"
               className="hover:bg-gray-700 hover:text-white w-50"
@@ -223,70 +216,52 @@ function AccountDetails() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label>Old Password</Label>
-                <Input
-                  className="col-span-3"
-                  value={oldPassword}
-                  // onChange={(e) => setOldPassword(e.target.value)}
+            <Form {...updatePasswordForm}>
+              <form onSubmit={updatePasswordForm.handleSubmit(passwordUpdate)}>
+                <FormField
+                  control={updatePasswordForm.control}
+                  name="oldPassword"
+                  render={({ field }) => (
+                    <FormItem className="mb-5">
+                      <div className="flex justify-between">
+                        <FormLabel>Old Password</FormLabel>
+                        <FormControl>
+                          <Input className="w-75" {...field} />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-[90px] leading-none" />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label>New Password</Label>
-                <Input
-                  className="col-span-3"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-              </div>
-            </div>
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  className="hover:bg-gray-700 hover:text-white"
-                  variant="outline"
-                  type="submit"
-                  onClick={passwordUpdate}
-                >
-                  Save
-                </Button>
-              </DialogClose>
-            </DialogFooter>
+                <FormField
+                  control={updatePasswordForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem className="mb-5">
+                      <div className="flex justify-between">
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input className="w-75" {...field} />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-[90px] leading-none" />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end">
+                  <Button
+                    className="hover:bg-gray-700 hover:text-white"
+                    variant="outline"
+                    type="submit"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
-
-        {/* <div className="flex justify-between items-center mb-7">
-          Password
-          <Input
-            className={"w-50 ml-10"}
-            placeholder="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div> */}
-
-        <Form {...updateNameForm}>
-          <form className="flex justify-end" onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
-            <Button
-            type="submit"
-              variant="outline"
-              className="hover:bg-gray-700 hover:text-white w-30"
-              // onClick={handleUpdate}
-            >
-              Update
-            </Button>
-          </form>
-        </Form>
-
-        {/* <Button
-          variant="outline"
-          className="hover:bg-gray-700 hover:text-white w-30 self-end"
-          onClick={handleUpdate}
-        >
-          Update
-        </Button> */}
       </div>
       <Toaster />
     </>

@@ -4,15 +4,20 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import monopoly from '../assets/monopoly.png';
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import monopoly from "../assets/monopoly.png";
 
-import { Review } from './review'
-import { fetchReviewsForBoardGame, ReviewResponse } from '../services/reviewService';
+import { Review } from "./review";
+import {
+  fetchReviewsForBoardGame,
+  ReviewResponse,
+} from "../services/reviewService";
+import { toast } from "sonner";
+import { useAuth } from "@/auth/UserAuth";
 
 interface Game {
   title: string;
@@ -23,12 +28,14 @@ interface Game {
 
 const GameGrid: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
+  const { userData } = useAuth(); 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [showReviewBox, setShowReviewBox] = useState<boolean>(false);
   const [reviewText, setReviewText] = useState<string>("");
   const [reviews, setReviews] = useState<ReviewResponse[]>([]);
+  const [stars, setStars] = useState<number>(0); // State for star rating
 
   useEffect(() => {
     const loadGames = async () => {
@@ -51,13 +58,14 @@ const GameGrid: React.FC = () => {
     loadGames();
   }, []);
 
-  
   useEffect(() => {
     if (selectedGame) {
       const loadReviews = async () => {
         try {
           console.log("Fetching reviews for:", selectedGame.title);
-          const fetchedReviews = await fetchReviewsForBoardGame(selectedGame.title);
+          const fetchedReviews = await fetchReviewsForBoardGame(
+            selectedGame.title
+          );
           setReviews(fetchedReviews);
           console.log("Fetched reviews:", fetchedReviews);
         } catch (err) {
@@ -71,7 +79,12 @@ const GameGrid: React.FC = () => {
 
   const submitReview = async () => {
     if (!reviewText.trim()) {
-      alert("Review cannot be empty!");
+      toast.error("Review cannot be empty!");
+      return;
+    }
+
+    if (stars < 0 || stars > 5) {
+      toast.error("Please select a star rating between 1 and 5!");
       return;
     }
 
@@ -82,23 +95,28 @@ const GameGrid: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          gameTitle: selectedGame?.title,
-          review: reviewText,
+          stars: stars,
+          comment: reviewText,
+          authorId: userData?.id,
+          boardGameName: selectedGame?.title,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit review");
-      }
-
-      alert("Review submitted successfully!");
+         if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage = errorData.message || "Failed to submit review";
+      toast.error(errorMessage); 
+    
+    }
+      toast.success("Review submitted successfully!");
       setShowReviewBox(false);
       setReviewText("");
+      setStars(0); 
     } catch (err) {
       if (err instanceof Error) {
-        alert(err.message || "An error occurred while submitting the review");
+        toast.error(err.message || "An error occurred while submitting the review");
       } else {
-        alert("An unknown error occurred while submitting the review");
+        toast.error("An unknown error occurred while submitting the review");
       }
     }
   };
@@ -151,9 +169,12 @@ const GameGrid: React.FC = () => {
       {selectedGame && (
         <Dialog
           open={!!selectedGame}
-          onOpenChange={() => setSelectedGame(null)}
+          onOpenChange={() => {
+            setSelectedGame(null);
+            setShowReviewBox(false); // Reset showReviewBox to false when the dialog is closed
+          }}
         >
-          <DialogContent className='z-200'>
+          <DialogContent className="z-200">
             <DialogHeader>
               <DialogTitle className="text-center font-bold pt-1">
                 {selectedGame.title}
@@ -179,10 +200,8 @@ const GameGrid: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="font-bold text-lg text-center">
-              Reviews
-            </div>
-            <ScrollArea className='max-h-60 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3'>
+            <div className="font-bold text-lg text-center">Reviews</div>
+            <ScrollArea className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3">
               {reviews.length > 0 ? (
                 reviews.map((review) => (
                   <Review
@@ -191,48 +210,52 @@ const GameGrid: React.FC = () => {
                     comment={review.comment}
                     authorId={review.authorId}
                     timeStamp={review.timeStamp}
-                   />
+                  />
                 ))
               ) : (
                 <p className="text-center text-gray-500">No reviews yet.</p>
               )}
             </ScrollArea>
-            <DialogFooter className='flex flex-col space-y-4'>
-              {/* Borrow Button */}
-              <Button
-                className="bg-green-500 hover:bg-green-600 text-white"
-                onClick={() =>
-                  (window.location.href = `/specificboardgames/${selectedGame?.title}`)
-                }
-              >
-                Borrow
-              </Button>
-
-              {/* Add Review Button */}
-              <Button
-                className="bg-yellow-500 hover:bg-yellow-600 text-black"
-                onClick={() => setShowReviewBox(!showReviewBox)}
-              >
-                Add Review
-              </Button>
-
+            <DialogFooter>
               {/* Review Box */}
+              
+
               {showReviewBox && (
-                <div className="space-y-2">
-                  <Textarea
-                    placeholder="Write your review here..."
-                    value={reviewText}
-                    onChange={(e) => setReviewText(e.target.value)}
-                  />
-                  <Button
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                    onClick={submitReview}
+                <div className="w-full flex flex-col space-y-2">
+                  <select
+                    value={stars}
+                    onChange={(e) => setStars(Number(e.target.value))}
+                    className="w-full border border-gray-300 rounded-lg p-2"
                   >
-                    Submit Review
+                    <option value={0}>Select Star Rating</option>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <option key={star} value={star}>
+                        {star} Star{star > 1 ? "s" : ""}
+                      </option>
+                    ))}
+                  </select>
+                {/* Buttons Row (Now Below the Review Box) */}
+                <div className="flex justify-between w-full space-x-3">
+                  <Button
+                    className="bg-green-500 hover:bg-green-600 text-white flex-1"
+                    onClick={() =>
+                      (window.location.href = `/specificboardgames/${selectedGame?.title}`)
+                    }
+                  >
+                    Borrow
+                  </Button>
+                  <Button
+                    className={`flex-1 ${
+                      showReviewBox
+                        ? "bg-red-500 hover:bg-red-600 text-white"
+                        : "bg-yellow-500 hover:bg-yellow-600 text-black"
+                    }`}
+                    onClick={() => setShowReviewBox(!showReviewBox)}
+                  >
+                    {showReviewBox ? "Cancel Review" : "Add Review"}
                   </Button>
                 </div>
-              )}
-
+              </div>
             </DialogFooter>
           </DialogContent>
         </Dialog>

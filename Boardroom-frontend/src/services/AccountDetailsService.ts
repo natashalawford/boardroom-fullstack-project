@@ -26,51 +26,19 @@ interface PasswordRequest {
   newPassword: string;
 }
 
-export const login = async (
-  email: string,
-  password: string,
-  setUserData: (user: User) => void
-): Promise<void> => {
-  const loginDto = {
-    email: email,
-    password: password,
-  };
-
-  try {
-    const response = await fetch(`http://localhost:8080/people/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(loginDto),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error(error);
-      //   throw new Error(error.errors.join(", "));
-    }
-
-    const userResponse = await response.json();
-
-    const user: User = {
-      ...userResponse,
-      owner: userResponse.owner ? "true" : "false",
-    };
-
-    setUserData(user);
-  } catch (error) {
-    console.error(error);
-  }
-};
+export interface ErrorMessage {
+  errorMessage: string;
+}
 
 export const toggleAccountType = async (
   user: User | null,
   owner: string,
   setUserData: (user: User) => void
-): Promise<void> => {
+): Promise<void | ErrorMessage> => {
   if (user == null) {
-    return;
+    return {
+      errorMessage: "User must be logged in",
+    };
   }
 
   // create request for backend
@@ -91,7 +59,11 @@ export const toggleAccountType = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.errors.join(", "));
+      return {
+        // design decision to only show first error
+        errorMessage: error.errors[0]
+      }
+      // throw new Error(error.errors.join(", "));
     }
 
     const updatedUserResponse: UserResponse = await response.json();
@@ -105,7 +77,9 @@ export const toggleAccountType = async (
     setUserData(updatedUser);
 
   } catch (error) {
-    console.error(error);
+    return {
+      errorMessage: String(error),
+    }
   }
 };
 
@@ -114,10 +88,17 @@ export const updatePassword = async (
   oldPassword: string,
   newPassword: string,
   setUserData: (user: User) => void
-): Promise<User | void> => {
-  if (user == null || oldPassword == "" || newPassword == "") {
-    return;
+): Promise<void | ErrorMessage> => {
+  if (user == null) {
+    return {
+      errorMessage: "User must be logged in",
+    };
   }
+  // if (oldPassword == "" || newPassword == "") { -- this should be taken care of by form not here
+  //   return {
+
+  //   }
+  // }
 
   const passwordRequest: PasswordRequest = {
     oldPassword: oldPassword,
@@ -136,9 +117,14 @@ export const updatePassword = async (
       }
     );
 
+
+
     if (!response.ok) {
-      const errorMessage = await response.json();
-      throw new Error(errorMessage.errors.join(", "));
+      const error = await response.json();
+      return {
+        // design decision to only show first error
+        errorMessage: error.errors[0]
+      }
     }
 
     const updatedPasswordResponse: UserResponse = await response.json();
@@ -150,7 +136,9 @@ export const updatePassword = async (
 
     setUserData(updatedPasswordUser);
   } catch (error) {
-    console.error(error);
+    return {
+      errorMessage: String(error)
+    }
   }
 };
 
@@ -159,8 +147,12 @@ export const updateAccountInfo = async (
   user: User | null,
   name: string,
   setUserData: (user: User) => void
-): Promise<User | void> => {
-  if (user == null) return;
+): Promise<void | ErrorMessage> => {
+  if (user == null) {
+    return {
+      errorMessage: "User must be logged in"
+    }
+  };
 
   // do the fetch before updating here, fetch should be in the .then()
   const userToUpdate: UserRequest = {
@@ -179,8 +171,11 @@ export const updateAccountInfo = async (
     });
     
     if (!response.ok) {
-      const errorMessage = await response.json();
-      throw new Error(errorMessage.errors.join(", "));
+      const error = await response.json();
+      return {
+        // design decision to only show first error
+        errorMessage: error.errors[0] 
+      }
     }
 
     const updatedAccountResponse: UserResponse = await response.json();
@@ -191,7 +186,11 @@ export const updateAccountInfo = async (
     };
 
     setUserData(updatedAccountUser);
-  } catch (error) {}
+  } catch (error) {
+    return {
+      errorMessage: String(error)
+    }
+  }
 };
 
 //   // update context

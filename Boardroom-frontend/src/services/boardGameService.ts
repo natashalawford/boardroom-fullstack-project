@@ -13,6 +13,15 @@ export interface SpecificBoardGame {
     personId: number;
 }
 
+export interface OwnedGame {
+    id: number;
+    description: string;
+    picture: number; // Or string if it ends up being a URL
+    status: string;
+    boardGameTitle: string;
+    ownerId: number;
+  }
+
 const API_BASE_URL = 'http://localhost:8080';
 
 export const saveBoardGame = async (boardGame: BoardGame): Promise<BoardGame> => {
@@ -56,4 +65,18 @@ export const fetchBoardGames = async (): Promise<BoardGame[]> => {
         throw new Error(errorResponse.errors?.[0] || 'Something went wrong when fetching the board games');
     }
     return response.json();
+}
+
+// src/services/gameService.ts
+
+
+
+export async function getOwnedGamesByOwnerId(ownerId: number): Promise<OwnedGame[]> {
+const response = await fetch(`http://localhost:8080/specificboardgame/owner/${ownerId}`);
+
+if (!response.ok) {
+    throw new Error("Failed to fetch owned games");
+}
+
+return response.json();
 }

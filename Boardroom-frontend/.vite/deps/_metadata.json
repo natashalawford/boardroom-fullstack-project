@@ -1,40 +1,64 @@
 {
-  "hash": "a9c446fd",
-  "configHash": "a78f8f1f",
-  "lockfileHash": "628a9bad",
-  "browserHash": "6dcdafdc",
+  "hash": "1b9d2501",
+  "configHash": "8e1c6c20",
+  "lockfileHash": "642becbe",
+  "browserHash": "5dc8cf87",
   "optimized": {
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "4d079746",
+      "fileHash": "bfe3a4ec",
       "needsInterop": true
     },
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "8d3e9252",
+      "fileHash": "d3d39ae5",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "118ba5df",
+      "fileHash": "88e3fba5",
       "needsInterop": true
     },
     "react-router-dom": {
       "src": "../../node_modules/react-router-dom/dist/index.mjs",
       "file": "react-router-dom.js",
-      "fileHash": "d74b7fdd",
+      "fileHash": "899f930b",
+      "needsInterop": false
+    },
+    "@hookform/resolvers/zod": {
+      "src": "../../node_modules/@hookform/resolvers/zod/dist/zod.mjs",
+      "file": "@hookform_resolvers_zod.js",
+      "fileHash": "443e6e4b",
+      "needsInterop": false
+    },
+    "react-hook-form": {
+      "src": "../../node_modules/react-hook-form/dist/index.esm.mjs",
+      "file": "react-hook-form.js",
+      "fileHash": "67726c8d",
+      "needsInterop": false
+    },
+    "zod": {
+      "src": "../../node_modules/zod/lib/index.mjs",
+      "file": "zod.js",
+      "fileHash": "c7b80a76",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-K5LUDHM4": {
-      "file": "chunk-K5LUDHM4.js"
+    "chunk-DBUGNT2R": {
+      "file": "chunk-DBUGNT2R.js"
     },
-    "chunk-6JKWCWVM": {
-      "file": "chunk-6JKWCWVM.js"
+    "chunk-CDQZNYFE": {
+      "file": "chunk-CDQZNYFE.js"
+    },
+    "chunk-VUPZMC2T": {
+      "file": "chunk-VUPZMC2T.js"
+    },
+    "chunk-EQCVQC35": {
+      "file": "chunk-EQCVQC35.js"
     }
   }
 }

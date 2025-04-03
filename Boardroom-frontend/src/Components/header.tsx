@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import userImage from '../assets/user.png';
 import diceImage from '../assets/dice.png';
 import { Button } from '@/components/ui/button';
+import { LoginPopup } from '@/pages/login/loginPopup'
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+
+  const [showLoginPopup, setShowLoginPopup] = useState(false) //state for login pop open or not
 
   return (
     <header
@@ -33,7 +36,8 @@ const Header: React.FC = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
         <Button variant='default' onClick={() => navigate('/games')} className='mr-2'>Games</Button>
         <Button variant='default' onClick={() => navigate('/events')} className='mr-2'>Events</Button>
-        <Button variant='default' onClick={() => navigate('/login')} className='mr-2'>Login</Button>
+         {/* When clicked, open the Login popup instead of navigating */}
+        <Button variant='default' onClick={() => setShowLoginPopup(true)} className='mr-2'>Login</Button>
         <img
           src={userImage}
           alt="User Profile"
@@ -41,6 +45,13 @@ const Header: React.FC = () => {
           onClick={() => navigate('/user')}
         />
       </div>
+
+      {/* Render the popup. Pass isOpen and onClose props. */}
+      <LoginPopup
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+      />
+
     </header>
   );
 };

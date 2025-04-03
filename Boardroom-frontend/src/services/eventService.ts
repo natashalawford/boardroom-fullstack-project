@@ -20,3 +20,20 @@ export const fetchEvents = async (): Promise<Event[]> => {
     return response.json();
 };
 
+export const fetchRegistrationsForEvent = async (eventId: number): Promise<any[]> => {
+    const response = await fetch(`${API_BASE_URL}/registration/event/${eventId}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch registrations for the event');
+    }
+    return response.json();
+};
+
+export const fetchHostName = async (hostId: number): Promise<string> => {
+    const response = await fetch(`${API_BASE_URL}/people/${hostId}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch host information');
+    }
+    const data = await response.json();
+    return data.name;
+};
+

@@ -8,9 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
-  DialogClose,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -74,10 +72,7 @@ function AccountDetails() {
     if (errorMessage != null) {
       toast(errorMessage.errorMessage);
     }
-    // TODO  don't have this on toggle because it might get spammed ASK GROUP
-    // else {
-    //   toast("Success")
-    // }
+    
   };
 
   const updateNameForm = useForm<z.infer<typeof updateNameFormSchema>>({
@@ -224,7 +219,7 @@ function AccountDetails() {
                   render={({ field }) => (
                     <FormItem className="mb-5">
                       <div className="flex justify-between">
-                        <FormLabel>Old Password</FormLabel>
+                        <FormLabel className='w-[85px]'>Old Password</FormLabel>
                         <FormControl>
                           <Input className="w-75" {...field} />
                         </FormControl>
@@ -240,7 +235,7 @@ function AccountDetails() {
                   render={({ field }) => (
                     <FormItem className="mb-5">
                       <div className="flex justify-between">
-                        <FormLabel>New Password</FormLabel>
+                        <FormLabel className='w-[85px]'>New Password</FormLabel>
                         <FormControl>
                           <Input className="w-75" {...field} />
                         </FormControl>

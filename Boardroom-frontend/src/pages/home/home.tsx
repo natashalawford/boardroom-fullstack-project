@@ -2,49 +2,65 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/button'
+import { useState } from 'react';
+import { LoginPopup } from '@/pages/login/loginPopup'
 
 // Temporary placeholder images (replace with your own local or imported assets)
 const placeholderImg =
   'https://via.placeholder.com/200x150.png?text=Board+Game'
 
 const Home: React.FC = () => {
+  const [showLoginPopup, setShowLoginPopup] = useState(false)
+
   return (
     <main className="mt-20 p-6 flex flex-col items-center justify-center text-center">
     {/* Container with a border, padding, and a slight rounding of corners */}
-    <div className="border border-gray-300 p-6 rounded-lg max-w-2xl w-full">
+    {/*<div className="border border-gray-300 p-6 rounded-lg max-w-2xl w-full">*/}
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Welcome to Boardroom!
       </h1>
       <p className="leading-7 mt-4 text-gray-600">
-        Your one-stop platform to explore, host, and join exciting board game events.
+        Your one-stop platform to explore, host, and join exciting board game events and borrow games.
         Created by ECSE 321 Group 17.
       </p>
-      <Button className="mt-6">Get Started</Button>
-    </div>
+      <h3 className='font-bold mt-4'>
+        Join Our Community & Get Started Right Away Below...
+      </h3>
+      <Button className="mt-6" onClick={() => setShowLoginPopup(true)}>
+          Get Started
+        </Button>
+    {/*</div>*/}
 
-      {/* Feature Section */}
-      <section className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold">Discover Games</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Browse a vast collection of board games to find your next favorite.
-          </p>
-        </div>
+      {/* Feature Section Title */}
+      <div className="mt-12 w-full max-w-6xl text-left">
+        <h2 className="text-2xl font-bold mb-4">
+          There are Many Ways You Can Participate in the Boardroom Community:
+        </h2>
 
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold">Join Events</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            See upcoming events and meet like-minded gamers in your area.
-          </p>
-        </div>
+        {/* Feature Section */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+          <div className="border p-4 rounded-lg max-w-sm text-center">
+            <h2 className="text-xl font-semibold">Discover & Borrow Games</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Explore our extensive collection of board games and borrow your favorites!
+            </p>
+          </div>
 
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold">Host A Room</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            As a game owner, create your own events for the community.
-          </p>
-        </div>
-      </section>
+          <div className="border p-4 rounded-lg max-w-sm text-center">
+            <h2 className="text-xl font-semibold">Join or Host Events</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Find exciting events to join or host your own game nights!
+            </p>
+          </div>
+
+          <div className="border p-4 rounded-lg max-w-sm text-center">
+            <h2 className="text-xl font-semibold">Leave Reviews</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Share your experiences and rate games and events to help others!
+            </p>
+          </div>
+        </section>
+      </div>
 
       {/* Suggested Games Section */}
       <section className="mt-12 w-full max-w-6xl">
@@ -167,6 +183,10 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Render the Login Popup */}
+      <LoginPopup isOpen={showLoginPopup} onClose={() => setShowLoginPopup(false)} />
+
     </main>
   )
 }

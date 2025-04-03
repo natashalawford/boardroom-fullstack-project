@@ -89,8 +89,6 @@ export function NewSpecificGameForm () {
 
   // User details
   const { userData, setUserData } = useAuth();
-  const [name, setName] = useState<string>(userData?.name || "");
-  const [email, setEmail] = useState<string>(userData?.email || "");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -116,7 +114,7 @@ export function NewSpecificGameForm () {
         console.error('Failed to fetch board games:', error)
         const errorMessage =
           error instanceof Error ? error.message : 'An unknown error occurred.'
-        toast(`Error fetching board games: ${errorMessage}`)
+        toast.error(`Error fetching board games: ${errorMessage}`)
       } finally {
         setLoading(false) // Ensure loading state is reset
       }

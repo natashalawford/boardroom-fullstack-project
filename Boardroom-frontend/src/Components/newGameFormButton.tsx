@@ -52,7 +52,7 @@ const formSchema = z.object({
   )
 })
 
-export function NewGameForm () {
+export function NewGameForm({ onGameAdded }: { onGameAdded: () => void }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false) // State to control dialog visibility
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -90,10 +90,11 @@ export function NewGameForm () {
         toast('Board game saved.')
         setIsDialogOpen(false)
         form.reset() // Reset the form after successful submission
+        onGameAdded(); // Refresh game list
       })
       .catch(error => {
         console.error('Error saving board game: ', error.message)
-        toast(`Error saving board game: ${error.message}`) // Display the error message in the toast
+        toast.error(`Error saving board game: ${error.message}`) // Display the error message in the toast
       })
   }
 

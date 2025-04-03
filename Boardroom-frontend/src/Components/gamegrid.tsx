@@ -42,8 +42,7 @@ interface Game {
   picture: number;
 }
 
-const GameGrid: React.FC = () => {
-  const [games, setGames] = useState<Game[]>([]);
+const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
   const { userData } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -52,27 +51,6 @@ const GameGrid: React.FC = () => {
   const [reviewText, setReviewText] = useState<string>("");
   const [reviews, setReviews] = useState<ReviewResponse[]>([]);
   const [stars, setStars] = useState<number>(0); 
-
-  useEffect(() => {
-    const loadGames = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch("http://localhost:8080/boardgame");
-        if (!response.ok) {
-          throw new Error("Failed to fetch games");
-        }
-        const data = await response.json();
-        setGames(data);
-      } catch (err: any) {
-        setError(err.message || "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadGames();
-  }, []);
 
   useEffect(() => {
     if (selectedGame) {
@@ -86,6 +64,7 @@ const GameGrid: React.FC = () => {
           console.log("Fetched reviews:", fetchedReviews);
         } catch (err) {
           console.error("Error fetching reviews:", err);
+          toast.error("Failed to fetch reviews for this game.");
           setReviews([]);
         }
       };
@@ -219,7 +198,7 @@ const GameGrid: React.FC = () => {
               </div>
             </div>
             <div className="font-bold text-lg text-center">Reviews</div>
-            <ScrollArea className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3">
+            <ScrollArea className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg ml-3 mr-3">
               {reviews.length > 0 ? (
                 reviews.map((review) => (
                   <Review
@@ -272,7 +251,7 @@ const GameGrid: React.FC = () => {
                   <Button
                     className="bg-green-500 hover:bg-green-600 text-white flex-1"
                     onClick={() =>
-                      (window.location.href = `/specificboardgames/${selectedGame?.title}`)
+                      (window.location.href = `/specificboardgames/${selectedGame?.title}?pictureId=${selectedGame?.picture}`)
                     }
                   >
                     Borrow

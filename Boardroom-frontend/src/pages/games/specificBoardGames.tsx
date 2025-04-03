@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -20,6 +20,20 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/auth/UserAuth"; // Import the useAuth hook
 import { toast } from "sonner";
 
+import image1 from "../../assets/games/image1.jpg";
+import image2 from "../../assets/games/image2.jpg";
+import image3 from "../../assets/games/image3.jpg";
+import image4 from "../../assets/games/image4.jpg";
+import image5 from "../../assets/games/image5.jpg";
+
+const gameImages: { [key: number]: string } = {
+  1: image1,
+  2: image2,
+  3: image3,
+  4: image4,
+  5: image5
+};
+
 interface SpecificGame {
   id: number;
   description: string;
@@ -31,6 +45,11 @@ interface SpecificGame {
 
 const SpecificGames: React.FC = () => {
   const { title } = useParams<{ title: string }>(); // Extract the game title from the URL
+  const location = useLocation(); // for extracting pic
+  const queryParams = new URLSearchParams(location.search);
+  let pictureId = queryParams.get("pictureId");
+  if (!pictureId) { pictureId = "1"; } // Default to 1 if not provided
+
   const [specificGames, setSpecificGames] = useState<SpecificGame[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -162,7 +181,7 @@ useEffect(() => {
           {/* Image Section */}
           <div className="aspect-w-1 aspect-h-1">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
+              src={gameImages[Number(pictureId)]}
               alt={game.boardGameTitle}
               className="rounded-lg object-cover w-full h-40"
             />

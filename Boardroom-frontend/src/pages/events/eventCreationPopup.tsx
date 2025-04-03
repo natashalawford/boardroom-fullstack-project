@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {useAuth} from '../../auth/UserAuth'
+import { useAuth } from '../../auth/UserAuth';
 
 // Define color scheme constants
 const TEXT_COLOR = '#000';
@@ -33,6 +33,7 @@ interface EventCreationPopupProps {
 
 const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
     const { userData } = useAuth();
+    const [boardGames, setBoardGames] = useState<string[]>([]); // State to store board games
     const {
         register,
         handleSubmit,
@@ -43,12 +44,37 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
 
     const [message, setMessage] = React.useState<string | null>(null); // For success/error messages
 
-    const onSubmit = async (data: FormData) => {
+    // Fetch board games from the backend
+    useEffect(() => {
+        const fetchBoardGames = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/boardgame', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
 
+                if (!response.ok) {
+                    throw new Error('Failed to fetch board games');
+                }
+
+                const data = await response.json();
+                const boardGameTitles = data.map((game: { title: string }) => game.title); // Extract titles
+                setBoardGames(boardGameTitles);
+            } catch (error) {
+                console.error('Error fetching board games:', error);
+            }
+        };
+
+        fetchBoardGames();
+    }, []);
+
+    const onSubmit = async (data: FormData) => {
         setMessage(null); // Clear previous messages
         const eventData = {
             ...data,
-            hostId: userData?.id // Ensure userData has an 'id' property
+            hostId: userData?.id, // Ensure userData has an 'id' property
         };
         try {
             const response = await fetch('http://localhost:8080/events', {
@@ -67,6 +93,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
             }
 
             setMessage('Event created successfully!');
+            onClose(); // Close the popup after successful creation
         } catch (error: any) {
             setMessage(`Error: ${error.message}`);
         }
@@ -96,7 +123,6 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
                 }}
             >
-                <div>{userData?.id}</div>
                 <h2 style={{ color: TEXT_COLOR, marginBottom: '20px', fontWeight: 'bold' }}>Create New Event</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div style={{ marginBottom: '10px' }}>
@@ -130,9 +156,8 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label style={{ color: TEXT_COLOR }}>Board Game Name:</label>
-                        <input
-                            type="text"
-                            {...register('boardGameName')}
+                        <select
+                             {...register('boardGameName')}
                             style={{
                                 width: '100%',
                                 padding: '5px',
@@ -140,7 +165,14 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
                             }}
-                        />
+                            >
+                            <option value="">Select a board game</option>
+                            {boardGames.map((game) => (
+                                <option key={game} value={game}>
+                                    {game}
+                                </option>
+                            ))}
+                        </select>
                         {errors.boardGameName && <p style={{ color: 'red' }}>{errors.boardGameName.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>

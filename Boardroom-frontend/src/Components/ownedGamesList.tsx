@@ -71,9 +71,14 @@ const OwnedGamesList: React.FC = () => {
                 <div className="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-50 transition-opacity" />
 
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200">
-                    Details
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200">
+                      Update
+                    </Button>
+                    <Button className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-red-200">
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

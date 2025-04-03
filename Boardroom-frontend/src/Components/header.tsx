@@ -5,20 +5,11 @@ import diceImage from '../assets/dice.png';
 import { Button } from '@/components/ui/button';
 import { LoginPopup } from '@/pages/login/loginPopup'
 import { useAuth } from '@/auth/UserAuth'
-import { logout } from '@/services/loginService'
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { userData, setUserData } = useAuth()  // get global auth info
-
+  const { userData } = useAuth()  // get global auth info
   const [showLoginPopup, setShowLoginPopup] = useState(false) //state for login pop open or not
-
-  const handleLogout = () => {
-    logout(setUserData)
-    // navigate to home after logout
-    navigate('/')
-    // window.location.reload()
-  }
 
   return (
     <header
@@ -46,17 +37,13 @@ const Header: React.FC = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
         <Button variant='default' onClick={() => navigate('/games')} className='mr-2'>Games</Button>
         <Button variant='default' onClick={() => navigate('/events')} className='mr-2'>Events</Button>
-        {userData ? (
-          // If logged in, show Logout button
-          <Button variant="default" onClick={handleLogout} className="mr-2">
-            Logout
-          </Button>
-        ) : (
-          // Otherwise, show Login button that opens the popup
-          <Button variant="default" onClick={() => setShowLoginPopup(true)} className="mr-2">
-            Login
-          </Button>
-        )}
+        {/* 
+          Whether logged in or out, clicking the button opens the login popup.
+          The button text changes based on whether the user is logged in or not.
+        */}
+        <Button variant="default" onClick={() => setShowLoginPopup(true)} className="mr-2">
+          {userData ? 'Logout' : 'Login'}
+        </Button>
         <img
           src={userImage}
           alt="User Profile"

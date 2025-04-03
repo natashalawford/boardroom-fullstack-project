@@ -194,7 +194,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             )}
 
             <DialogFooter className="mt-6">
-              <Button type="submit" className="text-black">
+              <Button type="submit">
                 {isLoginMode ? 'Login' : 'Create Account'}
               </Button>
               <Button

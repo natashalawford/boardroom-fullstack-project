@@ -105,6 +105,7 @@ public class BorrowService {
                 }
     }
 
+     
     public List<BorrowRequest> viewBorrowRequestsByPersonAndStatus(int personId, RequestStatus status) {
         Person person = personRepo.findById(personId)
             .orElseThrow(() -> new BoardroomException(
@@ -113,5 +114,6 @@ public class BorrowService {
             ));
         return borrowRequestRepo.findByPersonAndStatus(person, status);
     }
+    
 
 }

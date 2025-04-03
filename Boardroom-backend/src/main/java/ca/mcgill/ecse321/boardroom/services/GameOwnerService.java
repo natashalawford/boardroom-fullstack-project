@@ -27,9 +27,6 @@ public class GameOwnerService {
     @Autowired
     private BoardGameService boardGameService;
 
-    @Autowired 
-    PersonRepository personRepo; // added for account details page
-
     @Autowired
     private BoardGameRepository boardGameRepo;
    
@@ -102,7 +99,7 @@ public class GameOwnerService {
     // added for account details page  
     @Transactional
     public List<SpecificBoardGame> getSpecificBoardGamesByOwner(int ownerId) {
-        Person owner = personRepo.findPersonById(ownerId);
+        Person owner = personService.findPersonById(ownerId);
         if (owner == null) {
             throw new BoardroomException(
                 HttpStatus.NOT_FOUND,
@@ -111,4 +108,5 @@ public class GameOwnerService {
         }
         return specificBoardGameRepo.findSpecificBoardGameByOwner(owner);
     }
+    
 }

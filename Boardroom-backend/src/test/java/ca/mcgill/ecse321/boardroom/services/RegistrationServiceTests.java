@@ -363,4 +363,27 @@ public class RegistrationServiceTests {
 
     }
 
+    @Test
+    public void testGetRegistrationsForEvent() {
+        // Arrange
+        Event VALID_EVENT = new Event(VALID_TITLE, VALID_DESCRIPTION, VALID_START_TIME, VALID_END_TIME,
+                VALID_MAX_PARTICIPANTS, VALID_LOCATION, VALID_HOST, VALID_BOARD_GAME);
+
+        when(eventRepository.findEventById(EVENT_ID)).thenReturn(VALID_EVENT);
+
+        Registration registration1 = new Registration(new Registration.Key(VALID_EVENT, PERSON), LocalDateTime.now());
+        List<Registration> registrations = List.of(registration1);
+
+        when(registrationRepository.findByKeyEvent(VALID_EVENT)).thenReturn(registrations);
+
+        // Act
+        List<Registration> retrievedRegistrations = registrationService.getRegistrationsForEvent(EVENT_ID);
+
+        // Assert
+        assertNotNull(retrievedRegistrations);
+        assertEquals(1, retrievedRegistrations.size());
+        assertEquals(registration1, retrievedRegistrations.get(0));
+    }
+
+
 }

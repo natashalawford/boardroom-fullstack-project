@@ -6,10 +6,11 @@ export interface BoardGame {
 }
 
 export interface SpecificBoardGame {
-    boardGame: string;
-    gameStatus: string;
-    description: string;
     picture: number;
+    description: string;
+    gameStatus: string;
+    boardGameTitle: string;
+    personId: number;
 }
 
 export interface OwnedGame {

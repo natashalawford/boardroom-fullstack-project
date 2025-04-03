@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +55,7 @@ public class ReviewServiceTests {
         int authorId = VALID_AUTHOR.getId();
         VALID_BOARD_GAME = new BoardGame("Uno", "A fun card game", 2, 54321);
         String boardGameName = VALID_BOARD_GAME.getTitle();
-        VALID_REVIEW = new Review(authorId, boardGameName, LocalTime.NOON, VALID_AUTHOR, VALID_BOARD_GAME);
+        VALID_REVIEW = new Review(authorId, boardGameName, LocalDateTime.now(), VALID_AUTHOR, VALID_BOARD_GAME);
 
         this.authorId = authorId;
         this.boardGameName = boardGameName;
@@ -196,7 +196,7 @@ public class ReviewServiceTests {
     public void testDeleteValidReview() {
         // Arrange
         int reviewId = 5;
-        LocalTime now = LocalTime.now();
+        LocalDateTime now = LocalDateTime.now();
         Review review = new Review(
                 VALID_STARS, VALID_COMMENT, now, VALID_AUTHOR, VALID_BOARD_GAME
         );

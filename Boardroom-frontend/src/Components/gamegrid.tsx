@@ -54,32 +54,33 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
   const [stars, setStars] = useState<number>(0)
 
   // Load reviews + user names
+  const loadReviewsWithUsernames = async () => {
+    try {
+      if (!selectedGame) return
+
+      const fetchedReviews = await fetchReviewsForBoardGame(
+        selectedGame.title
+      )
+
+      // For each review, fetch the user name
+      const reviewsWithUsernames = await Promise.all(
+        fetchedReviews.map(async rev => {
+          const authorName = await getUserName(rev.authorId)
+          return { ...rev, authorName }
+        })
+      )
+
+      setReviews(reviewsWithUsernames)
+      console.log("Reviews with usernames:", reviewsWithUsernames)
+    } catch (err) {
+      console.error('Error fetching reviews:', err)
+      toast.error('Failed to fetch reviews for this game.')
+      setReviews([])
+    }
+  }
+
   useEffect(() => {
     if (!selectedGame) return
-
-    const loadReviewsWithUsernames = async () => {
-      try {
-        const fetchedReviews = await fetchReviewsForBoardGame(
-          selectedGame.title
-        )
-
-        // For each review, fetch the user name
-        const reviewsWithUsernames = await Promise.all(
-          fetchedReviews.map(async rev => {
-            const authorName = await getUserName(rev.authorId)
-            return { ...rev, authorName }
-          })
-        )
-
-        setReviews(reviewsWithUsernames)
-        console.log("Reviews with usernames:", reviewsWithUsernames)
-      } catch (err) {
-        console.error('Error fetching reviews:', err)
-        toast.error('Failed to fetch reviews for this game.')
-        setReviews([])
-      }
-    }
-
     loadReviewsWithUsernames()
   }, [selectedGame])
 
@@ -119,6 +120,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
       setShowReviewBox(false)
       setReviewText('')
       setStars(0)
+      loadReviewsWithUsernames()
     } catch (err) {
       if (err instanceof Error) {
         toast.error(
@@ -145,7 +147,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
         {games.map((game, index) => (
           <div
             key={index}
-            className='relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer'
+            className='relative w-full pb-[100%] bg-cover bg-center rounded-lg overflow-hidden cursor-pointer group'
             style={{
               backgroundImage: `url(${gameImages[game.picture] || monopoly})`,
               backgroundSize: 'cover',

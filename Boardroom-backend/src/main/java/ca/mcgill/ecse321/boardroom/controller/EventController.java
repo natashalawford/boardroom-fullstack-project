@@ -27,6 +27,7 @@ public class EventController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @CrossOrigin(origins = "http://localhost:5173")
     public EventResponseDto createEvent(@RequestBody EventCreationDto eventToCreate) {
         Event createdEvent = eventService.createEvent(eventToCreate);
         return new EventResponseDto(createdEvent);
@@ -41,6 +42,7 @@ public class EventController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public EventResponseDto getEventById(@PathVariable int id) {
         Event event = eventService.findEventById(id);
         return new EventResponseDto(event);
@@ -53,6 +55,7 @@ public class EventController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public List<EventResponseDto> getAllEvents() {
         return eventService.getEvents()
                 .stream()
@@ -67,6 +70,7 @@ public class EventController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CrossOrigin(origins = "http://localhost:5173")
     public void deleteEventById(@PathVariable int id) {
         eventService.deleteEventById(id);
     }

@@ -26,6 +26,7 @@ public class ReviewController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @CrossOrigin(origins = "http://localhost:5173")
     public ReviewResponseDto createReview(@RequestBody ReviewCreationDto reviewToCreate) {
         Review createdReview = reviewService.createReview(reviewToCreate);
         return new ReviewResponseDto(createdReview);
@@ -38,6 +39,7 @@ public class ReviewController {
      * @return The reviews for the board game
      */
     @GetMapping("/{title}")
+    @CrossOrigin(origins = "http://localhost:5173")
     public List<ReviewResponseDto> getReviewsForBoardGame(@PathVariable String title) {
         List<Review> reviews = reviewService.getReviewsForBoardGame(title);
         return reviews.stream().map(ReviewResponseDto::new).toList();
@@ -50,6 +52,7 @@ public class ReviewController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CrossOrigin(origins = "http://localhost:5173")
     public void deleteReviewById(@PathVariable int id) {
         reviewService.deleteReviewById(id);
     }

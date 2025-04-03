@@ -10,17 +10,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
- 
+
 @RestController
 @RequestMapping("people")
 public class PersonController {
@@ -37,6 +29,7 @@ public class PersonController {
      */
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
+    @CrossOrigin(origins = "http://localhost:5173")
     public PersonResponseDto createPerson(@Valid @RequestBody PersonCreationDto personToCreate) {
         return new PersonResponseDto(personService.createPerson(personToCreate));
     }
@@ -50,6 +43,7 @@ public class PersonController {
      */
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public PersonResponseDto getPerson(@PathVariable("id") int id) {
         return new PersonResponseDto(personService.findPersonById(id));
     }
@@ -64,6 +58,7 @@ public class PersonController {
      */
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public PersonResponseDto toggleAccountType(@PathVariable("id") int id, @Valid @RequestBody PersonRequestDto partialUpdatedPerson) {
         return new PersonResponseDto(personService.updatePerson(id, partialUpdatedPerson));
     } 
@@ -77,8 +72,9 @@ public class PersonController {
      */
     @PutMapping("{id}/password")
     @ResponseStatus(HttpStatus.OK)
-    public void changePassword(@PathVariable("id") int id, @RequestBody PersonUpdatePasswordDto passwordDto) {
-        personService.changePassword(id, passwordDto);
+    @CrossOrigin(origins = "http://localhost:5173")
+    public PersonResponseDto changePassword(@PathVariable("id") int id, @RequestBody PersonUpdatePasswordDto passwordDto) {
+        return new PersonResponseDto(personService.changePassword(id, passwordDto));
     }
     
     /** 
@@ -89,6 +85,7 @@ public class PersonController {
      */
     @PostMapping("login")
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
     public PersonResponseDto loginPerson(@Valid @RequestBody PersonLoginDto loginDto) {
         // Directly use the incoming loginDto
         return personService.login(loginDto);
@@ -101,6 +98,7 @@ public class PersonController {
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CrossOrigin(origins = "http://localhost:5173")
     public void deletePersonById(@PathVariable("id") int id) {
         personService.deletePerson(id);
     }

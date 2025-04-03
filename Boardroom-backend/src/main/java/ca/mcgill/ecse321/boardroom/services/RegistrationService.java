@@ -137,4 +137,12 @@ public class RegistrationService {
 
         return registration;
     }
+
+    public List<Registration> getRegistrationsForEvent(int eventId) {
+        Event event = eventRepository.findEventById(eventId);
+        if (event == null) {
+            throw new BoardroomException(HttpStatus.NOT_FOUND, "Event not found");
+        }
+        return registrationRepository.findByKeyEvent(event);
+    }
 }

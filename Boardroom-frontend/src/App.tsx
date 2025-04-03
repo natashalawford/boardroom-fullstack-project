@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/header";
+import Home from "./pages/home/home";
+import Games from "./pages/games/games";
+import Events from "./pages/events/events";
+import AccountDetails from "./pages/account/AccountDetails";
+import { NewGameForm } from "./components/newGameFormButton";
+import SpecificGames from "./pages/games/specificBoardGames";
+import { NewSpecificGameForm } from "./components/newSpecificGameFormButton";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Toaster } from "sonner";
 
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <Toaster
+        position="top-center"
+        richColors
+        toastOptions={{
+          className: "bg-white text-black",
+          style: {
+            background: "#FFFFFF",
+            color: "#000000",
+          },
+        }}
+      />
+      <div
+        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+      >
+        <Header />
+        <main style={{ flex: 1, paddingTop: "60px"}}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/games" element={<Games />} />
+            <Route path="/games/new" element={<NewGameForm />} />
+            <Route
+              path="/specificboardgames/:title"
+              element={<SpecificGames />}
+            />
+            <Route path="/events" element={<Events />} />
+            <Route
+              path="/games/new/specific"
+              element={<NewSpecificGameForm />}
+            />
+            {/*<Route path="/login" element={<Login />} /> */}
+            <Route path="/user" element={<AccountDetails />} />
+          </Routes>
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </Router>
+  );
+};
 
-export default App
+export default App;

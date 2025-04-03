@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.boardroom.dtos.responses;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import ca.mcgill.ecse321.boardroom.model.Review;
 
@@ -11,7 +11,7 @@ public class ReviewResponseDto {
     private String comment;
     private int authorId;
     private String boardGameName;
-    private LocalTime timeStamp;
+    private LocalDateTime timeStamp;
 
     @SuppressWarnings("unused")
     private ReviewResponseDto() {
@@ -30,7 +30,7 @@ public class ReviewResponseDto {
         return id;
     }
 
-    public LocalTime getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timeStamp;
     }
 

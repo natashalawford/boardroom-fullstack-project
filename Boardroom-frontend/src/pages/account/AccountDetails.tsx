@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  login,
   toggleAccountType,
   updateAccountInfo,
   updatePassword,
@@ -130,10 +131,6 @@ function AccountDetails() {
       toast("Success");
     }
   }
-  // login on render -- to be removed
-  useEffect(() => {
-    login("johndoe@example.com", "securepassword", setUserData);
-  }, []);
 
   // keep info up to date
   useEffect(() => {

@@ -30,6 +30,7 @@ export interface ErrorMessage {
   errorMessage: string;
 }
 
+
 export const toggleAccountType = async (
   user: User | null,
   owner: string,

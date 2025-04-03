@@ -7,6 +7,7 @@ export interface ReviewResponse {
   authorId: number;
   boardgameName: string;
   timestamp: string;
+  authorName: string;
 }
 
 export interface ReviewCreation {

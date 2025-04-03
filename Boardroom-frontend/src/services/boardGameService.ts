@@ -6,10 +6,11 @@ export interface BoardGame {
 }
 
 export interface SpecificBoardGame {
-    boardGame: string;
-    gameStatus: string;
-    description: string;
     picture: number;
+    description: string;
+    gameStatus: string;
+    boardGameTitle: string;
+    personId: number;
 }
 
 const API_BASE_URL = 'http://localhost:8080';

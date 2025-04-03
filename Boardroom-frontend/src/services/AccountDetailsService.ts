@@ -231,3 +231,18 @@ export async function getBorrowRequestsByPersonAndStatus(personId: number, statu
   }
   
 
+// Input: userId, Output: the name of the user
+// This function is used to get the name of the user from the backend
+export const getUserName = async (userId: number): Promise<string> => {
+  try {
+    const response = await fetch(`http://localhost:8080/people/${userId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch user name");
+    }
+    const userResponse = await response.json();
+    return userResponse.name;
+  } catch (error) {
+    console.error(error);
+    return "Unknown User";
+  }
+}

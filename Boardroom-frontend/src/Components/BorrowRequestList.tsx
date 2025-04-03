@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBorrowRequestsByPersonAndStatus } from "../services/AccountDetailsService"; // adjust import path if needed
-import { updateBorrowRequestStatus } from "../services/AccountDetailsService";
-
+import { getBorrowRequestsByPersonAndStatus, updateBorrowRequestStatus } from "../services/AccountDetailsService";
+import { useAuth } from "@/auth/UserAuth"; // ✅ Add this
 
 type BorrowRequest = {
   id: number;
@@ -12,29 +11,29 @@ type BorrowRequest = {
   requestStartDate: string;
   requestEndDate: string;
   personName: string;
-  specificBoardGameTitle: string,
+  specificBoardGameTitle: string;
 };
 
 const BorrowRequestList = () => {
+  const { userData } = useAuth(); // ✅ Get logged-in user from context
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
 
   useEffect(() => {
-    // replace `1` with actual person ID if needed
-    getBorrowRequestsByPersonAndStatus(1, "PENDING")
-      .then(setRequests)
-      .catch(console.error);
-  }, []);
+    if (userData?.id) {
+      getBorrowRequestsByPersonAndStatus(userData.id, "PENDING")
+        .then(setRequests)
+        .catch(console.error);
+    }
+  }, [userData]);
 
   const handleStatusUpdate = (id: number, status: string) => {
+    if (!userData?.id) return;
+
     updateBorrowRequestStatus(id, status)
-      .then(() => {
-        // Refresh the list after updating
-        return getBorrowRequestsByPersonAndStatus(1, "PENDING");
-      })
+      .then(() => getBorrowRequestsByPersonAndStatus(userData.id, "PENDING"))
       .then(setRequests)
       .catch(console.error);
   };
-  
 
   return (
     <>
@@ -57,26 +56,26 @@ const BorrowRequestList = () => {
                   <td className="px-8 py-2 border-t border-gray-200">{req.personName}</td>
                   <td className="px-8 py-2 border-t border-gray-200">{req.specificBoardGameTitle}</td>
                   <td className="px-8 py-2 border-t border-gray-200">
-                  {new Date(req.requestStartDate).toISOString().split("T")[0]}
+                    {new Date(req.requestStartDate).toISOString().split("T")[0]}
                   </td>
                   <td className="px-8 py-2 border-t border-gray-200">
-                  {new Date(req.requestEndDate).toISOString().split("T")[0]}
+                    {new Date(req.requestEndDate).toISOString().split("T")[0]}
                   </td>
                   <td className="px-8 py-2 border-t border-gray-200 flex justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    className="hover:bg-gray-700 hover:text-white w-30 self-end"
-                    onClick={() => handleStatusUpdate(req.id, "ACCEPTED")}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="hover:bg-gray-700 hover:text-white w-30 self-end"
-                    onClick={() => handleStatusUpdate(req.id, "DECLINED")}
-                  >
-                    Decline
-                  </Button>
+                    <Button
+                      variant="outline"
+                      className="hover:bg-gray-700 hover:text-white w-30 self-end"
+                      onClick={() => handleStatusUpdate(req.id, "ACCEPTED")}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="hover:bg-gray-700 hover:text-white w-30 self-end"
+                      onClick={() => handleStatusUpdate(req.id, "DECLINED")}
+                    >
+                      Decline
+                    </Button>
                   </td>
                 </tr>
               ))}

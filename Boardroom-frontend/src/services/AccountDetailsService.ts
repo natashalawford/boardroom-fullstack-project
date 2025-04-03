@@ -30,6 +30,15 @@ export interface ErrorMessage {
   errorMessage: string;
 }
 
+export interface SpecificBoardGameResponseDto {
+  id: number;
+  description: string;
+  picture: number;
+  status: string;
+  boardGameTitle: string;
+  ownerId: number;
+}
+
 
 export const toggleAccountType = async (
   user: User | null,
@@ -247,3 +256,39 @@ export const getUserName = async (userId: number): Promise<string> => {
     return "Unknown User";
   }
 }
+
+export async function deleteSpecificBoardGame(id: number): Promise<void> {
+  try {
+    const response = await fetch(`http://localhost:8080/specificboardgame/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to delete game. Server said: ${errorText}`);
+    }
+  } catch (error) {
+    console.error("Error deleting game:", error);
+    throw error;
+  }
+}
+
+export async function getSpecificBoardGamesByOwner(
+  ownerId: number
+): Promise<SpecificBoardGameResponseDto[]> {
+  try {
+    const response = await fetch(`http://localhost:8080/specificboardgame/owner/${ownerId}`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch games. Server said: ${errorText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching owned games:", error);
+    throw error;
+  }
+}
+
+

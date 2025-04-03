@@ -6,10 +6,11 @@ export interface BoardGame {
 }
 
 export interface SpecificBoardGame {
-    boardGame: string;
-    gameStatus: string;
-    description: string;
     picture: number;
+    description: string;
+    gameStatus: string;
+    boardGameTitle: string;
+    personId: number;
 }
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -47,3 +48,12 @@ export const saveSpecificBoardGame = async (specificBoardGame: SpecificBoardGame
 
     return response.json();
 };
+
+export const fetchBoardGames = async (): Promise<BoardGame[]> => {
+    const response = await fetch(`${API_BASE_URL}/boardgame`);
+    if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.errors?.[0] || 'Something went wrong when fetching the board games');
+    }
+    return response.json();
+}

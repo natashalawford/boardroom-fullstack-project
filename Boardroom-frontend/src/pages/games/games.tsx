@@ -1,26 +1,55 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button'
+import React from 'react'
+import { useState, useEffect } from 'react'
+import GameGrid from '../../components/gamegrid'
+import { NewGameForm } from '../../components/newGameFormButton'
+import { NewSpecificGameForm } from '../../components/newSpecificGameFormButton'
+import { fetchBoardGames } from '@/services/boardGameService'
+import { toast } from 'sonner'
+
+interface Game {
+  title: string
+  description: string
+  playersNeeded: number
+  picture: number
+}
 
 const Games: React.FC = () => {
-    const navigate = useNavigate();
+  const [games, setGames] = useState<Game[]>([])
 
-    return (
-        <div className='font-roboto p-8'>
-            <h1 className='font-semibold'>Games Page</h1>
-            <p className='pt-3'>Welcome to the Games Page! Here you can explore and play various games.</p>
-        
-            <div className='flex justify-start pt-3'>
-                <Button variant='default' onClick={() => navigate('/games/new')} className='mr-2'>
-                    Add New Game
-                </Button>
+  // Function to load games
+  const loadGames = async () => {
+    try {
+      const data = await fetchBoardGames()
+      setGames(data)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(`Error loading games: ${error.message}`)
+      } else {
+        toast.error(`${String(error)}`)
+      }
+    }
+  }
 
-                <Button variant='default' onClick={() => navigate('/games/new/specific')} className='mr-2'>
-                    Add Your Copy of a Game
-                </Button>
-            </div>
-        </div>
-    );
-};
+  useEffect(() => {
+    loadGames()
+  }, [])
 
-export default Games;
+  return (
+    <div className='font-roboto p-8'>
+      <h1 className='font-semibold'>Games Page</h1>
+      <p className='pt-3'>
+        Welcome to the Games Page! Here you can explore and play various games.
+      </p>
+      <div className='flex justify-start pt-3'>
+        <NewGameForm onGameAdded={loadGames} />
+        <NewSpecificGameForm />
+      </div>
+
+      <div className='pt-3'>
+        <GameGrid games={games}/>
+      </div>
+    </div>
+  )
+}
+
+export default Games

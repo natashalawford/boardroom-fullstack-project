@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class ReviewService {
 
     @Transactional
     public Review createReview(ReviewCreationDto reviewToCreate) {
-        LocalTime today = LocalTime.now();
+        LocalDateTime today = LocalDateTime.now();
         validateReview(reviewToCreate);
 
         Person authorToFind = personRepository.findById(reviewToCreate.getAuthorId()).orElseThrow(

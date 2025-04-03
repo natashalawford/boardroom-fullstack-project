@@ -7,8 +7,11 @@ import ca.mcgill.ecse321.boardroom.dtos.responses.EventRegistrationResponseDto;
 import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.services.RegistrationService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/registration/{personId}/{eventId}")
+@RequestMapping("/registration")
 public class RegistrationController {
     @Autowired
     private RegistrationService registrationService;
@@ -19,7 +22,7 @@ public class RegistrationController {
      * @param eventId
      * @return EventRegistrationResponseDto
      */
-    @PutMapping
+    @PutMapping("/{personId}/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public EventRegistrationResponseDto registerForEvent(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
         Registration registration = registrationService.registerForEvent(personId, eventId);
@@ -32,7 +35,7 @@ public class RegistrationController {
      * @param personId
      * @param eventId
      */
-    @DeleteMapping
+    @DeleteMapping("/{personId}/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CrossOrigin(origins = "http://localhost:5173")
     public void unregisterFromEvent(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
@@ -46,11 +49,27 @@ public class RegistrationController {
      * @param eventId
      * @return EventRegistrationResponseDto
      */
-    @GetMapping
+    @GetMapping("/{personId}/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     @CrossOrigin(origins = "http://localhost:5173")
     public EventRegistrationResponseDto getRegistration(@PathVariable("personId") int personId, @PathVariable("eventId") int eventId) {
         Registration registration = registrationService.getRegistration(personId, eventId);
         return new EventRegistrationResponseDto(registration);
+    }
+
+
+    /**
+     * Retrieves all registrations for a given event.
+     * @param eventId The ID of the event.
+     * @return List of EventRegistrationResponseDto objects containing registration details.
+     */
+    @GetMapping("/event/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
+    public List<EventRegistrationResponseDto> getRegistrationsForEvent(@PathVariable int eventId) {
+        List<Registration> registrations = registrationService.getRegistrationsForEvent(eventId);
+        return registrations.stream()
+                .map(EventRegistrationResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

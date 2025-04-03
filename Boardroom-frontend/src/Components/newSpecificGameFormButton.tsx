@@ -37,7 +37,6 @@ import {
   DialogContent,
   DialogTitle
 } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import FileUpload from '@/components/imageUpload'
 import { ArrowDownToLine, Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
@@ -65,16 +64,16 @@ const formSchema = z.object({
   boardGame: z.string({
     required_error: 'Board game selection is required.'
   }),
-  image: z.preprocess(
-    val => {
-      // If it's a FileList and has at least one File, extract that file
-      if (val instanceof FileList && val.length > 0) {
-        return val.item(0)
-      }
-      return val
-    },
-    z.instanceof(File, { message: 'Image of board game is required.' }) // Validate that the processed value is a File or undefined
-  ),
+  // image: z.preprocess(
+  //   val => {
+  //     // If it's a FileList and has at least one File, extract that file
+  //     if (val instanceof FileList && val.length > 0) {
+  //       return val.item(0)
+  //     }
+  //     return val
+  //   },
+  //   z.instanceof(File, { message: 'Image of board game is required.' }) // Validate that the processed value is a File or undefined
+  // ),
   gameStatus: z.string().min(1, { message: 'Game status is required.' }),
   description: z.string().min(1, { message: 'Description is required.' })
 })
@@ -132,11 +131,11 @@ export function NewSpecificGameForm () {
     console.log('Description:', values.description)
 
     // Accessing the uploaded file
-    if (values.image instanceof File) {
-      console.log('Uploaded Image:', values.image)
-      console.log('Image Name:', values.image.name)
-      console.log('Image Size:', values.image.size)
-    }
+    // if (values.image instanceof File) {
+    //   console.log('Uploaded Image:', values.image)
+    //   console.log('Image Name:', values.image.name)
+    //   console.log('Image Size:', values.image.size)
+    // }
 
     // Check if logged in
     if (!userData || !userData.id) {
@@ -186,11 +185,10 @@ export function NewSpecificGameForm () {
           <DialogTitle className='font-bold text-xl'>
             Add a copy of your board game
           </DialogTitle>
-          <ScrollArea className='h-[400px] w-full'>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className='space-y-8 font-roboto'
+                className='space-y-5 font-roboto'
               >
                 <FormField
                   control={form.control}
@@ -258,7 +256,7 @@ export function NewSpecificGameForm () {
                     </FormItem>
                   )}
                 />
-
+{/*}
                 <FormField
                   control={form.control}
                   name='image'
@@ -281,7 +279,7 @@ export function NewSpecificGameForm () {
                     </FormItem>
                   )}
                 />
-
+*/}
                 <FormField
                   control={form.control}
                   name='gameStatus'
@@ -368,7 +366,6 @@ export function NewSpecificGameForm () {
                 </Button>
               </form>
             </Form>
-          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>

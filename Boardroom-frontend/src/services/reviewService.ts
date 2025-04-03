@@ -40,7 +40,7 @@ export const fetchReviewsForBoardGame = async (
   return reviews.map((review: ReviewResponse) => {
     try {
       console.log("Timestamp", review.timestamp);
-      review.timestamp = formatLocalTimeWithDateFns(review.timestamp);
+      review.timestamp = format(new Date(review.timestamp), "yyyy-MM-dd HH:mm:ss");
     } catch (error) {
       console.error("Date parsing error:", error);
     }
@@ -49,22 +49,15 @@ export const fetchReviewsForBoardGame = async (
   });
 };
 
-function formatLocalTimeWithDateFns(localTime: string): string {
+function formatLocalDateTimeWithDateFns(localDateTime: string): string {
   try {
-    const [hours, minutes, secondsWithMilliseconds] = localTime.split(":");
-    const [seconds, milliseconds] = secondsWithMilliseconds.split(".");
+    // Parse the local datetime string into a Date object
+    const date = new Date(localDateTime);
 
-    const date = new Date();
-    date.setHours(
-      parseInt(hours, 10),
-      parseInt(minutes, 10),
-      parseInt(seconds, 10),
-      parseInt(milliseconds, 10)
-    );
-
-    return format(date, "hh:mm:ss a"); // Format as "01:26:42 AM"
+    // Format the date and time using date-fns
+    return format(date, "MMMM dd, yyyy hh:mm:ss a"); // Example: "April 02, 2025 01:26:42 AM"
   } catch (error) {
-    console.error("Error formatting local time:", error);
-    return "Invalid Time";
+    console.error("Error formatting local datetime:", error);
+    return "Invalid DateTime";
   }
 }

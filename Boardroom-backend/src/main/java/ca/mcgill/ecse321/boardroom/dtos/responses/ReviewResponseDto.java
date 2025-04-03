@@ -2,6 +2,8 @@ package ca.mcgill.ecse321.boardroom.dtos.responses;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import ca.mcgill.ecse321.boardroom.model.Review;
 
 public class ReviewResponseDto {
@@ -11,6 +13,8 @@ public class ReviewResponseDto {
     private String comment;
     private int authorId;
     private String boardGameName;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timeStamp;
 
     @SuppressWarnings("unused")
@@ -41,7 +45,6 @@ public class ReviewResponseDto {
     public String getComment() {
         return comment;
     }
-
 
     public int getAuthorId() {
         return authorId;

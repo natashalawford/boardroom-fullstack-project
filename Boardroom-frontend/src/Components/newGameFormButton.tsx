@@ -24,8 +24,8 @@ import {
   DialogContent,
   DialogTitle
 } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import FileUpload from '@/components/imageUpload'
+// import { ScrollArea } from '@/components/ui/scroll-area'
+// import FileUpload from '@/components/imageUpload'
 import { ArrowDownToLine } from 'lucide-react'
 
 import { toast } from 'sonner'
@@ -35,16 +35,16 @@ import { saveBoardGame, BoardGame } from '../services/boardGameService'
 
 const formSchema = z.object({
   title: z.string().min(1, { message: 'Title is required.' }),
-  image: z.preprocess(
-    val => {
-      // If it's a FileList and has at least one File, extract that file
-      if (val instanceof FileList && val.length > 0) {
-        return val.item(0)
-      }
-      return val
-    },
-    z.instanceof(File, { message: 'Image of board game is required' }) // Validate that the processed value is a File or undefined
-  ),
+  // image: z.preprocess(
+  //   val => {
+  //     // If it's a FileList and has at least one File, extract that file
+  //     if (val instanceof FileList && val.length > 0) {
+  //       return val.item(0)
+  //     }
+  //     return val
+  //   },
+  //   z.instanceof(File, { message: 'Image of board game is required' }) // Validate that the processed value is a File or undefined
+  // ),
   description: z.string().min(1, { message: 'Description is required.' }),
   playersNeeded: z.preprocess(
     value => (typeof value === 'string' ? parseInt(value, 10) : value),
@@ -72,11 +72,11 @@ export function NewGameForm({ onGameAdded }: { onGameAdded: () => void }) {
     console.log('Players Needed:', values.playersNeeded)
 
     // Accessing the uploaded file
-    if (values.image instanceof File) {
-      console.log('Uploaded Image:', values.image)
-      console.log('Image Name:', values.image.name)
-      console.log('Image Size:', values.image.size)
-    }
+    // if (values.image instanceof File) {
+    //   console.log('Uploaded Image:', values.image)
+    //   console.log('Image Name:', values.image.name)
+    //   console.log('Image Size:', values.image.size)
+    // }
 
     const newBoardGame: BoardGame = {
       title: values.title,
@@ -120,11 +120,10 @@ export function NewGameForm({ onGameAdded }: { onGameAdded: () => void }) {
           <DialogTitle className='font-bold text-xl'>
             Add a new board game
           </DialogTitle>
-          <ScrollArea className='h-[400px] w-full'>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className='space-y-8 font-roboto'
+                className='space-y-5 font-roboto'
               >
                 <FormField
                   control={form.control}
@@ -143,7 +142,7 @@ export function NewGameForm({ onGameAdded }: { onGameAdded: () => void }) {
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name='image'
                   render={({ field }) => (
@@ -164,7 +163,7 @@ export function NewGameForm({ onGameAdded }: { onGameAdded: () => void }) {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 <FormField
                   control={form.control}
@@ -213,7 +212,6 @@ export function NewGameForm({ onGameAdded }: { onGameAdded: () => void }) {
                 </Button>
               </form>
             </Form>
-          </ScrollArea>
         </DialogContent>
       </Dialog>
    

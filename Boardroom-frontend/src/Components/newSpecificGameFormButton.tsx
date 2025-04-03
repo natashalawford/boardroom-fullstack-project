@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useState, useEffect } from 'react'
-import { useAuth } from "@/auth/UserAuth";
+import { useAuth } from '@/auth/UserAuth'
 
 // UI components
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ import {
   DialogContent,
   DialogTitle
 } from '@/components/ui/dialog'
-import FileUpload from '@/components/imageUpload'
+// import FileUpload from '@/components/imageUpload'
 import { ArrowDownToLine, Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -87,7 +87,7 @@ export function NewSpecificGameForm () {
   const [loading, setLoading] = useState(true)
 
   // User details
-  const { userData, setUserData } = useAuth();
+  const { userData, setUserData } = useAuth()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -148,7 +148,7 @@ export function NewSpecificGameForm () {
       description: values.description,
       gameStatus: values.gameStatus,
       boardGameTitle: values.boardGame,
-      personId: userData?.id,
+      personId: userData?.id
     }
 
     saveSpecificBoardGame(newBoardGame)
@@ -185,78 +185,78 @@ export function NewSpecificGameForm () {
           <DialogTitle className='font-bold text-xl'>
             Add a copy of your board game
           </DialogTitle>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className='space-y-5 font-roboto'
-              >
-                <FormField
-                  control={form.control}
-                  name='boardGame'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-col'>
-                      <FormLabel>Select Board Game</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              role='combobox'
-                              className={cn(
-                                'w-[200px] justify-between',
-                                !field.value && 'text-muted-foreground'
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='space-y-5 font-roboto'
+            >
+              <FormField
+                control={form.control}
+                name='boardGame'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Select Board Game</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            role='combobox'
+                            className={cn(
+                              'w-[200px] justify-between bg-gray-200 text-black border border-gray-300 hover:bg-gray-300',
+                              !field.value && 'text-gray-400'
+                            )}
+                          >
+                            {field.value
+                              ? boardGames.find(
+                                  game => game.value === field.value
+                                )?.label
+                              : 'Select board game'}
+                            <ChevronsUpDown className='opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-[200px] p-0'>
+                        <Command>
+                          <CommandInput
+                            placeholder='Search board game...'
+                            className='h-9'
+                          />
+                          <CommandList>
+                            <CommandEmpty>No board games found.</CommandEmpty>
+                            <CommandGroup>
+                              {loading ? (
+                                <CommandItem>Loading...</CommandItem>
+                              ) : (
+                                boardGames.map(game => (
+                                  <CommandItem
+                                    value={game.label}
+                                    key={game.value}
+                                    onSelect={() => {
+                                      form.setValue('boardGame', game.value)
+                                    }}
+                                  >
+                                    {game.label}
+                                    <Check
+                                      className={cn(
+                                        'ml-auto',
+                                        game.value === field.value
+                                          ? 'opacity-100'
+                                          : 'opacity-0'
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))
                               )}
-                            >
-                              {field.value
-                                ? boardGames.find(
-                                    game => game.value === field.value
-                                  )?.label
-                                : 'Select board game'}
-                              <ChevronsUpDown className='opacity-50' />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className='w-[200px] p-0'>
-                          <Command>
-                            <CommandInput
-                              placeholder='Search board game...'
-                              className='h-9'
-                            />
-                            <CommandList>
-                              <CommandEmpty>No board games found.</CommandEmpty>
-                              <CommandGroup>
-                                {loading ? (
-                                  <CommandItem>Loading...</CommandItem>
-                                ) : (
-                                  boardGames.map(game => (
-                                    <CommandItem
-                                      value={game.label}
-                                      key={game.value}
-                                      onSelect={() => {
-                                        form.setValue('boardGame', game.value)
-                                      }}
-                                    >
-                                      {game.label}
-                                      <Check
-                                        className={cn(
-                                          'ml-auto',
-                                          game.value === field.value
-                                            ? 'opacity-100'
-                                            : 'opacity-0'
-                                        )}
-                                      />
-                                    </CommandItem>
-                                  ))
-                                )}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-{/*}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*}
                 <FormField
                   control={form.control}
                   name='image'
@@ -280,92 +280,92 @@ export function NewSpecificGameForm () {
                   )}
                 />
 */}
-                <FormField
-                  control={form.control}
-                  name='gameStatus'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Select Game Status</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              role='combobox'
-                              className={cn(
-                                'w-[200px] justify-between',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value
-                                ? gameStatuses.find(
-                                    status => status.value === field.value
-                                  )?.label
-                                : 'Select Game Status'}
-                              <ChevronsUpDown className='opacity-50' />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className='w-[200px] p-0'>
-                          <Command>
-                            <CommandInput
-                              placeholder='Search status...'
-                              className='h-9'
-                            />
-                            <CommandList>
-                              <CommandEmpty>No status found.</CommandEmpty>
-                              <CommandGroup>
-                                {gameStatuses.map(status => (
-                                  <CommandItem
-                                    key={status.value}
-                                    value={status.label}
-                                    onSelect={() => {
-                                      form.setValue('gameStatus', status.value)
-                                    }}
-                                  >
-                                    {status.label}
-                                    <Check
-                                      className={cn(
-                                        'ml-auto',
-                                        status.value === field.value
-                                          ? 'opacity-100'
-                                          : 'opacity-0'
-                                      )}
-                                    />
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name='gameStatus'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Game Status</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            role='combobox'
+                            className={cn(
+                              'w-[200px] justify-between bg-gray-200 text-black border border-gray-300 hover:bg-gray-300',
+                              !field.value && 'text-gray-400'
+                            )}
+                          >
+                            {field.value
+                              ? gameStatuses.find(
+                                  status => status.value === field.value
+                                )?.label
+                              : 'Select Game Status'}
+                            <ChevronsUpDown className='opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-[200px] p-0'>
+                        <Command>
+                          <CommandInput
+                            placeholder='Search status...'
+                            className='h-9'
+                          />
+                          <CommandList>
+                            <CommandEmpty>No status found.</CommandEmpty>
+                            <CommandGroup>
+                              {gameStatuses.map(status => (
+                                <CommandItem
+                                  key={status.value}
+                                  value={status.label}
+                                  onSelect={() => {
+                                    form.setValue('gameStatus', status.value)
+                                  }}
+                                >
+                                  {status.label}
+                                  <Check
+                                    className={cn(
+                                      'ml-auto',
+                                      status.value === field.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0'
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name='description'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder='One to two line description of your copy of the board game (e.g. condition, missing pieces, etc.)'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='One to two line description of your copy of the board game (e.g. condition, missing pieces, etc.)'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <Button type='submit'>
-                  Save
-                  <ArrowDownToLine strokeWidth={3} />
-                </Button>
-              </form>
-            </Form>
+              <Button type='submit'>
+                Save
+                <ArrowDownToLine strokeWidth={3} />
+              </Button>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

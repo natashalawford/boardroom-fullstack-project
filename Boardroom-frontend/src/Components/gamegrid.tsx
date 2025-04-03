@@ -212,7 +212,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
               </div>
             </div>
             <div className='font-bold text-lg text-center'>Reviews</div>
-            <ScrollArea className='max-h-40 overflow-y-auto rounded-lg ml-3 mr-3 border border-gray-100'>
+            <ScrollArea className='max-h-40 overflow-y-auto rounded-lg ml-3 mr-3'>
               {reviews.length > 0 ? (
                 reviews.map(review => (
                   <Review

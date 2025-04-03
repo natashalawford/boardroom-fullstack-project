@@ -2,6 +2,10 @@
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import BorrowRequestList from "@/Components/BorrowRequestList";
+import LendingHistoryList from "@/Components/LendingHistoryList";
+import { useContext } from "react";
+import { AuthContext } from "@/auth/UserAuth";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import {
@@ -13,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  login,
   toggleAccountType,
   updateAccountInfo,
   updatePassword,
@@ -39,6 +44,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import OwnedGamesList from "@/Components/ownedGamesList";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
@@ -257,6 +263,17 @@ function AccountDetails() {
             </Form>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
+        <BorrowRequestList />  
+      </div>
+
+      <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
+        <LendingHistoryList />  
+      </div>
+      <div>
+        <OwnedGamesList />
       </div>
       <Toaster />
     </>

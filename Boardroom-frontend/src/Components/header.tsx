@@ -5,7 +5,6 @@ import diceImage from '../assets/dice.png';
 import { Button } from '@/components/ui/button';
 import { LoginPopup } from '@/pages/login/loginPopup'
 
-
 const Header: React.FC = () => {
   const navigate = useNavigate();
 
@@ -61,7 +60,7 @@ const Header: React.FC = () => {
           src={userImage}
           alt="User Profile"
           style={{ width: "40px", height: "40px", cursor: "pointer" }}
-          onClick={() => navigate("/user")}
+          onClick={() => navigate("/account")}
         />
       </div>
 

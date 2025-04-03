@@ -191,4 +191,45 @@ public class RegistrationIntegrationTests {
         assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
     }
 
+    @Test
+    @Order(8)
+    public void testGetRegistrationsForEvent() {
+        // Arrange
+        int eventId = event.getId();
+
+        // Create and save multiple registrations
+        Person anotherPerson = new Person("Charlie", "charlie@mail.com", "password123", false);
+        personRepository.save(anotherPerson);
+
+        Registration registration1 = new Registration(new Registration.Key(event, person), LocalDateTime.now());
+        Registration registration2 = new Registration(new Registration.Key(event, anotherPerson), LocalDateTime.now());
+        registrationRepository.save(registration1);
+        registrationRepository.save(registration2);
+
+        // Act
+        ResponseEntity<EventRegistrationResponseDto[]> response = client.getForEntity("/registration/event/{eventId}",
+                EventRegistrationResponseDto[].class, eventId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().length);
+
+        // Ensure the registrations match the expected persons
+        boolean containsPerson1 = false;
+        boolean containsPerson2 = false;
+
+        for (EventRegistrationResponseDto dto : response.getBody()) {
+            if (dto.getPersonId() == person.getId()) {
+                containsPerson1 = true;
+            } else if (dto.getPersonId() == anotherPerson.getId()) {
+                containsPerson2 = true;
+            }
+        }
+
+        assertTrue(containsPerson1);
+        assertTrue(containsPerson2);
+    }
+
+
 }

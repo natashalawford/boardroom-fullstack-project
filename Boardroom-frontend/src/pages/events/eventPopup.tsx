@@ -1,5 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {useAuth} from '../../auth/UserAuth';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { fetchRegistrationsForEvent, fetchHostName } from '../../services/eventService'; // Updated import
 
 interface EventPopupProps {
     event: {
@@ -13,18 +22,37 @@ interface EventPopupProps {
         maxParticipants: number;
         hostId: number;
     };
-    personId: number; // Add personId as a prop
     onClose: () => void;
 }
 
-const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => {
+const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
     const { userData } = useAuth();
-    const popupRef = useRef<HTMLDivElement>(null);
     const [message, setMessage] = useState<string | null>(null); // For success/error messages
+    const [hostName, setHostName] = useState<string | null>(null); // For host name
+    const [spotsLeft, setSpotsLeft] = useState<number | null>(null); // For spots left
 
-    const handleOverlayClick = (e: React.MouseEvent) => {
-        if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-            onClose();
+    useEffect(() => {
+        fetchHostNameWrapper();
+        fetchSpotsLeft();
+    }, [event.hostId]);
+
+    const fetchHostNameWrapper = async () => {
+        try {
+            const name = await fetchHostName(event.hostId);
+            setHostName(name);
+        } catch (error) {
+            console.error('Error fetching host name:', error);
+            setHostName('Unknown Host');
+        }
+    };
+
+    const fetchSpotsLeft = async () => {
+        try {
+            const registrations = await fetchRegistrationsForEvent(event.id);
+            setSpotsLeft(event.maxParticipants - registrations.length);
+        } catch (error) {
+            console.error('Error fetching spots left:', error);
+            setSpotsLeft(null);
         }
     };
 
@@ -58,54 +86,29 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => 
     };
 
     return (
-        <div
-            onClick={handleOverlayClick}
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1000,
-            }}
-        >
-            <div
-                ref={popupRef}
-                style={{
-                    backgroundColor: '#fff',
-                    padding: '20px',
-                    borderRadius: '10px',
-                    width: '400px',
-                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
-                }}
-            >
-                <h2>{event.title}</h2>
-                <p><strong>Game:</strong> {event.boardGameName}</p>
-                <p><strong>Description:</strong> {event.description}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Start:</strong> {new Date(event.startDateTime).toLocaleString()}</p>
-                <p><strong>End:</strong> {new Date(event.endDateTime).toLocaleString()}</p>
-                <p><strong>Max Participants:</strong> {event.maxParticipants}</p>
-                <p><strong>Host ID:</strong> {event.hostId}</p>
-                <div style={{ display: 'flex', marginTop: '10px', justifyContent: 'right' }}>
-                    <button
+        <Dialog open={true} onOpenChange={onClose}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{event.title}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                    <p><strong>Game:</strong> {event.boardGameName}</p>
+                    <p><strong>Description:</strong> {event.description}</p>
+                    <p><strong>Location:</strong> {event.location}</p>
+                    <p><strong>Start:</strong> {new Date(event.startDateTime).toLocaleString()}</p>
+                    <p><strong>End:</strong> {new Date(event.endDateTime).toLocaleString()}</p>
+                    <p><strong>Max Participants:</strong> {event.maxParticipants}</p>
+                    <p><strong>Spots Left:</strong> {spotsLeft !== null ? spotsLeft : 'Loading...'}</p>
+                    <p><strong>Host:</strong> {hostName || 'Loading...'}</p>
+                </div>
+                <DialogFooter className="mt-4">
+                    <Button
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
                         onClick={handleRegister}
-                        style={{
-                            padding: '10px 20px',
-                            backgroundColor: '#30BCED',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                        }}
                     >
                         Register for Event
-                    </button>
-                </div>
+                    </Button>
+                </DialogFooter>
                 {message && (
                     <div
                         style={{
@@ -119,8 +122,8 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, personId, onClose }) => 
                         {message}
                     </div>
                 )}
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 };
 

@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Entity
 public class Review {
@@ -14,7 +14,7 @@ public class Review {
     private int id;
     private int stars;
     private String comment;
-    private LocalTime timeStamp;
+    private LocalDateTime timeStamp;
 
     @ManyToOne
     private Person author;
@@ -23,7 +23,7 @@ public class Review {
 
     protected Review() {}
 
-    public Review(int stars, String comment, LocalTime timeStamp,
+    public Review(int stars, String comment, LocalDateTime timeStamp,
                   Person author, BoardGame boardGame) {
 
         this.stars = stars;
@@ -45,7 +45,7 @@ public class Review {
         return comment;
     }
 
-    public LocalTime getTimeStamp() {
+    public LocalDateTime getTimeStamp() {
         return timeStamp;
     }
 

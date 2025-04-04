@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import userImage from '../assets/user.png';
-import diceImage from '../assets/dice.png';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import userImage from '../assets/user.png'
+import diceImage from '../assets/dice.png'
+import { Button } from '@/components/ui/button'
 import { LoginPopup } from '@/pages/login/loginPopup'
+import { useAuth } from '@/auth/UserAuth'
 
 const Header: React.FC = () => {
-  const navigate = useNavigate();
-
+  const navigate = useNavigate()
+  const { userData } = useAuth() // get global auth info
   const [showLoginPopup, setShowLoginPopup] = useState(false) //state for login pop open or not
 
   return (
@@ -24,25 +25,60 @@ const Header: React.FC = () => {
         padding: '0 20px',
         backgroundColor: '#303036',
         zIndex: 1000,
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)'
       }}
     >
       <img
         src={diceImage}
-        alt="Logo"
-        style={{ width: '50px', height: '50px', cursor: 'pointer' }}
+        alt='Logo'
+        style={{
+          width: '50px',
+          height: '50px',
+          cursor: 'pointer',
+          transition: 'transform 0.3s ease' // Smooth scaling animation
+        }}
+        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')} // Scale up
+        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} // Reset scale
         onClick={() => navigate('/')}
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
-        <Button variant='default' onClick={() => navigate('/games')} className='mr-2'>Games</Button>
-        <Button variant='default' onClick={() => navigate('/events')} className='mr-2'>Events</Button>
-         {/* When clicked, open the Login popup instead of navigating */}
-        <Button variant='default' onClick={() => setShowLoginPopup(true)} className='mr-2'>Login</Button>
+        <Button
+          variant='default'
+          onClick={() => navigate('/games')}
+          className='mr-2 hover:bg-neutral-800 transition duration-300'
+        >
+          Games
+        </Button>
+        <Button
+          variant='default'
+          onClick={() => navigate('/events')}
+          className='mr-2 hover:bg-neutral-800 transition duration-300'
+        >
+          Events
+        </Button>
+        {/* 
+          Whether logged in or out, clicking the button opens the login popup.
+          The button text changes based on whether the user is logged in or not.
+        */}
+        <Button
+          variant='default'
+          onClick={() => setShowLoginPopup(true)}
+          className='mr-2 hover:bg-neutral-800 transition duration-300'
+        >
+          {userData ? 'Logout' : 'Login'}
+        </Button>
         <img
           src={userImage}
-          alt="User Profile"
-          style={{ width: '40px', height: '40px', cursor: 'pointer' }}
-          onClick={() => navigate('/user')}
+          alt='User Profile'
+          style={{
+            width: '40px',
+            height: '40px',
+            cursor: 'pointer',
+            transition: 'transform 0.3s ease'
+          }}
+          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')} // Scale up
+          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} // Reset scale
+          onClick={() => navigate('/account')}
         />
       </div>
 
@@ -51,9 +87,8 @@ const Header: React.FC = () => {
         isOpen={showLoginPopup}
         onClose={() => setShowLoginPopup(false)}
       />
-
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

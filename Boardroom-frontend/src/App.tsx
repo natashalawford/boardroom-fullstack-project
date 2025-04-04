@@ -1,5 +1,7 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import User from './pages/user/user';
+import './App.css'
 import Header from "./components/header";
 import Home from "./pages/home/home";
 import Games from "./pages/games/games";
@@ -10,6 +12,7 @@ import SpecificGames from "./pages/games/specificBoardGames";
 import { NewSpecificGameForm } from "./components/newSpecificGameFormButton";
 
 import { Toaster } from "sonner";
+//import Login from './pages/login/login';
 
 const App: React.FC = () => {
   return (
@@ -33,18 +36,14 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
-            <Route path="/games/new" element={<NewGameForm />} />
             <Route
               path="/specificboardgames/:title"
               element={<SpecificGames />}
             />
             <Route path="/events" element={<Events />} />
-            <Route
-              path="/games/new/specific"
-              element={<NewSpecificGameForm />}
-            />
             {/*<Route path="/login" element={<Login />} /> */}
-            <Route path="/user" element={<AccountDetails />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/account" element={<AccountDetails />} />
           </Routes>
         </main>
       </div>

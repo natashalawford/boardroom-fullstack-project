@@ -183,7 +183,7 @@ const SpecificGames: React.FC = () => {
             {/* Image Section */}
             <div className="aspect-w-1 aspect-h-1">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
+                src={gameImages[Number(pictureId)]}
                 alt={game.boardGameTitle}
                 className="rounded-lg object-cover w-full h-40"
               />

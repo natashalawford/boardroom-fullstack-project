@@ -69,7 +69,7 @@ const Games: React.FC = () => {
       {userData?.owner && (
         <div className='flex justify-start pt-3'>
           <NewGameForm onGameAdded={loadGames} />
-          <NewSpecificGameForm />
+          <NewSpecificGameForm loadGames={loadGames} />
         </div>
       )}
 

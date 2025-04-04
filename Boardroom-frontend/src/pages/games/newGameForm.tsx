@@ -81,7 +81,7 @@ export function NewGameForm() {
     };
     saveBoardGame(newBoardGame)
       .then(() => {
-        toast("Board game saved.");
+        toast.success("Board game saved.");
         setTimeout(() => {
           navigate("/games"); // Navigate after the toast is displayed
         }, 500);

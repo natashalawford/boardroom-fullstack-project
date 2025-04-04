@@ -10,6 +10,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { fetchHostName, fetchRegistrationsForEvent } from '../../services/eventService'; // Use eventService
 
+import image1 from '../../assets/games/image1.jpg'
+import image2 from '../../assets/games/image2.jpg'
+import image3 from '../../assets/games/image3.jpg'
+import image4 from '../../assets/games/image4.jpg'
+import image5 from '../../assets/games/image5.jpg'
+
+const gameImages: { [key: number]: string } = {
+    1: image1,
+    2: image2,
+    3: image3,
+    4: image4,
+    5: image5
+  }
+
 interface EventPopupProps {
     event: {
         id: number;
@@ -22,10 +36,11 @@ interface EventPopupProps {
         maxParticipants: number;
         hostId: number;
     };
+    pictureIndex: number;
     onClose: () => void;
 }
 
-const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
+const EventPopup: React.FC<EventPopupProps> = ({ event, pictureIndex, onClose }) => {
     const { userData } = useAuth();
     const [message, setMessage] = useState<string | null>(null); // For success/error messages
     const [hostName, setHostName] = useState<string | null>(null); // For host name
@@ -94,21 +109,30 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
         <Dialog open={true} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{event.title}</DialogTitle>
+                    <DialogTitle className='font-bold text-xl ml-4 mt-4'>{event.title}</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <p><strong>Game:</strong> {event.boardGameName}</p>
-                    <p><strong>Description:</strong> {event.description}</p>
-                    <p><strong>Location:</strong> {event.location}</p>
-                    <p><strong>Start:</strong> {new Date(event.startDateTime).toLocaleString()}</p>
-                    <p><strong>End:</strong> {new Date(event.endDateTime).toLocaleString()}</p>
-                    <p><strong>Max Participants:</strong> {event.maxParticipants}</p>
-                    <p><strong>Spots Left:</strong> {spotsLeft !== null ? spotsLeft : 'Loading...'}</p>
-                    <p><strong>Host:</strong> {hostName || 'Loading...'}</p>
+                <div className='flex items-start space-x-2 p-4'>
+                    <div className="flex-1 space-y-1 self-center">
+                        <p><strong>Game:</strong> {event.boardGameName}</p>
+                        <p><strong>Description:</strong> {event.description}</p>
+                        <p><strong>Location:</strong> {event.location}</p>
+                        <p><strong>Start:</strong> {new Date(event.startDateTime).toLocaleString()}</p>
+                        <p><strong>End:</strong> {new Date(event.endDateTime).toLocaleString()}</p>
+                        <p><strong>Max Participants:</strong> {event.maxParticipants}</p>
+                        <p><strong>Spots Left:</strong> {spotsLeft !== null ? spotsLeft : 'Loading...'}</p>
+                        <p><strong>Host:</strong> {hostName || 'Loading...'}</p>
+                    </div> 
+                    <div className='w-40 h-25 flex-shrink-0'>
+                        <img
+                        alt='Board Game'
+                        src={gameImages[pictureIndex]}
+                        className='w-full h-full object-cover rounded-lg shadow-md'
+                        />
+                    </div>
                 </div>
                 <DialogFooter className="mt-4">
                     <Button
-                        className="bg-black hover:bg-gray-800 text-white"
+                        className="bg-black hover:bg-neutral-800 text-white"
                         onClick={handleRegister}
                     >
                         Register for Event

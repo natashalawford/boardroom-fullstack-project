@@ -160,7 +160,7 @@ const Events: React.FC = () => {
                     }}
                 />
                 <Button
-                    className="bg-black hover:bg-gray-800 text-white"
+                    className="bg-black hover:bg-neutral-800 text-white"
                     onClick={handleCreateEvent}
                 >
                     Create Event
@@ -207,7 +207,7 @@ const Events: React.FC = () => {
             </div>
             {/* Show popup for the selected event */}
             {selectedEvent && (
-                <EventPopup event={selectedEvent} onClose={handleClosePopup} />
+                <EventPopup event={selectedEvent} pictureIndex={boardGames.find(game => game.title === selectedEvent.boardGameName)?.picture || 1} onClose={handleClosePopup} />
             )}
             {/* Show popup for creating a new event */}
             {showCreatePopup && <EventCreationPopup onClose={handleCloseCreatePopup}/>}

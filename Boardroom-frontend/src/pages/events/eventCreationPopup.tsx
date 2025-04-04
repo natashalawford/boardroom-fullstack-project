@@ -80,13 +80,11 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
         <Dialog open={true} onOpenChange={onClose}>
             <DialogContent
                 style={{
-                    zIndex: 1050, 
-                    maxWidth: '450px',
-
+                    zIndex: 1050
                 }}
             >
                 <DialogHeader>
-                    <DialogTitle>Create New Event</DialogTitle>
+                    <DialogTitle className="font-bold text-xl">Create New Event</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div style={{ marginBottom: '10px' }}>

@@ -2,24 +2,19 @@
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import BorrowRequestList from "@/Components/BorrowRequestList";
-import LendingHistoryList from "@/Components/LendingHistoryList";
-import { useContext } from "react";
-import { AuthContext } from "@/auth/UserAuth";
+import BorrowRequestList from "@/components/BorrowRequestList";
+import LendingHistoryList from "@/components/LendingHistoryList";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
-  DialogClose,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  login,
   toggleAccountType,
   updateAccountInfo,
   updatePassword,
@@ -27,7 +22,6 @@ import {
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
-import { Label } from "@/components/ui/label";
 
 import {
   updateNameFormSchema,
@@ -40,13 +34,12 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import OwnedGamesList from "@/Components/ownedGamesList";
+import OwnedGamesList from "@/components/ownedGamesList";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
@@ -78,7 +71,7 @@ function AccountDetails() {
     );
 
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast.error(errorMessage.errorMessage);
     }
     // TODO  don't have this on toggle because it might get spammed ASK GROUP
     // else {
@@ -102,9 +95,9 @@ function AccountDetails() {
     );
 
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast.error(errorMessage.errorMessage);
     } else {
-      toast("Success");
+      toast.success("Success");
     }
   }
 
@@ -126,10 +119,10 @@ function AccountDetails() {
       setUserData
     );
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast.error(errorMessage.errorMessage);
     } else {
       setIsDialogOpen(false);
-      toast("Success");
+      toast.success("Success");
     }
   }
 

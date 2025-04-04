@@ -49,6 +49,10 @@ import {
   fetchBoardGames
 } from '../services/boardGameService'
 
+interface NewSpecificGameFormProps {
+  loadGames: () => Promise<void>;
+}
+
 type GameStatus = {
   value: string
   label: string
@@ -78,7 +82,7 @@ const formSchema = z.object({
   description: z.string().min(1, { message: 'Description is required.' })
 })
 
-export function NewSpecificGameForm () {
+export function NewSpecificGameForm({ loadGames }: NewSpecificGameFormProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false) // State to control dialog visibility
 
   const [boardGames, setBoardGames] = useState<
@@ -120,7 +124,7 @@ export function NewSpecificGameForm () {
     }
 
     loadBoardGames()
-  }, [])
+  }, [loadGames])
 
   // Submit handler
   function onSubmit (values: z.infer<typeof formSchema>) {
@@ -153,7 +157,7 @@ export function NewSpecificGameForm () {
 
     saveSpecificBoardGame(newBoardGame)
       .then(() => {
-        toast('Board game saved.')
+        toast.success('Board game saved.')
         setIsDialogOpen(false)
         form.reset() // Reset the form after successful submission
       })

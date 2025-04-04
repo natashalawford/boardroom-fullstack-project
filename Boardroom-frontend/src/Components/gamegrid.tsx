@@ -11,6 +11,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import monopoly from '../assets/monopoly.png'
 
+import Rating from '@mui/material/Rating'
+import Box from '@mui/material/Box'
+import StarIcon from '@mui/icons-material/Star'
+
 import { Review } from './review'
 import {
   fetchReviewsForBoardGame,
@@ -43,6 +47,18 @@ interface Game {
   picture: number
 }
 
+const labels: { [index: string]: string } = {
+  1: 'Very poor',
+  2: 'Poor',
+  3: 'Okay',
+  4: 'Good',
+  5: 'Excellent'
+}
+
+function getLabelText (value: number) {
+  return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`
+}
+
 const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
   const { userData } = useAuth()
   const [loading, setLoading] = useState<boolean>(false)
@@ -51,16 +67,16 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
   const [showReviewBox, setShowReviewBox] = useState<boolean>(false)
   const [reviewText, setReviewText] = useState<string>('')
   const [reviews, setReviews] = useState<ReviewResponse[]>([])
-  const [stars, setStars] = useState<number>(0)
+
+  const [valueStars, setValueStars] = React.useState<number | null>(-1)
+  const [hoverStars, setHoverStars] = React.useState(-1)
 
   // Load reviews + user names
   const loadReviewsWithUsernames = async () => {
     try {
       if (!selectedGame) return
 
-      const fetchedReviews = await fetchReviewsForBoardGame(
-        selectedGame.title
-      )
+      const fetchedReviews = await fetchReviewsForBoardGame(selectedGame.title)
 
       // For each review, fetch the user name
       const reviewsWithUsernames = await Promise.all(
@@ -71,7 +87,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
       )
 
       setReviews(reviewsWithUsernames)
-      console.log("Reviews with usernames:", reviewsWithUsernames)
+      console.log('Reviews with usernames:', reviewsWithUsernames)
     } catch (err) {
       console.error('Error fetching reviews:', err)
       toast.error('Failed to fetch reviews for this game.')
@@ -90,7 +106,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
       return
     }
 
-    if (stars < 1 || stars > 5) {
+    if (valueStars == null || valueStars < 1 || valueStars > 5) {
       toast.error('Please select a star rating between 1 and 5!')
       return
     }
@@ -102,7 +118,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          stars: stars,
+          stars: valueStars,
           comment: reviewText,
           authorId: userData?.id,
           boardGameName: selectedGame?.title
@@ -119,7 +135,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
       toast.success('Review submitted successfully!')
       setShowReviewBox(false)
       setReviewText('')
-      setStars(0)
+      setValueStars(0)
       loadReviewsWithUsernames()
     } catch (err) {
       if (err instanceof Error) {
@@ -185,9 +201,9 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
             setShowReviewBox(false) // Reset showReviewBox to false when the dialog is closed
           }}
         >
-          <DialogContent className='z-200'>
+          <DialogContent className='border-gray-200' style={{ zIndex: 2000 }}>
             <DialogHeader>
-              <DialogTitle className='text-center font-bold pt-1'>
+              <DialogTitle className='text-center font-bold'>
                 {selectedGame.title}
               </DialogTitle>
             </DialogHeader>
@@ -203,7 +219,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
               </div>
 
               {/* Right Section: Image */}
-              <div className='w-48 h-30 flex-shrink-0'>
+              <div className='w-50 h-25 flex-shrink-0'>
                 <img
                   alt='Board Game'
                   src={gameImages[selectedGame.picture] || monopoly}
@@ -224,7 +240,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
                   />
                 ))
               ) : (
-                <p className='text-center text-gray-500 p-3'>No reviews yet.</p>
+                <p className='text-center text-gray-500 p-2'>No reviews yet.</p>
               )}
             </ScrollArea>
             <DialogFooter>
@@ -232,18 +248,43 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
                 {/* Review Box */}
                 {showReviewBox && (
                   <>
-                    <select
-                      value={stars}
-                      onChange={e => setStars(Number(e.target.value))}
-                      className='w-full border border-gray-300 rounded-lg p-2'
-                    >
-                      <option value={0}>Select Star Rating</option>
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <option key={star} value={star}>
-                          {star} Star{star > 1 ? 's' : ''}
-                        </option>
-                      ))}
-                    </select>
+                    <div className='border border-gray-300 rounded-lg p-2'>
+                      <Box
+                        sx={{
+                          width: 400,
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Rating
+                          name='hover-feedback'
+                          value={valueStars}
+                          precision={1}
+                          getLabelText={getLabelText}
+                          onChange={(event, newValue) => {
+                            setValueStars(newValue)
+                          }}
+                          onChangeActive={(event, newHover) => {
+                            setHoverStars(newHover)
+                          }}
+                          emptyIcon={
+                            <StarIcon
+                              style={{ opacity: 0.55 }}
+                              fontSize='inherit'
+                            />
+                          }
+                        />
+                        {valueStars !== null && (
+                          <Box sx={{ ml: 2 }}>
+                            {
+                              labels[
+                                hoverStars !== -1 ? hoverStars : valueStars
+                              ]
+                            }
+                          </Box>
+                        )}
+                      </Box>
+                    </div>
                     <Textarea
                       placeholder='Write your review here...'
                       value={reviewText}

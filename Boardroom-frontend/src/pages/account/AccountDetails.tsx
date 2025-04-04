@@ -36,7 +36,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -77,7 +76,7 @@ function AccountDetails() {
     );
 
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast.error(errorMessage.errorMessage);
     }
   };
 
@@ -97,9 +96,9 @@ function AccountDetails() {
     );
 
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast.error(errorMessage.errorMessage);
     } else {
-      toast("Success");
+      toast.success("Success");
     }
   }
 
@@ -121,10 +120,10 @@ function AccountDetails() {
       setUserData
     );
     if (errorMessage != null) {
-      toast(errorMessage.errorMessage);
+      toast.error(errorMessage.errorMessage);
     } else {
       setIsDialogOpen(false);
-      toast("Success");
+      toast.success("Success");
     }
   }
 

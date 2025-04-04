@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getBorrowRequestsByPersonAndStatus } from "@/services/AccountDetailsService";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/auth/UserAuth"; // ✅ import the auth context
 
 type BorrowRequest = {
   id: number;
@@ -10,20 +11,20 @@ type BorrowRequest = {
   requestStartDate: string;
   requestEndDate: string;
   personName: string;
-  specificBoardGameTitle: string,
+  specificBoardGameTitle: string;
 };
 
 const LendingHistoryList = () => {
-
+  const { userData } = useAuth(); // ✅ get the logged-in user
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
-  
-    useEffect(() => {
-      // replace `1` with actual person ID if needed
-      getBorrowRequestsByPersonAndStatus(1, "RETURNED")
+
+  useEffect(() => {
+    if (userData?.id) {
+      getBorrowRequestsByPersonAndStatus(userData.id, "RETURNED")
         .then(setRequests)
         .catch(console.error);
-    }, []);
-
+    }
+  }, [userData]);
 
   return (
     <>
@@ -45,10 +46,10 @@ const LendingHistoryList = () => {
                   <td className="px-8 py-2 border-t border-gray-200">{req.personName}</td>
                   <td className="px-8 py-2 border-t border-gray-200">{req.specificBoardGameTitle}</td>
                   <td className="px-8 py-2 border-t border-gray-200">
-                  {new Date(req.requestStartDate).toISOString().split("T")[0]}
+                    {new Date(req.requestStartDate).toISOString().split("T")[0]}
                   </td>
                   <td className="px-8 py-2 border-t border-gray-200">
-                  {new Date(req.requestEndDate).toISOString().split("T")[0]}
+                    {new Date(req.requestEndDate).toISOString().split("T")[0]}
                   </td>
                 </tr>
               ))}

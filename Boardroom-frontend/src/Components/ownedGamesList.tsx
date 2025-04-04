@@ -47,7 +47,7 @@ const OwnedGamesList: React.FC<OwnedGamesListProps> = ({
   }, [userData]);
 
   return (
-    <div className="w-[50%] mt-[-35px] ml-10 mr-15">
+    <div className="w-[50%] ml-10 mr-15">
       <h2 className="text-lg font-semibold mb-4">Owned Games</h2>
 
       <Card className="rounded-2xl shadow-md border w-full max-w-[750px] p-4 min-h-[290px]">

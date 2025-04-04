@@ -151,7 +151,7 @@ function AccountDetails() {
     } else {
       setShowUpdateGame(false);
       setSpecificGameInfo(null);
-      toast("Success");
+      toast.success("Success");
     }
   }
 
@@ -169,99 +169,178 @@ function AccountDetails() {
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center h-[120px] ml-10 mr-10">
-        <p className="text-2xl">Account Details</p>
+      {userData ? (
+        <>
+          <div className="flex flex-row justify-between items-center h-[120px] ml-10 mr-10">
+            <p className="text-2xl">Account Details</p>
 
-        <div className="flex items-center">
-          <label className="text-lg">{accountType}</label>
-          <Switch.Root
-            checked={isChecked}
-            onCheckedChange={handleToggle}
-            className="ml-5 relative w-[50px] h-[30px] bg-gray-400 rounded-full shadow-lg 
+            <div className="flex items-center">
+              <label className="text-lg">{accountType}</label>
+              <Switch.Root
+                checked={isChecked}
+                onCheckedChange={handleToggle}
+                className="ml-5 relative w-[50px] h-[30px] bg-gray-400 rounded-full shadow-lg 
                  transition-colors focus:outline-none focus:ring-2 focus:ring-black 
                  data-[state=checked]:bg-gray-700"
-          >
-            <Switch.Thumb
-              className="block w-[25px] h-[25px] bg-white rounded-full shadow-md  
+              >
+                <Switch.Thumb
+                  className="block w-[25px] h-[25px] bg-white rounded-full shadow-md  
                    transition-transform duration-100 transform translate-x-[2px] 
                    data-[state=checked]:translate-x-[23px]"
-            />
-          </Switch.Root>
-        </div>
-      </div>
-
-      <p className="ml-20 mb-10 text-4xl">Hello, {name}</p>
-
-      <div className='flex flex-row justify-between items-center'>
-        <div className="flex flex-col ml-20 w-100 borderd rounded-lg">
-          <div className="flex justify-between items-center mb-5">
-            Email
-            <Input disabled value={email} className="w-80" />
+                />
+              </Switch.Root>
+            </div>
           </div>
 
-          <Form {...updateNameForm}>
-            <form onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
-              <FormField
-                control={updateNameForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="mb-5">
-                    <div className="flex justify-between">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          className={"w-80"}
-                          placeholder="Name"
-                          {...field}
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage className="ml-[85px] leading-none" />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end mb-5">
-                <Button
-                  type="submit"
-                  variant="outline"
-                  className="hover:bg-gray-700 hover:text-white w-30 "
-                >
-                  Update
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <p className="ml-20 text-4xl">Hello, {name}</p>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild className="flex shrink self-center mb-10">
-              <Button
-                variant="outline"
-                className="hover:bg-gray-700 hover:text-white w-50"
-              >
-                Update Password
-              </Button>
-            </DialogTrigger>
+          <div className="flex flex-row justify-between items-center min-h-[335px]">
+            <div className="flex flex-col ml-20 w-100 borderd rounded-lg">
+              <div className="flex justify-between items-center mb-5">
+                Email
+                <Input disabled value={email} className="w-80" />
+              </div>
+
+              <Form {...updateNameForm}>
+                <form onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
+                  <FormField
+                    control={updateNameForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="mb-5">
+                        <div className="flex justify-between">
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              className={"w-80"}
+                              placeholder="Name"
+                              {...field}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage className="ml-[85px] leading-none" />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex justify-end mb-5">
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      className="hover:bg-gray-700 hover:text-white w-30 "
+                    >
+                      Update
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild className="flex shrink self-center">
+                  <Button
+                    variant="outline"
+                    className="hover:bg-gray-700 hover:text-white w-50"
+                  >
+                    Update Password
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] bg-white">
+                  <DialogHeader>
+                    <DialogTitle>Update Password</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your password here. Click save when you're
+                      done.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <Form {...updatePasswordForm}>
+                    <form
+                      onSubmit={updatePasswordForm.handleSubmit(passwordUpdate)}
+                    >
+                      <FormField
+                        control={updatePasswordForm.control}
+                        name="oldPassword"
+                        render={({ field }) => (
+                          <FormItem className="mb-5">
+                            <div className="flex justify-between">
+                              <FormLabel className="w-[85px]">
+                                Old Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input className="w-75" {...field} />
+                              </FormControl>
+                            </div>
+                            <FormMessage className="ml-[90px] leading-none" />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={updatePasswordForm.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem className="mb-5">
+                            <div className="flex justify-between">
+                              <FormLabel className="w-[85px]">
+                                New Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input className="w-75" {...field} />
+                              </FormControl>
+                            </div>
+                            <FormMessage className="ml-[90px] leading-none" />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          className="hover:bg-gray-700 hover:text-white"
+                          variant="outline"
+                          type="submit"
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {userData?.owner == "false" ? (
+              <></>
+            ) : (
+              <OwnedGamesList
+                openModal={() => setShowUpdateGame(true)}
+                setInfo={(gameInfo: OwnedGameUpdate) =>
+                  setSpecificGameInfo(gameInfo)
+                }
+              />
+            )}
+          </div>
+
+          <Dialog open={showUpdateGame} onOpenChange={setShowUpdateGame}>
             <DialogContent className="sm:max-w-[425px] bg-white">
               <DialogHeader>
-                <DialogTitle>Update Password</DialogTitle>
+                <DialogTitle>Update Game</DialogTitle>
                 <DialogDescription>
-                  Make changes to your password here. Click save when you're
-                  done.
+                  Make changes to your game here. Click save when you're done.
                 </DialogDescription>
               </DialogHeader>
 
-              <Form {...updatePasswordForm}>
+              <Form {...updateSpecificGameForm}>
                 <form
-                  onSubmit={updatePasswordForm.handleSubmit(passwordUpdate)}
+                  onSubmit={updateSpecificGameForm.handleSubmit(
+                    specificGameUpdate
+                  )}
                 >
                   <FormField
-                    control={updatePasswordForm.control}
-                    name="oldPassword"
+                    control={updateSpecificGameForm.control}
+                    name="description"
                     render={({ field }) => (
                       <FormItem className="mb-5">
                         <div className="flex justify-between">
                           <FormLabel className="w-[85px]">
-                            Old Password
+                            Description
                           </FormLabel>
                           <FormControl>
                             <Input className="w-75" {...field} />
@@ -272,23 +351,6 @@ function AccountDetails() {
                     )}
                   />
 
-                  <FormField
-                    control={updatePasswordForm.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem className="mb-5">
-                        <div className="flex justify-between">
-                          <FormLabel className="w-[85px]">
-                            New Password
-                          </FormLabel>
-                          <FormControl>
-                            <Input className="w-75" {...field} />
-                          </FormControl>
-                        </div>
-                        <FormMessage className="ml-[90px] leading-none" />
-                      </FormItem>
-                    )}
-                  />
                   <div className="flex justify-end">
                     <Button
                       className="hover:bg-gray-700 hover:text-white"
@@ -302,68 +364,28 @@ function AccountDetails() {
               </Form>
             </DialogContent>
           </Dialog>
-        </div>
 
-
-          <OwnedGamesList
-            openModal={() => setShowUpdateGame(true)}
-            setInfo={(gameInfo: OwnedGameUpdate) =>
-              setSpecificGameInfo(gameInfo)
-            }
-          />
-
-      </div>
-
-      <Dialog open={showUpdateGame} onOpenChange={setShowUpdateGame}>
-        <DialogContent className="sm:max-w-[425px] bg-white">
-          <DialogHeader>
-            <DialogTitle>Update Game</DialogTitle>
-            <DialogDescription>
-              Make changes to your game here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-
-          <Form {...updateSpecificGameForm}>
-            <form
-              onSubmit={updateSpecificGameForm.handleSubmit(specificGameUpdate)}
-            >
-              <FormField
-                control={updateSpecificGameForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="mb-5">
-                    <div className="flex justify-between">
-                      <FormLabel className="w-[85px]">Description</FormLabel>
-                      <FormControl>
-                        <Input className="w-75" {...field} />
-                      </FormControl>
-                    </div>
-                    <FormMessage className="ml-[90px] leading-none" />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex justify-end">
-                <Button
-                  className="hover:bg-gray-700 hover:text-white"
-                  variant="outline"
-                  type="submit"
-                >
-                  Save
-                </Button>
+          {userData?.owner == "false" ? (
+            <></>
+          ) : (
+            <>
+              <div className="flex flex-col justify-between items-left ml-15 mr-10 mb-10">
+                <BorrowRequestList />
               </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
 
-      <div className="flex flex-col justify-between items-left ml-15 mr-10 mb-10">
-        <BorrowRequestList />
-      </div>
-
-      <div className="flex flex-col justify-between items-left ml-15 mr-10 mb-10">
-        <LendingHistoryList />
-      </div>
+              <div className="flex flex-col justify-between items-left ml-15 mr-10 mb-10">
+                <LendingHistoryList />
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <div className='flex justify-center items-center h-screen mt-[-70px]'>
+            <p className='text-6xl'>Please login before consulting account details.</p>
+          </div>
+        </>
+      )}
     </>
   );
 }

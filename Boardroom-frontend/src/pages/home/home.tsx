@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false)
 
   return (
-    <main className="mt-20 p-6 flex flex-col items-center justify-center text-center">
+    <main className="mt-15 p-6 mb-15 flex flex-col items-center justify-center text-center">
     {/* Container with a border, padding, and a slight rounding of corners */}
     <div className="flex flex-col items-center max-w-2xl w-full">
         <img
@@ -45,21 +45,21 @@ const Home: React.FC = () => {
 
         {/* Feature Section */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
-          <div className="border p-4 rounded-lg max-w-sm text-center">
+          <div className="border p-4 rounded-lg max-w-sm text-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <h2 className="text-xl font-semibold">Discover & Borrow Games</h2>
             <p className="mt-2 text-sm text-gray-600">
               Explore our extensive collection of board games and borrow your favorites!
             </p>
           </div>
 
-          <div className="border p-4 rounded-lg max-w-sm text-center">
+          <div className="border p-4 rounded-lg max-w-sm text-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <h2 className="text-xl font-semibold">Join or Host Events</h2>
             <p className="mt-2 text-sm text-gray-600">
               Find exciting events to join or host your own game nights!
             </p>
           </div>
 
-          <div className="border p-4 rounded-lg max-w-sm text-center">
+          <div className="border p-4 rounded-lg max-w-sm text-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <h2 className="text-xl font-semibold">Leave Reviews</h2>
             <p className="mt-2 text-sm text-gray-600">
               Share your experiences and rate games and events to help others!
@@ -76,7 +76,7 @@ const Home: React.FC = () => {
         {/* Grid of 4 “Game Cards” */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Card 1 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage1}
               alt="Game 1"
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Card 2 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage5}
               alt="Game 2"
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Card 3 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage3}
               alt="Game 3"
@@ -115,7 +115,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Card 4 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage4}
               alt="Game 4"
@@ -137,7 +137,7 @@ const Home: React.FC = () => {
         {/* Grid of 4 “Event Cards” */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Event Card 1 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage3}
               alt="Event 1"
@@ -150,7 +150,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Event Card 2 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage4}
               alt="Event 2"
@@ -163,7 +163,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Event Card 3 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage1}
               alt="Event 3"
@@ -176,7 +176,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Event Card 4 */}
-          <div className="border rounded-lg p-4 flex flex-col items-center">
+          <div className="border rounded-lg p-4 flex flex-col items-center shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200">
             <img
               src={gameImage5}
               alt="Event 4"

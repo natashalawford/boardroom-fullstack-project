@@ -153,7 +153,7 @@ export function NewSpecificGameForm () {
 
     saveSpecificBoardGame(newBoardGame)
       .then(() => {
-        toast('Board game saved.')
+        toast.success('Board game saved.')
         setIsDialogOpen(false)
         form.reset() // Reset the form after successful submission
       })

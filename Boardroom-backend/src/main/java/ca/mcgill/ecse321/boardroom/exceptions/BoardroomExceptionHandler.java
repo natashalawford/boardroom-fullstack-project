@@ -21,7 +21,6 @@ public class BoardroomExceptionHandler {
         return new ResponseEntity<ErrorDto>(new ErrorDto(e.getMessage()), e.getStatus());
     }    
 
-    //Update this to make a list of errors and appending to errordto errors field
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) { 
         ErrorDto errorDto = new ErrorDto(new ArrayList<>());

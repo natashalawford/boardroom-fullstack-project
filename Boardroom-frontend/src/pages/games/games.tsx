@@ -5,6 +5,7 @@ import { NewGameForm } from '../../components/newGameFormButton'
 import { NewSpecificGameForm } from '../../components/newSpecificGameFormButton'
 import { fetchBoardGames } from '@/services/boardGameService'
 import { toast } from 'sonner'
+import { useAuth } from '@/auth/UserAuth'
 
 interface Game {
   title: string
@@ -15,6 +16,8 @@ interface Game {
 
 const Games: React.FC = () => {
   const [games, setGames] = useState<Game[]>([])
+  const [searchQuery, setSearchQuery] = useState('') // State for search query
+  const { userData } = useAuth()
 
   // Function to load games
   const loadGames = async () => {
@@ -30,6 +33,11 @@ const Games: React.FC = () => {
     }
   }
 
+  // Filter games based on the search query
+  const filteredGames = games.filter((game) =>
+    game.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   useEffect(() => {
     loadGames()
   }, [])
@@ -40,13 +48,33 @@ const Games: React.FC = () => {
       <p className='pt-3'>
         Welcome to the Games Page! Here you can explore and play various games.
       </p>
-      <div className='flex justify-start pt-3'>
-        <NewGameForm onGameAdded={loadGames} />
-        <NewSpecificGameForm />
+
+      {/* Search bar */}
+      <div className='pt-3'>
+        <input
+          type='text'
+          placeholder='Search For Games...'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} // Update dynamically
+          className='p-2 border border-gray-300 rounded w-full'
+          style={{
+            padding: '5px 10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '390px',
+        }}
+        />
       </div>
 
+      {userData?.owner && (
+        <div className='flex justify-start pt-3'>
+          <NewGameForm onGameAdded={loadGames} />
+          <NewSpecificGameForm />
+        </div>
+      )}
+
       <div className='pt-3'>
-        <GameGrid games={games}/>
+        <GameGrid games={filteredGames} />
       </div>
     </div>
   )

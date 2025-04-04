@@ -1,26 +1,45 @@
+"use client";
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import BorrowRequestList from "@/components/BorrowRequestList";
+import LendingHistoryList from "@/components/LendingHistoryList";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
-  DialogClose,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   toggleAccountType,
-  login,
   updateAccountInfo,
-  updatePassword
+  updatePassword,
 } from "@/services/AccountDetailsService";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
-import { Label } from "@/components/ui/label";
+
+import {
+  updateNameFormSchema,
+  updatePasswordFormSchema,
+} from "./AccountDetailFormSchemas";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import OwnedGamesList from "@/components/ownedGamesList";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
@@ -29,7 +48,7 @@ function AccountDetails() {
   const [name, setName] = useState<string>(userData?.name || "");
   const [email, setEmail] = useState<string>(userData?.email || "");
   const [accountType, setAccountType] = useState<string>(
-    userData?.owner == "true" ? "owner" : "user"
+    userData?.owner == "true" ? "Owner" : "User"
   );
 
   // for switch
@@ -40,33 +59,81 @@ function AccountDetails() {
   // this is what is defined in the update fields
   const [newName, setNewName] = useState<string>(name);
 
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  // const [oldPassword, setOldPassword] = useState<string>("");
+  // const [newPassword, setNewPassword] = useState<string>("");
 
   const handleToggle = async (checked: boolean) => {
-    await toggleAccountType(userData, checked.toString(), setUserData);
+    const errorMessage = await toggleAccountType(
+      userData,
+      checked.toString(),
+      setUserData
+    );
+
+    if (errorMessage != null) {
+      toast.error(errorMessage.errorMessage);
+    }
+    // TODO  don't have this on toggle because it might get spammed ASK GROUP
+    // else {
+    //   toast("Success")
+    // }
   };
 
-  const passwordUpdate = async () => {
-    await updatePassword(userData, oldPassword, newPassword, setUserData);
+  const updateNameForm = useForm<z.infer<typeof updateNameFormSchema>>({
+    resolver: zodResolver(updateNameFormSchema),
+    defaultValues: {
+      name: newName,
+    },
+  });
+
+  // there should never really be any errors here
+  async function handleUpdate(values: z.infer<typeof updateNameFormSchema>) {
+    const errorMessage = await updateAccountInfo(
+      userData,
+      values.name,
+      setUserData
+    );
+
+    if (errorMessage != null) {
+      toast.error(errorMessage.errorMessage);
+    } else {
+      toast.success("Success");
+    }
   }
 
-  const handleUpdate = async () => {
-    await updateAccountInfo(userData, newName, setUserData);
-  };
+  const updatePasswordForm = useForm<z.infer<typeof updatePasswordFormSchema>>({
+    resolver: zodResolver(updatePasswordFormSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+    },
+  });
 
-  // login on render -- to be removed
-  useEffect(() => {
-    login("johndoe@example.com", "securepassword", setUserData);
-  }, []);
+  async function passwordUpdate(
+    values: z.infer<typeof updatePasswordFormSchema>
+  ) {
+    const errorMessage = await updatePassword(
+      userData,
+      values.oldPassword,
+      values.newPassword,
+      setUserData
+    );
+    if (errorMessage != null) {
+      toast.error(errorMessage.errorMessage);
+    } else {
+      setIsDialogOpen(false);
+      toast.success("Success");
+    }
+  }
 
   // keep info up to date
   useEffect(() => {
     if (userData) {
       setEmail(userData.email);
       setName(userData.name);
-      setNewName(userData.name);
-      setAccountType(userData.owner == "true" ? "owner" : "user");
+      updateNameForm.setValue("name", userData.name);
+      // setNewName(userData.name);
+      setAccountType(userData.owner == "true" ? "Owner" : "User");
       setIsChecked(userData.owner == "true");
     }
   }, [userData]);
@@ -94,27 +161,45 @@ function AccountDetails() {
         </div>
       </div>
 
-
       <p className="ml-20 mb-10 text-4xl">Hello, {name}</p>
 
       <div className="flex flex-col ml-20 w-100 borderd rounded-lg">
         <div className="flex justify-between items-center mb-5">
           Email
-          <Input disabled value={email} className="w-90 ml-10" />
+          <Input disabled value={email} className="w-80" />
         </div>
 
-        <div className="flex justify-between items-center mb-5">
-          Name
-          <Input
-            className={"w-90 ml-10"}
-            placeholder="Name"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-        </div>
+        <Form {...updateNameForm}>
+          <form onSubmit={updateNameForm.handleSubmit(handleUpdate)}>
+            <FormField
+              control={updateNameForm.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="mb-5">
+                  <div className="flex justify-between">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input className={"w-80"} placeholder="Name" {...field} />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="ml-[85px] leading-none"/>
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end mb-5">
+              <Button
+                type="submit"
+                variant="outline"
+                className="hover:bg-gray-700 hover:text-white w-30 "
+              >
+                Update
+              </Button>
+            </div>
+          </form>
+        </Form>
 
-        <Dialog>
-          <DialogTrigger className="flex shrink self-center mb-10">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild className="flex shrink self-center mb-10">
             <Button
               variant="outline"
               className="hover:bg-gray-700 hover:text-white w-50"
@@ -130,50 +215,65 @@ function AccountDetails() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label>Old Password</Label>
-                <Input className="col-span-3" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)}/>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label>New Password</Label>
-                <Input className="col-span-3" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
-              </div>
-            </div>
+            <Form {...updatePasswordForm}>
+              <form onSubmit={updatePasswordForm.handleSubmit(passwordUpdate)}>
+                <FormField
+                  control={updatePasswordForm.control}
+                  name="oldPassword"
+                  render={({ field }) => (
+                    <FormItem className="mb-5">
+                      <div className="flex justify-between">
+                        <FormLabel>Old Password</FormLabel>
+                        <FormControl>
+                          <Input className="w-75" {...field} />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-[90px] leading-none" />
+                    </FormItem>
+                  )}
+                />
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  className="hover:bg-gray-700 hover:text-white"
-                  variant="outline"
-                  type="submit"
-                  onClick={passwordUpdate}
-                >
-                  Save
-                </Button>
-              </DialogClose>
-            </DialogFooter>
+                <FormField
+                  control={updatePasswordForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem className="mb-5">
+                      <div className="flex justify-between">
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input className="w-75" {...field} />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="ml-[90px] leading-none" />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end">
+                  <Button
+                    className="hover:bg-gray-700 hover:text-white"
+                    variant="outline"
+                    type="submit"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
-
-        {/* <div className="flex justify-between items-center mb-7">
-          Password
-          <Input
-            className={"w-50 ml-10"}
-            placeholder="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div> */}
-
-        <Button
-          variant="outline"
-          className="hover:bg-gray-700 hover:text-white w-30 self-end"
-          onClick={handleUpdate}
-        >
-          Update
-        </Button>
       </div>
+
+      <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
+        <BorrowRequestList />  
+      </div>
+
+      <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
+        <LendingHistoryList />  
+      </div>
+      <div>
+        <OwnedGamesList />
+      </div>
+      <Toaster />
     </>
   );
 }

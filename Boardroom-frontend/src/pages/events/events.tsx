@@ -170,7 +170,7 @@ const Events: React.FC = () => {
                 {events.map((event, index) => (
                     <div
                         key={index}
-                        className="relative bg-cover bg-center rounded-lg overflow-hidden cursor-pointer"
+                        className="relative bg-cover bg-center rounded-lg overflow-hidden cursor-pointer group"
                         style={{
                             width: '250px', // Fixed width
                             height: '250px', // Fixed height
@@ -192,7 +192,7 @@ const Events: React.FC = () => {
                         {/* Centered More Info Button */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
-                                className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200"
+                                className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200 font-bold"
                                 onClick={() => handleCardClick(event)}
                             >
                                 More Info

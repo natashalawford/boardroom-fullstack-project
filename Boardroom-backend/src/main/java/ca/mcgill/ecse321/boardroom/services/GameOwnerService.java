@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.boardroom.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import ca.mcgill.ecse321.boardroom.model.BoardGame;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
+import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 import jakarta.transaction.Transactional;
 
@@ -92,4 +95,18 @@ public class GameOwnerService {
         //Delete specific board game
         specificBoardGameRepo.delete(specificBoardGameToDelete); 
     }
+
+    // added for account details page  
+    @Transactional
+    public List<SpecificBoardGame> getSpecificBoardGamesByOwner(int ownerId) {
+        Person owner = personService.findPersonById(ownerId);
+        if (owner == null) {
+            throw new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A person with this id (%d) does not exist", ownerId)
+            );
+        }
+        return specificBoardGameRepo.findSpecificBoardGameByOwner(owner);
+    }
+    
 }

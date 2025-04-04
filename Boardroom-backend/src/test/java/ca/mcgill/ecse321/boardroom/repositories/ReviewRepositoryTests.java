@@ -39,7 +39,7 @@ public class ReviewRepositoryTests {
         BoardGame boardGame = new BoardGame("Monopoly", "A game about buying properties", 2, 1234);
         boardGame = boardGameRepo.save(boardGame);
 
-        Review review = new Review(5, "We had a fun time", LocalDateTime.parse("00:00"), bob, boardGame);
+        Review review = new Review(5, "We had a fun time", LocalDateTime.parse("2025-04-02T22:36:08"), bob, boardGame);
         review = reviewRepo.save(review);
 
         // Act

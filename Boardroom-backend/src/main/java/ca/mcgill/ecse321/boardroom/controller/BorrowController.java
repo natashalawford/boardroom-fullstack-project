@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ca.mcgill.ecse321.boardroom.dtos.creation.BorrowRequestDtoCreation;
+import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseAccountDto;
 import ca.mcgill.ecse321.boardroom.dtos.responses.BorrowRequestResponseDto;
 import ca.mcgill.ecse321.boardroom.model.BorrowRequest;
 import ca.mcgill.ecse321.boardroom.model.enums.RequestStatus;
@@ -98,7 +99,7 @@ public class BorrowController {
 
     
     /** 
-     * View history of borrow requests for a specific board game.
+     * View history of borrow requests for a specific board game. //not that useful as of now, use method below
      * 
      * @param boardGameId
      * @return List<BorrowRequestResponseDto>
@@ -114,4 +115,18 @@ public class BorrowController {
         }
         return borrowRequestDtos;
     }
+
+     
+    @PostMapping("/pending/{personId}")    
+    @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
+    public List<BorrowRequestResponseAccountDto> viewBorrowRequestsByPersonAndStatus(@PathVariable int personId, @RequestBody RequestStatus status) {
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByPersonAndStatus(personId, status);
+        List<BorrowRequestResponseAccountDto> borrowRequestDtos = new ArrayList<>();
+        for (BorrowRequest borrowRequest : borrowRequests) {
+            borrowRequestDtos.add(new BorrowRequestResponseAccountDto(borrowRequest));
+        }
+        return borrowRequestDtos;
+    }
+    
 }

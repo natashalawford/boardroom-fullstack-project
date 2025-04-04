@@ -32,7 +32,7 @@ const Home: React.FC = () => {
       <h3 className='font-bold mt-4'>
         Your next game night starts here. Sign in and dive into the action!
       </h3>
-      <Button className="mt-6 bg-[#30BCED] text-white hover:bg-[#303036]" onClick={() => setShowLoginPopup(true)}>
+      <Button className="mt-6 bg-[#30BCED] text-white hover:bg-[#00a6f4]" onClick={() => setShowLoginPopup(true)}>
           Get Started
         </Button>
       </div>

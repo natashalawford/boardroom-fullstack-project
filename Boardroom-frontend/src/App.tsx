@@ -36,16 +36,11 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
-            <Route path="/games/new" element={<NewGameForm />} />
             <Route
               path="/specificboardgames/:title"
               element={<SpecificGames />}
             />
             <Route path="/events" element={<Events />} />
-            <Route
-              path="/games/new/specific"
-              element={<NewSpecificGameForm />}
-            />
             {/*<Route path="/login" element={<Login />} /> */}
             <Route path="/user" element={<User />} />
             <Route path="/account" element={<AccountDetails />} />

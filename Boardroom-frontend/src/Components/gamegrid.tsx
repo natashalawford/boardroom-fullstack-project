@@ -68,7 +68,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
   const [reviewText, setReviewText] = useState<string>('')
   const [reviews, setReviews] = useState<ReviewResponse[]>([])
 
-  const [valueStars, setValueStars] = React.useState<number | null>(2)
+  const [valueStars, setValueStars] = React.useState<number | null>(-1)
   const [hoverStars, setHoverStars] = React.useState(-1)
 
   // Load reviews + user names

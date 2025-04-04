@@ -201,9 +201,9 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
             setShowReviewBox(false) // Reset showReviewBox to false when the dialog is closed
           }}
         >
-          <DialogContent className='z-200'>
+          <DialogContent className='border-gray-200' style={{ zIndex: 2000 }}>
             <DialogHeader>
-              <DialogTitle className='text-center font-bold pt-1'>
+              <DialogTitle className='text-center font-bold'>
                 {selectedGame.title}
               </DialogTitle>
             </DialogHeader>
@@ -219,7 +219,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
               </div>
 
               {/* Right Section: Image */}
-              <div className='w-48 h-30 flex-shrink-0'>
+              <div className='w-50 h-25 flex-shrink-0'>
                 <img
                   alt='Board Game'
                   src={gameImages[selectedGame.picture] || monopoly}
@@ -240,7 +240,7 @@ const GameGrid: React.FC<{ games: Game[] }> = ({ games }) => {
                   />
                 ))
               ) : (
-                <p className='text-center text-gray-500 p-3'>No reviews yet.</p>
+                <p className='text-center text-gray-500 p-2'>No reviews yet.</p>
               )}
             </ScrollArea>
             <DialogFooter>

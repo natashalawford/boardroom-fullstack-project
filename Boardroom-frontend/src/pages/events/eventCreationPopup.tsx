@@ -71,7 +71,6 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
         try {
             await createEvent(eventData); // Use eventService
             setMessage('Event created successfully!');
-            onClose(); // Close the popup after successful creation
         } catch (error: any) {
             setMessage(`Error: ${error.message}`);
         }

@@ -4,15 +4,19 @@ import EventCreationPopup from './eventCreationPopup'; // Import the event creat
 import { fetchEvents, fetchRegistrationsForEvent, Event } from '../../services/eventService'; // Updated import
 import { fetchBoardGames, BoardGame } from '../../services/boardGameService'; // Import fetchBoardGames and BoardGame interface
 import { Button } from "@/components/ui/button";
-import monopoly from '../../assets/monopoly.png';
-import dice from "../../assets/dice.png";
-import user from "../../assets/user.png";
+import image1 from '../../assets/games/image1.jpg'
+import image2 from '../../assets/games/image2.jpg'
+import image3 from '../../assets/games/image3.jpg'
+import image4 from '../../assets/games/image4.jpg'
+import image5 from '../../assets/games/image5.jpg'
 
 const gameImages: { [key: number]: string } = {
-  1: monopoly,
-  2: dice,
-  3: user,
-};
+  1: image1,
+  2: image2,
+  3: image3,
+  4: image4,
+  5: image5
+}
 
 const Events: React.FC = () => {
     // State variables for managing search, filters, events, and UI state

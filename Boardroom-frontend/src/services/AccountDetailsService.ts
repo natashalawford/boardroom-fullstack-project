@@ -1,3 +1,5 @@
+import monopoly from "../assets/monopoly.png";
+
 // used for info on frontend
 export interface User {
   id: number;
@@ -246,4 +248,51 @@ export const getUserName = async (userId: number): Promise<string> => {
     console.error(error);
     return "Unknown User";
   }
+}
+
+
+export const updateSpecificGame = async (
+  id : number | undefined,
+  status: string | undefined,
+  description: string
+): Promise<ErrorMessage|void> => {
+  if (id == undefined || status == undefined) {
+    return {
+      errorMessage: "An error occured, please try again."
+    };
+  }
+
+  const requestBody = {
+    status,
+    monopoly,
+    description
+  }
+
+  try {
+    const response = await fetch((`http://localhost:8080/specificboardgame/${id}`), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+
+      return {
+        errorMessage: error.errors[0]
+      }
+    }
+
+    // successfully updated in backend, need to update it in frontend again
+
+
+  } catch (error) {
+    return {
+      errorMessage: String(error)
+    }
+  }
+
+
 }

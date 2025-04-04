@@ -2,10 +2,8 @@
 import * as Switch from "@radix-ui/react-switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import BorrowRequestList from "@/Components/BorrowRequestList";
-import LendingHistoryList from "@/Components/LendingHistoryList";
-import { useContext } from "react";
-import { AuthContext } from "@/auth/UserAuth";
+import BorrowRequestList from "@/components/BorrowRequestList";
+import LendingHistoryList from "@/components/LendingHistoryList";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import {
@@ -17,19 +15,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  login,
   toggleAccountType,
   updateAccountInfo,
   updatePassword,
+  updateSpecificGame
 } from "@/services/AccountDetailsService";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
-import { Label } from "@/components/ui/label";
 
 import {
   updateNameFormSchema,
   updatePasswordFormSchema,
+  updateSpecificGameSchema,
 } from "./AccountDetailFormSchemas";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,7 +42,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import OwnedGamesList from "@/Components/ownedGamesList";
+import OwnedGamesList, { OwnedGameUpdate } from "@/components/ownedGamesList";
 
 function AccountDetails() {
   const { userData, setUserData } = useAuth();
@@ -68,6 +66,9 @@ function AccountDetails() {
   // const [oldPassword, setOldPassword] = useState<string>("");
   // const [newPassword, setNewPassword] = useState<string>("");
 
+  const [showUpdateGame, setShowUpdateGame] = useState<boolean>(false);
+  const [specificGameInfo, setSpecificGameInfo] = useState<OwnedGameUpdate|null>();
+
   const handleToggle = async (checked: boolean) => {
     const errorMessage = await toggleAccountType(
       userData,
@@ -78,7 +79,6 @@ function AccountDetails() {
     if (errorMessage != null) {
       toast(errorMessage.errorMessage);
     }
-    
   };
 
   const updateNameForm = useForm<z.infer<typeof updateNameFormSchema>>({
@@ -124,6 +124,29 @@ function AccountDetails() {
       toast(errorMessage.errorMessage);
     } else {
       setIsDialogOpen(false);
+      toast("Success");
+    }
+  }
+
+  const updateSpecificGameForm = useForm<
+    z.infer<typeof updateSpecificGameSchema>
+  >({
+    resolver: zodResolver(updateSpecificGameSchema),
+    defaultValues: {
+      description: "",
+    },
+  });
+
+  async function specificGameUpdate(
+    values: z.infer<typeof updateSpecificGameSchema>
+  ) {
+    const errorMessage = await updateSpecificGame(specificGameInfo?.id, specificGameInfo?.status, values.description);
+
+    if (errorMessage != null) {
+      toast(errorMessage.errorMessage);
+    } else {
+      setShowUpdateGame(false);
+      setSpecificGameInfo(null);
       toast("Success");
     }
   }
@@ -184,7 +207,7 @@ function AccountDetails() {
                       <Input className={"w-80"} placeholder="Name" {...field} />
                     </FormControl>
                   </div>
-                  <FormMessage className="ml-[85px] leading-none"/>
+                  <FormMessage className="ml-[85px] leading-none" />
                 </FormItem>
               )}
             />
@@ -225,7 +248,7 @@ function AccountDetails() {
                   render={({ field }) => (
                     <FormItem className="mb-5">
                       <div className="flex justify-between">
-                        <FormLabel className='w-[85px]'>Old Password</FormLabel>
+                        <FormLabel className="w-[85px]">Old Password</FormLabel>
                         <FormControl>
                           <Input className="w-75" {...field} />
                         </FormControl>
@@ -241,7 +264,7 @@ function AccountDetails() {
                   render={({ field }) => (
                     <FormItem className="mb-5">
                       <div className="flex justify-between">
-                        <FormLabel className='w-[85px]'>New Password</FormLabel>
+                        <FormLabel className="w-[85px]">New Password</FormLabel>
                         <FormControl>
                           <Input className="w-75" {...field} />
                         </FormControl>
@@ -265,17 +288,59 @@ function AccountDetails() {
         </Dialog>
       </div>
 
+      <Dialog open={showUpdateGame} onOpenChange={setShowUpdateGame}>
+        <DialogContent className="sm:max-w-[425px] bg-white">
+          <DialogHeader>
+            <DialogTitle>Update Game</DialogTitle>
+            <DialogDescription>
+              Make changes to your game here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...updateSpecificGameForm}>
+            <form
+              onSubmit={updateSpecificGameForm.handleSubmit(specificGameUpdate)}
+            >
+              <FormField
+                control={updateSpecificGameForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="mb-5">
+                    <div className="flex justify-between">
+                      <FormLabel className="w-[85px]">Description</FormLabel>
+                      <FormControl>
+                        <Input className="w-75" {...field} />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="ml-[90px] leading-none" />
+                  </FormItem>
+                )}
+              />
+ 
+              <div className="flex justify-end">
+                <Button
+                  className="hover:bg-gray-700 hover:text-white"
+                  variant="outline"
+                  type="submit"
+                >
+                  Save
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
-        <BorrowRequestList />  
+        <BorrowRequestList />
       </div>
 
       <div className="flex flex-col justify-between items-left ml-10 mr-10 mb-10">
-        <LendingHistoryList />  
+        <LendingHistoryList />
       </div>
       <div>
-        <OwnedGamesList />
+        <OwnedGamesList openModal={() => setShowUpdateGame(true)} setInfo={(gameInfo: OwnedGameUpdate) => setSpecificGameInfo(gameInfo)} />
       </div>
-      <Toaster />
     </>
   );
 }

@@ -13,6 +13,11 @@ interface OwnedGame {
   ownerId: number;
 }
 
+export interface OwnedGameUpdate {
+  id: number;
+  status: string;
+}
+
 const exampleGames: OwnedGame[] = [
   {
     id: 1,
@@ -48,7 +53,15 @@ const exampleGames: OwnedGame[] = [
   },
 ];
 
-const OwnedGamesList: React.FC = () => {
+interface OwnedGamesListProps {
+  openModal: () => void;
+  setInfo: (boardGameInfo: OwnedGameUpdate) => void;
+}
+
+const OwnedGamesList: React.FC<OwnedGamesListProps> = ({
+  openModal,
+  setInfo,
+}: OwnedGamesListProps) => {
   return (
     <div className="w-full mt-6 ml-10 mr-10">
       <h2 className="text-lg font-semibold mb-4">Owned Games</h2>
@@ -72,7 +85,17 @@ const OwnedGamesList: React.FC = () => {
 
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="flex flex-col gap-2">
-                    <Button className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200">
+                    <Button
+                      className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-gray-200"
+                      onClick={() => {
+                        openModal();
+                        console.log(game.description);
+                        setInfo({
+                          id: game.id,
+                          status: game.status
+                        });
+                      }}
+                    >
                       Update
                     </Button>
                     <Button className="bg-white text-black px-4 py-2 rounded-lg shadow-md hover:bg-red-200">

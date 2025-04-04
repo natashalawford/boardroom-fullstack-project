@@ -4,10 +4,11 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react';
 import { LoginPopup } from '@/pages/login/loginPopup'
-
-// Temporary placeholder images (replace with your own local or imported assets)
-const placeholderImg =
-  'https://via.placeholder.com/200x150.png?text=Board+Game'
+import diceImage from '@/assets/dice.png'
+import gameImage1 from '@/assets/games/image1.jpg'
+import gameImage3 from '@/assets/games/image3.jpg'
+import gameImage4 from '@/assets/games/image4.jpg'
+import gameImage5 from '@/assets/games/image5.jpg'
 
 const Home: React.FC = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false)
@@ -15,26 +16,31 @@ const Home: React.FC = () => {
   return (
     <main className="mt-20 p-6 flex flex-col items-center justify-center text-center">
     {/* Container with a border, padding, and a slight rounding of corners */}
-    {/*<div className="border border-gray-300 p-6 rounded-lg max-w-2xl w-full">*/}
+    <div className="flex flex-col items-center max-w-2xl w-full">
+        <img
+          src={diceImage}
+          alt="Boardroom Logo"
+          className="w-32 h-auto mb-4"
+        />
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Welcome to Boardroom!
+        Welcome to Boardroom
       </h1>
       <p className="leading-7 mt-4 text-gray-600">
         Your one-stop platform to explore, host, and join exciting board game events and borrow games.
         Created by ECSE 321 Group 17.
       </p>
       <h3 className='font-bold mt-4'>
-        Join Our Community & Get Started Right Away Below...
+        Your next game night starts here. Sign in and dive into the action!
       </h3>
-      <Button className="mt-6" onClick={() => setShowLoginPopup(true)}>
+      <Button className="mt-6 bg-[#30BCED] text-white hover:bg-[#303036]" onClick={() => setShowLoginPopup(true)}>
           Get Started
         </Button>
-    {/*</div>*/}
+      </div>
 
       {/* Feature Section Title */}
-      <div className="mt-12 w-full max-w-6xl text-left">
+      <div className="mt-12 w-full max-w-6xl text-center">
         <h2 className="text-2xl font-bold mb-4">
-          There are Many Ways You Can Participate in the Boardroom Community:
+          Get in the game - discover all the ways you can join the fun!
         </h2>
 
         {/* Feature Section */}
@@ -72,7 +78,7 @@ const Home: React.FC = () => {
           {/* Card 1 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage1}
               alt="Game 1"
               className="w-full h-auto object-cover mb-4"
             />
@@ -85,7 +91,7 @@ const Home: React.FC = () => {
           {/* Card 2 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage5}
               alt="Game 2"
               className="w-full h-auto object-cover mb-4"
             />
@@ -98,7 +104,7 @@ const Home: React.FC = () => {
           {/* Card 3 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage3}
               alt="Game 3"
               className="w-full h-auto object-cover mb-4"
             />
@@ -111,7 +117,7 @@ const Home: React.FC = () => {
           {/* Card 4 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage4}
               alt="Game 4"
               className="w-full h-auto object-cover mb-4"
             />
@@ -133,7 +139,7 @@ const Home: React.FC = () => {
           {/* Event Card 1 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage3}
               alt="Event 1"
               className="w-full h-auto object-cover mb-4"
             />
@@ -146,7 +152,7 @@ const Home: React.FC = () => {
           {/* Event Card 2 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage4}
               alt="Event 2"
               className="w-full h-auto object-cover mb-4"
             />
@@ -159,7 +165,7 @@ const Home: React.FC = () => {
           {/* Event Card 3 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage1}
               alt="Event 3"
               className="w-full h-auto object-cover mb-4"
             />
@@ -172,7 +178,7 @@ const Home: React.FC = () => {
           {/* Event Card 4 */}
           <div className="border rounded-lg p-4 flex flex-col items-center">
             <img
-              src={placeholderImg}
+              src={gameImage5}
               alt="Event 4"
               className="w-full h-auto object-cover mb-4"
             />

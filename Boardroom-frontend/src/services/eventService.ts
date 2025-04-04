@@ -37,3 +37,18 @@ export const fetchHostName = async (hostId: number): Promise<string> => {
     return data.name;
 };
 
+export const createEvent = async (eventData: any): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/events`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.errors?.[0] || 'Failed to create event';
+        throw new Error(errorMessage);
+    }
+};
+

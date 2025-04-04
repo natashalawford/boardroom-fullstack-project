@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {useAuth} from '../../auth/UserAuth';
+import { useAuth } from '../../auth/UserAuth';
 import {
     Dialog,
     DialogContent,
@@ -8,7 +8,7 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { fetchRegistrationsForEvent, fetchHostName } from '../../services/eventService'; // Updated import
+import { fetchHostName, fetchRegistrationsForEvent } from '../../services/eventService'; // Use eventService
 
 interface EventPopupProps {
     event: {
@@ -38,7 +38,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
 
     const fetchHostNameWrapper = async () => {
         try {
-            const name = await fetchHostName(event.hostId);
+            const name = await fetchHostName(event.hostId); // Use eventService
             setHostName(name);
         } catch (error) {
             console.error('Error fetching host name:', error);
@@ -48,7 +48,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
 
     const fetchSpotsLeft = async () => {
         try {
-            const registrations = await fetchRegistrationsForEvent(event.id);
+            const registrations = await fetchRegistrationsForEvent(event.id); // Use eventService
             setSpotsLeft(event.maxParticipants - registrations.length);
         } catch (error) {
             console.error('Error fetching spots left:', error);
@@ -61,6 +61,11 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
 
         if (!userData || !userData.id) {
             setMessage('Error: You must be logged in to register for an event.');
+            return;
+        }
+
+        if(userData.id === event.hostId) {
+            setMessage('Error: You cannot register for your own event.');
             return;
         }
 
@@ -103,7 +108,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, onClose }) => {
                 </div>
                 <DialogFooter className="mt-4">
                     <Button
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        className="bg-black hover:bg-gray-800 text-white"
                         onClick={handleRegister}
                     >
                         Register for Event

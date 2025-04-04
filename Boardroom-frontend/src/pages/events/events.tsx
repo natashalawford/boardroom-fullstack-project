@@ -3,6 +3,7 @@ import EventPopup from './eventPopup';
 import EventCreationPopup from './eventCreationPopup'; // Import the event creation popup
 import { fetchEvents, fetchRegistrationsForEvent, Event } from '../../services/eventService'; // Updated import
 import { fetchBoardGames, BoardGame } from '../../services/boardGameService'; // Import fetchBoardGames and BoardGame interface
+import { Button } from "@/components/ui/button";
 import monopoly from '../../assets/monopoly.png';
 import dice from "../../assets/dice.png";
 import user from "../../assets/user.png";
@@ -26,39 +27,39 @@ const Events: React.FC = () => {
     const [showCreatePopup, setShowCreatePopup] = useState(false); // State for create event popup
     const [boardGames, setBoardGames] = useState<BoardGame[]>([]); // State to store board games
 
-    // Fetch events and board games from the backend when the component mounts
-    useEffect(() => {
-        const loadBoardGamesAndEvents = async () => {
-            setLoading(true);
-            setError('');
-            try {
-                const [fetchedBoardGames, fetchedEvents] = await Promise.all([
-                    fetchBoardGames(), // Fetch board games
-                    fetchEvents() // Fetch events
-                ]);
-                setBoardGames(fetchedBoardGames); // Store board games
-                const today = new Date();
-                const filteredData = await Promise.all(
-                    fetchedEvents.filter(event => new Date(event.startDateTime) >= today) // Exclude past events
-                        .map(async event => {
-                            const registrations = await fetchRegistrationsForEvent(event.id);
-                            return registrations.length < event.maxParticipants ? event : null; // Exclude full events
-                        })
-                );
-                const validEvents = filteredData.filter(event => event !== null);
-                const sortedData = validEvents.sort((a, b) => 
-                    new Date(a!.startDateTime).getTime() - new Date(b!.startDateTime).getTime()
-                ); // Sort events by closest date
-                setAllEvents(sortedData as Event[]); // Store all events
-                setEvents(sortedData as Event[]); // Initially display all events
-            } catch (err: any) {
-                setError(err.message || 'An error occurred');
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Fetch events and board games from the backend
+    const loadBoardGamesAndEvents = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const [fetchedBoardGames, fetchedEvents] = await Promise.all([
+                fetchBoardGames(), // Fetch board games
+                fetchEvents() // Fetch events
+            ]);
+            setBoardGames(fetchedBoardGames); // Store board games
+            const today = new Date();
+            const filteredData = await Promise.all(
+                fetchedEvents.filter(event => new Date(event.startDateTime) >= today) // Exclude past events
+                    .map(async event => {
+                        const registrations = await fetchRegistrationsForEvent(event.id);
+                        return registrations.length < event.maxParticipants ? event : null; // Exclude full events
+                    })
+            );
+            const validEvents = filteredData.filter(event => event !== null);
+            const sortedData = validEvents.sort((a, b) => 
+                new Date(a!.startDateTime).getTime() - new Date(b!.startDateTime).getTime()
+            ); // Sort events by closest date
+            setAllEvents(sortedData as Event[]); // Store all events
+            setEvents(sortedData as Event[]); // Update displayed events
+        } catch (err: any) {
+            setError(err.message || 'An error occurred');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        loadBoardGamesAndEvents();
+    useEffect(() => {
+        loadBoardGamesAndEvents(); // Fetch events and board games on mount
     }, []);
 
     // Apply filters (game, date, search query) to the events list
@@ -96,8 +97,9 @@ const Events: React.FC = () => {
         setShowCreatePopup(true); // Show the create event popup
     };
 
-    const handleCloseCreatePopup = () => {
+    const handleCloseCreatePopup = async () => {
         setShowCreatePopup(false); // Close the create event popup
+        await loadBoardGamesAndEvents(); // Reuse the same logic to fetch events again
     };
 
     // Open the popup for the selected event
@@ -153,19 +155,12 @@ const Events: React.FC = () => {
                         border: '1px solid #ccc',
                     }}
                 />
-                <button
+                <Button
+                    className="bg-black hover:bg-gray-800 text-white"
                     onClick={handleCreateEvent}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#30BCED',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                    }}
                 >
                     Create Event
-                </button>
+                </Button>
             </div>
             {/* Display loading or error messages */}
             {loading && <p>Loading events...</p>}

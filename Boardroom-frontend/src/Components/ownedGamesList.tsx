@@ -8,7 +8,7 @@ import {
   getSpecificBoardGamesByOwner,
   SpecificBoardGameResponseDto
 } from "../services/AccountDetailsService";
-import { useAuth } from "@/auth/UserAuth"; // adjust the path if needed
+import { useAuth } from "@/auth/UserAuth"; 
 
 const OwnedGamesList: React.FC = () => {
   const { userData } = useAuth();

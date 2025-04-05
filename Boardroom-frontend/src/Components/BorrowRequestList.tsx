@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBorrowRequestsByPersonAndStatus, updateBorrowRequestStatus } from "../services/AccountDetailsService";
+import { getBorrowRequestsByOwnerAndStatus, updateBorrowRequestStatus } from "../services/AccountDetailsService";
 import { useAuth } from "@/auth/UserAuth";
 
 type BorrowRequest = {
@@ -20,7 +20,7 @@ const BorrowRequestList = () => {
 
   useEffect(() => {
     if (userData?.id) {
-      getBorrowRequestsByPersonAndStatus(userData.id, "PENDING")
+      getBorrowRequestsByOwnerAndStatus(userData.id, "PENDING")
         .then(setRequests)
         .catch(console.error);
     }
@@ -30,7 +30,7 @@ const BorrowRequestList = () => {
     if (!userData?.id) return;
 
     updateBorrowRequestStatus(id, status)
-      .then(() => getBorrowRequestsByPersonAndStatus(userData.id, "PENDING"))
+      .then(() => getBorrowRequestsByOwnerAndStatus(userData.id, "PENDING"))
       .then(setRequests)
       .catch(console.error);
   };

@@ -226,6 +226,22 @@ export async function getBorrowRequestsByPersonAndStatus(personId: number, statu
     return await response.json();
   }
 
+  export async function getBorrowRequestsByOwnerAndStatus(ownerId: number, status: string) {
+    const response = await fetch(`http://localhost:8080/borrowRequests/pending/owner/${ownerId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(status),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Failed to fetch borrow requests for owner');
+    }
+  
+    return await response.json();
+  }
+
   export async function updateBorrowRequestStatus(id: number, status: string) {
     const response = await fetch(`http://localhost:8080/borrowRequests/${id}`, {
       method: "PUT",

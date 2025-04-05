@@ -114,6 +114,17 @@ public class BorrowService {
             ));
         return borrowRequestRepo.findByPersonAndStatus(person, status);
     }
+
+    public List<BorrowRequest> viewBorrowRequestsByOwnerAndStatus(int ownerId, RequestStatus status) {
+        Person owner = personRepo.findById(ownerId)
+            .orElseThrow(() -> new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A person with this id (%d) does not exist", ownerId)
+            ));
+    
+        return borrowRequestRepo.findByOwnerIdAndStatus(ownerId, status);
+    }
+    
     
 
 }

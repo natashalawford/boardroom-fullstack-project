@@ -1,7 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { getBorrowRequestsByPersonAndStatus } from "@/services/AccountDetailsService";
+import { getBorrowRequestsByOwnerAndStatus } from "@/services/AccountDetailsService";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
 
@@ -19,11 +18,22 @@ const LendingHistoryList = () => {
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
 
   useEffect(() => {
-    if (userData?.id) {
-      getBorrowRequestsByPersonAndStatus(userData.id, "RETURNED")
-        .then(setRequests)
-        .catch(console.error);
-    }
+    let intervalId: NodeJS.Timeout;
+
+    const fetchRequests = () => {
+      if (userData?.id) {
+        getBorrowRequestsByOwnerAndStatus(userData.id, "ACCEPTED")
+          .then(setRequests)
+          .catch(console.error);
+      }
+    };
+
+    fetchRequests(); // Initial fetch
+
+    // Set up interval to refresh every 10 seconds
+    intervalId = setInterval(fetchRequests, 5000);
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [userData]);
 
   return (

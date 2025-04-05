@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { fetchHostName, fetchRegistrationsForEvent } from '../../services/eventService'; // Use eventService
+import { registerForEvent } from '../../services/eventService';
 
 import image1 from '../../assets/games/image1.jpg'
 import image2 from '../../assets/games/image2.jpg'
@@ -85,20 +86,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, pictureIndex, onClose })
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/registration/${userData.id}/${event.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                const errorMessage = errorData.errors?.[0] || 'Failed to register for the event';
-                console.error('Error response:', errorData);
-                throw new Error(errorMessage || 'Failed to register for the event');
-            }
-
+            await registerForEvent(userData.id, event.id); // Use the service function
             setMessage('Successfully registered for the event!');
         } catch (error: any) {
             setMessage(`Error: ${error.message}`);

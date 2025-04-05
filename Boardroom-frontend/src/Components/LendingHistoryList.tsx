@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getBorrowRequestsByPersonAndStatus } from "@/services/AccountDetailsService";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/auth/UserAuth"; // ✅ import the auth context
+import { useAuth } from "@/auth/UserAuth";
 
 type BorrowRequest = {
   id: number;
@@ -15,7 +15,7 @@ type BorrowRequest = {
 };
 
 const LendingHistoryList = () => {
-  const { userData } = useAuth(); // ✅ get the logged-in user
+  const { userData } = useAuth(); 
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
 
   useEffect(() => {

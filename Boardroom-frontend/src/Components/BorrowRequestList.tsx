@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getBorrowRequestsByPersonAndStatus, updateBorrowRequestStatus } from "../services/AccountDetailsService";
-import { useAuth } from "@/auth/UserAuth"; // ✅ Add this
+import { useAuth } from "@/auth/UserAuth";
 
 type BorrowRequest = {
   id: number;
@@ -15,7 +15,7 @@ type BorrowRequest = {
 };
 
 const BorrowRequestList = () => {
-  const { userData } = useAuth(); // ✅ Get logged-in user from context
+  const { userData } = useAuth();
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
 
   useEffect(() => {

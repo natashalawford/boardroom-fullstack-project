@@ -100,7 +100,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent className="border-gray-200">
         {userData ? (
           // Logged inn View - show a Logout button
           <div className="py-4">
@@ -123,7 +123,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               Logout
             </Button>
             {successMessage && (
-              <p className="text-green-500 text-sm mt-2">{successMessage}</p>
+              <p className="text-green-600 text-sm mt-3 font-semibold">{successMessage}</p>
             )}
           </div>
         ) : (
@@ -144,12 +144,12 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
             )}
             {successMessage && (
-              <p className="text-green-500 text-sm mt-2">{successMessage}</p>
+              <p className="text-green-600 text-sm mt-3 font-semibold">{successMessage}</p>
             )}
 
             {!isLoginMode && (
               <div className="mt-4">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name" className="mb-2">Name</Label>
                 <Input
                   id="name"
                   type="text"
@@ -161,7 +161,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             )}
 
             <div className="mt-4">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="mb-2">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -172,7 +172,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             </div>
 
             <div className="mt-4">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="mb-2">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -196,11 +196,12 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             )}
 
             <DialogFooter className="mt-6">
-              <Button type="submit" className="text-black">
-                {isLoginMode ? "Login" : "Create Account"}
+              <Button type="submit">
+                {isLoginMode ? 'Login' : 'Create Account'}
               </Button>
               <Button
                 variant="secondary"
+                className="hover:bg-gray-300 transition duration-300"
                 onClick={() => setIsLoginMode(!isLoginMode)}
               >
                 {isLoginMode ? "Need an account?" : "Already have an account?"}

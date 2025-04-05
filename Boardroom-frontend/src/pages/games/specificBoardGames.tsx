@@ -23,13 +23,14 @@ import image2 from "../../assets/games/image2.jpg";
 import image3 from "../../assets/games/image3.jpg";
 import image4 from "../../assets/games/image4.jpg";
 import image5 from "../../assets/games/image5.jpg";
+import { getUserName } from "@/services/AccountDetailsService";
 
 const gameImages: { [key: number]: string } = {
   1: image1,
   2: image2,
   3: image3,
   4: image4,
-  5: image5
+  5: image5,
 };
 
 interface SpecificGame {
@@ -43,10 +44,12 @@ interface SpecificGame {
 
 const SpecificGames: React.FC = () => {
   const { title } = useParams<{ title: string }>(); // Extract the game title from the URL
-  const location = useLocation(); // for extracting pic
+  const location = useLocation(); // for extracting picture id
   const queryParams = new URLSearchParams(location.search);
   let pictureId = queryParams.get("pictureId");
-  if (!pictureId) { pictureId = "1"; } // Default to 1 if not provided
+  if (!pictureId) {
+    pictureId = "1";
+  } // Default to 1 if not provided
 
   const [specificGames, setSpecificGames] = useState<SpecificGame[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -57,6 +60,7 @@ const SpecificGames: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog state
   const { userData } = useAuth();
   const [pendingRequests, setPendingRequests] = useState<number[]>([]); // Array of game IDs with pending requests
+  const [usernames, setUsernames] = useState<{ [key: number]: string }>({}); // State to store usernames
 
   useEffect(() => {
     const fetchSpecificGames = async () => {
@@ -73,6 +77,14 @@ const SpecificGames: React.FC = () => {
         );
 
         setSpecificGames(filteredGames);
+
+        // Fetch usernames for all ownerIds
+        const usernamesMap: { [key: number]: string } = {};
+        for (const game of filteredGames) {
+          const username = await getUserName(game.ownerId);
+          usernamesMap[game.ownerId] = username;
+        }
+        setUsernames(usernamesMap); // Store the usernames in state
       } catch (err: any) {
         setError(err.message || "An error occurred");
       } finally {
@@ -82,6 +94,35 @@ const SpecificGames: React.FC = () => {
 
     fetchSpecificGames();
   }, [title]);
+
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/borrowRequests", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch pending borrow requests");
+        }
+
+        const pendingRequestsData = await response.json();
+        const pendingRequestIds = pendingRequestsData.map(
+          (request: { specificBoardGameId: number }) =>
+            request.specificBoardGameId
+        );
+
+        setPendingRequests(pendingRequestIds); // Update the state with the IDs of games with pending requests
+      } catch (err: any) {
+        console.error("Error fetching pending requests:", err.message);
+      }
+    };
+
+    fetchPendingRequests();
+  }, []);
 
   const handleBorrowRequest = async () => {
     if (!userData || !userData.id) {
@@ -125,7 +166,6 @@ const SpecificGames: React.FC = () => {
       status: "PENDING", // Default status
       requestStartDate: formattedStartDate,
       requestEndDate: formattedEndDate,
-      //personId: 4752,
       personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
       specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
     };
@@ -161,6 +201,7 @@ const SpecificGames: React.FC = () => {
       toast.error("An error occurred while submitting the borrow request.");
     }
   };
+
   if (loading) {
     return (
       <p className="text-center text-gray-500">Loading specific games...</p>
@@ -173,17 +214,19 @@ const SpecificGames: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
-      <div className="grid md:grid-cols-3 gap-6">
+      <h1 className="text-2xl font-bold mt-6 mb-6 ml-4">
+        Specific Games for "{title}"
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ml-4 mr-4">
         {specificGames.map((game) => (
           <Card
             key={game.id}
-            className="flex flex-col items-stretch p-4 hover:shadow-lg transition-shadow"
+            className="flex flex-col items-stretch p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200"
           >
             {/* Image Section */}
             <div className="aspect-w-1 aspect-h-1">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
+                src={gameImages[Number(pictureId)]}
                 alt={game.boardGameTitle}
                 className="rounded-lg object-cover w-full h-40"
               />
@@ -195,20 +238,22 @@ const SpecificGames: React.FC = () => {
                 <CardTitle className="text-xl font-bold text-left">
                   {game.boardGameTitle}
                 </CardTitle>
-                <CardDescription className="text-gray-700">
+                <CardDescription className="mt-2 text-gray-700">
                   {game.description}
                 </CardDescription>
-              </div>
-              <div className="mt-2">
-                <p className="text-sm text-gray-600">
-                  <strong>Status:</strong>{" "}
-                  {game.status.charAt(0).toUpperCase() +
-                    game.status.slice(1).toLowerCase()}
-                </p>
+                <CardDescription className="mt-2 text-gray-600">
+                  <strong>Owner: </strong>
+                  {usernames[game.ownerId] || "Loading..."}
+                  <p className="text-sm mt-1 text-gray-600">
+                    <strong>Status:</strong>{" "}
+                    {game.status.charAt(0).toUpperCase() +
+                      game.status.slice(1).toLowerCase()}
+                  </p>
+                </CardDescription>
               </div>
             </CardContent>
 
-            {/* Borrow Button (Full Width of Grid Item) */}
+            {/* Borrow Button */}
             <div className="w-full mt-4">
               {game.status.toLowerCase() !== "available" ? (
                 <Button
@@ -224,6 +269,19 @@ const SpecificGames: React.FC = () => {
                 >
                   Pending
                 </Button>
+              ) : game.ownerId === userData?.id ? (
+                <div
+                  onClick={() =>
+                    toast.error("You cannot borrow your own game.")
+                  }
+                >
+                  <Button
+                    className="bg-gray-500 text-white w-full cursor-not-allowed"
+                    disabled
+                  >
+                    Borrow
+                  </Button>
+                </div>
               ) : (
                 <Button
                   className="bg-green-500 hover:bg-green-600 text-white w-full"

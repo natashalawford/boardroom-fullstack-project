@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BorrowRequestList from "@/components/BorrowRequestList";
 import LendingHistoryList from "@/components/LendingHistoryList";
+import ParticipatedEventsList from "@/components/ParticipatedEventsList";
+
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import {
@@ -378,6 +380,9 @@ function AccountDetails() {
               </div>
             </>
           )}
+          <div className="flex flex-col justify-between items-left ml-15 mr-10 mb-10">
+                <ParticipatedEventsList />
+          </div>
         </>
       ) : (
         <>

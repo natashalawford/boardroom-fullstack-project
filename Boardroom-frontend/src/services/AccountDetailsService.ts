@@ -341,3 +341,20 @@ export const updateSpecificGame = async (
 
 
 }
+
+export async function getEventsByParticipant(personId: number) {
+  try {
+    const response = await fetch(`http://localhost:8080/registration/person/${personId}/events`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch events. Server said: ${errorText}`);
+    }
+
+    return await response.json(); // this will be a list of EventResponseDto
+  } catch (error) {
+    console.error("Error fetching participant events:", error);
+    throw error;
+  }
+}
+

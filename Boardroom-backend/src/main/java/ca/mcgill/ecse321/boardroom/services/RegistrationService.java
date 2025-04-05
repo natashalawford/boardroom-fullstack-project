@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.boardroom.model.Event;
 import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.Registration;
 import ca.mcgill.ecse321.boardroom.model.Registration.Key;
+import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.repositories.EventRepository;
 import ca.mcgill.ecse321.boardroom.repositories.PersonRepository;
 import ca.mcgill.ecse321.boardroom.repositories.RegistrationRepository;
@@ -11,6 +12,7 @@ import ca.mcgill.ecse321.boardroom.exceptions.BoardroomException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -145,4 +147,22 @@ public class RegistrationService {
         }
         return registrationRepository.findByKeyEvent(event);
     }
+
+    @Transactional 
+    public List<Event> getEventByParticipant(int personId) {
+        Person person = personRepository.findPersonById(personId);
+        if (person == null) {
+            throw new BoardroomException(
+                HttpStatus.NOT_FOUND,
+                String.format("A person with this id (%d) does not exist", personId)
+            );
+        }
+
+        List<Registration> registrations = registrationRepository.findByKeyPerson(person);
+
+        return registrations.stream()
+                            .map(r -> r.getKey().getEvent())
+                            .collect(Collectors.toList());
+    }
+
 }

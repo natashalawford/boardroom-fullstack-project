@@ -1,0 +1,74 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/auth/UserAuth";
+import { getEventsByParticipant } from "@/services/AccountDetailsService";
+
+type EventInfo = {
+  id: number;
+  title: string;
+  description: string; // still exists in DTO but unused in table
+  startDateTime: string;
+  endDateTime: string;
+  maxParticipants: number;
+  location: string;
+  hostId: number;
+  boardGameName: string;
+};
+
+const formatDateTime = (dateTime: string) => {
+  return new Date(dateTime).toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+};
+
+const ParticipantEventTable = () => {
+  const { userData } = useAuth(); 
+  const [events, setEvents] = useState<EventInfo[]>([]);
+
+  useEffect(() => {
+    if (userData?.id) {
+      getEventsByParticipant(userData.id)
+        .then(setEvents)
+        .catch(console.error);
+    }
+  }, [userData]);
+
+  return (
+    <>
+      <h2 className="text-lg font-semibold mb-2">My Registered Events</h2>
+      <Card className="p-0 w-full max-w-5xl h-96 flex flex-col">
+        <ScrollArea className="h-full w-full">
+          <table className="w-full text-sm text-left border-separate border-spacing-y-2">
+            <thead className="text-xs uppercase text-muted-foreground">
+              <tr>
+                <th className="px-6 py-2">Title</th>
+                <th className="px-6 py-2">Board Game</th>
+                <th className="px-6 py-2">Start</th>
+                <th className="px-6 py-2">End</th>
+                <th className="px-6 py-2">Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((event) => (
+                <tr key={event.id} className="bg-muted rounded-md">
+                  <td className="px-6 py-2 border-t border-gray-200">{event.title}</td>
+                  <td className="px-6 py-2 border-t border-gray-200">{event.boardGameName}</td>
+                  <td className="px-6 py-2 border-t border-gray-200">{formatDateTime(event.startDateTime)}</td>
+                  <td className="px-6 py-2 border-t border-gray-200">{formatDateTime(event.endDateTime)}</td>
+                  <td className="px-6 py-2 border-t border-gray-200">{event.location}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ScrollArea>
+      </Card>
+    </>
+  );
+};
+
+export default ParticipantEventTable;

@@ -1,3 +1,5 @@
+import monopoly from "../assets/monopoly.png";
+
 // used for info on frontend
 export interface User {
   id: number;
@@ -291,4 +293,68 @@ export async function getSpecificBoardGamesByOwner(
   }
 }
 
+
+
+
+export const updateSpecificGame = async (
+  id : number | undefined,
+  status: string | undefined,
+  description: string
+): Promise<ErrorMessage|void> => {
+  if (id == undefined || status == undefined) {
+    return {
+      errorMessage: "An error occured, please try again."
+    };
+  }
+
+  const requestBody = {
+    status,
+    monopoly,
+    description
+  }
+
+  try {
+    const response = await fetch((`http://localhost:8080/specificboardgame/${id}`), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+
+      return {
+        errorMessage: error.errors[0]
+      }
+    }
+
+    // successfully updated in backend, need to update it in frontend again
+
+
+  } catch (error) {
+    return {
+      errorMessage: String(error)
+    }
+  }
+
+
+}
+
+export async function getEventsByParticipant(personId: number) {
+  try {
+    const response = await fetch(`http://localhost:8080/registration/person/${personId}/events`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch events. Server said: ${errorText}`);
+    }
+
+    return await response.json(); // this will be a list of EventResponseDto
+  } catch (error) {
+    console.error("Error fetching participant events:", error);
+    throw error;
+  }
+}
 

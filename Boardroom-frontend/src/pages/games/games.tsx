@@ -38,6 +38,8 @@ const Games: React.FC = () => {
     game.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const isOwner = userData?.owner === "true";
+
   useEffect(() => {
     loadGames()
   }, [])
@@ -66,7 +68,7 @@ const Games: React.FC = () => {
         />
       </div>
 
-      {userData?.owner && (
+      {isOwner && (
         <div className='flex justify-start pt-3'>
           <NewGameForm onGameAdded={loadGames} />
           <NewSpecificGameForm loadGames={loadGames}/>

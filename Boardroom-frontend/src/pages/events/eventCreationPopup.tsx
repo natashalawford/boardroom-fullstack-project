@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {useAuth} from '../../auth/UserAuth'
+import { useAuth } from '../../auth/UserAuth';
+import { Button } from "@/components/ui/button";
+import { createEvent } from '../../services/eventService'; // Use eventService
+import { fetchBoardGames } from '../../services/boardGameService'; // Import fetchBoardGames and BoardGame interface
+
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
 
 // Define color scheme constants
-const TEXT_COLOR = '#000';
-const BACKGROUND_COLOR = '#fff';
-const CLOSE_BUTTON_COLOR = '#ccc';
-const CLOSE_BUTTON_TEXT_COLOR = '#000';
-const CREATE_BUTTON_COLOR = '#30BCED';
-const CREATE_BUTTON_TEXT_COLOR = '#fff';
 const INPUT_BORDER_COLOR = '#808080';
 
 // Validation schema using zod
@@ -33,6 +38,7 @@ interface EventCreationPopupProps {
 
 const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
     const { userData } = useAuth();
+    const [boardGames, setBoardGames] = useState<string[]>([]);
     const {
         register,
         handleSubmit,
@@ -41,31 +47,29 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
         resolver: zodResolver(formSchema),
     });
 
-    const [message, setMessage] = React.useState<string | null>(null); // For success/error messages
+    const [message, setMessage] = React.useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchBoardGamesWrapper = async () => {
+            try {
+                const boardGames = await fetchBoardGames();
+                const boardGameTitles = boardGames.map((game) => game.title);
+                setBoardGames(boardGameTitles);
+            } catch (error) {
+                console.error('Error fetching board games:', error);
+            }
+        };
+        fetchBoardGamesWrapper();
+    }, []);
+        
     const onSubmit = async (data: FormData) => {
-
         setMessage(null); // Clear previous messages
         const eventData = {
             ...data,
-            hostId: userData?.id // Ensure userData has an 'id' property
+            hostId: userData?.id, // Ensure userData has an 'id' property
         };
         try {
-            const response = await fetch('http://localhost:8080/events', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(eventData),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                const errorMessage = errorData.errors?.[0] || 'Failed to create event';
-                console.error('Error response:', errorData);
-                throw new Error(errorMessage || 'Failed to create event');
-            }
-
+            await createEvent(eventData); // Use eventService
             setMessage('Event created successfully!');
         } catch (error: any) {
             setMessage(`Error: ${error.message}`);
@@ -73,34 +77,18 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
     };
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 1000,
-            }}
-        >
-            <div
+        <Dialog open={true} onOpenChange={onClose}>
+            <DialogContent
                 style={{
-                    backgroundColor: BACKGROUND_COLOR,
-                    padding: '20px',
-                    borderRadius: '10px',
-                    width: '400px',
-                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                    zIndex: 1050
                 }}
             >
-                <div>{userData?.id}</div>
-                <h2 style={{ color: TEXT_COLOR, marginBottom: '20px', fontWeight: 'bold' }}>Create New Event</h2>
+                <DialogHeader>
+                    <DialogTitle className="font-bold text-xl">Create New Event</DialogTitle>
+                </DialogHeader>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Title:</label>
+                        <label>Title:</label>
                         <input
                             type="text"
                             {...register('title')}
@@ -115,7 +103,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                         {errors.title && <p style={{ color: 'red' }}>{errors.title.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Description:</label>
+                        <label>Description:</label>
                         <textarea
                             {...register('description')}
                             style={{
@@ -129,9 +117,8 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                         {errors.description && <p style={{ color: 'red' }}>{errors.description.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Board Game Name:</label>
-                        <input
-                            type="text"
+                        <label>Board Game Name:</label>
+                        <select
                             {...register('boardGameName')}
                             style={{
                                 width: '100%',
@@ -140,11 +127,18 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
                             }}
-                        />
+                        >
+                            <option value="">Select a board game</option>
+                            {boardGames.map((game) => (
+                                <option key={game} value={game}>
+                                    {game}
+                                </option>
+                            ))}
+                        </select>
                         {errors.boardGameName && <p style={{ color: 'red' }}>{errors.boardGameName.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Start Date & Time:</label>
+                        <label>Start Date & Time:</label>
                         <input
                             type="datetime-local"
                             {...register('startDateTime')}
@@ -154,13 +148,12 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 borderRadius: '5px',
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
-                                colorScheme: 'light',
                             }}
                         />
                         {errors.startDateTime && <p style={{ color: 'red' }}>{errors.startDateTime.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>End Date & Time:</label>
+                        <label>End Date & Time:</label>
                         <input
                             type="datetime-local"
                             {...register('endDateTime')}
@@ -170,13 +163,12 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 borderRadius: '5px',
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
-                                colorScheme: 'light',
                             }}
                         />
                         {errors.endDateTime && <p style={{ color: 'red' }}>{errors.endDateTime.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Max Participants:</label>
+                        <label>Max Participants:</label>
                         <input
                             type="number"
                             {...register('maxParticipants')}
@@ -191,7 +183,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                         {errors.maxParticipants && <p style={{ color: 'red' }}>{errors.maxParticipants.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
-                        <label style={{ color: TEXT_COLOR }}>Location:</label>
+                        <label>Location:</label>
                         <input
                             type="text"
                             {...register('location')}
@@ -205,40 +197,21 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                         />
                         {errors.location && <p style={{ color: 'red' }}>{errors.location.message}</p>}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button
+                    
+                    <DialogFooter>
+                        <Button
+                            className="bg-black hover:bg-gray-800 text-white"
                             type="submit"
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: CREATE_BUTTON_COLOR,
-                                color: CREATE_BUTTON_TEXT_COLOR,
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                                
-                            }}
+                            style={{marginTop: '10px'}}
                         >
                             Create
-                        </button>
-                        <button
-                            onClick={onClose}
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: CLOSE_BUTTON_COLOR,
-                                color: CLOSE_BUTTON_TEXT_COLOR,
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            Close
-                        </button>
-                    </div>
+                        </Button>
+                    </DialogFooter>
                 </form>
                 {message && (
                     <div
                         style={{
-                            marginTop: '20px',
+                            marginTop: '5px',
                             padding: '10px',
                             backgroundColor: message.startsWith('Error') ? 'red' : 'green',
                             color: '#fff',
@@ -248,8 +221,8 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                         {message}
                     </div>
                 )}
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 };
 

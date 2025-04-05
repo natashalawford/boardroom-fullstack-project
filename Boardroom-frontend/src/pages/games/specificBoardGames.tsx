@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +18,21 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/auth/UserAuth"; // Import the useAuth hook
 import { toast } from "sonner";
 
+import image1 from "../../assets/games/image1.jpg";
+import image2 from "../../assets/games/image2.jpg";
+import image3 from "../../assets/games/image3.jpg";
+import image4 from "../../assets/games/image4.jpg";
+import image5 from "../../assets/games/image5.jpg";
+import { getUserName } from "@/services/AccountDetailsService";
+
+const gameImages: { [key: number]: string } = {
+  1: image1,
+  2: image2,
+  3: image3,
+  4: image4,
+  5: image5,
+};
+
 interface SpecificGame {
   id: number;
   description: string;
@@ -31,6 +44,13 @@ interface SpecificGame {
 
 const SpecificGames: React.FC = () => {
   const { title } = useParams<{ title: string }>(); // Extract the game title from the URL
+  const location = useLocation(); // for extracting picture id
+  const queryParams = new URLSearchParams(location.search);
+  let pictureId = queryParams.get("pictureId");
+  if (!pictureId) {
+    pictureId = "1";
+  } // Default to 1 if not provided
+
   const [specificGames, setSpecificGames] = useState<SpecificGame[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -38,33 +58,71 @@ const SpecificGames: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(""); // Start date input
   const [endDate, setEndDate] = useState<string>(""); // End date input
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog state
-  const { userData } = useAuth(); // Get userData from AuthContext
-  console.log("User Data:", userData); // Log userData for debugging
+  const { userData } = useAuth();
+  const [pendingRequests, setPendingRequests] = useState<number[]>([]); // Array of game IDs with pending requests
+  const [usernames, setUsernames] = useState<{ [key: number]: string }>({}); // State to store usernames
 
-useEffect(() => {
-  const fetchSpecificGames = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/specificboardgame`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch specific games");
+  useEffect(() => {
+    const fetchSpecificGames = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/specificboardgame`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch specific games");
+        }
+        const data = await response.json();
+
+        // Filter the specific games to match the selected board game title
+        const filteredGames = data.filter(
+          (game: SpecificGame) => game.boardGameTitle === title
+        );
+
+        setSpecificGames(filteredGames);
+
+        // Fetch usernames for all ownerIds
+        const usernamesMap: { [key: number]: string } = {};
+        for (const game of filteredGames) {
+          const username = await getUserName(game.ownerId);
+          usernamesMap[game.ownerId] = username;
+        }
+        setUsernames(usernamesMap); // Store the usernames in state
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
+    };
 
-      // Filter the specific games to match the selected board game title
-      const filteredGames = data.filter(
-        (game: SpecificGame) => game.boardGameTitle === title
-      );
+    fetchSpecificGames();
+  }, [title]);
 
-      setSpecificGames(filteredGames);
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/borrowRequests", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-  fetchSpecificGames();
-}, [title]);
+        if (!response.ok) {
+          throw new Error("Failed to fetch pending borrow requests");
+        }
+
+        const pendingRequestsData = await response.json();
+        const pendingRequestIds = pendingRequestsData.map(
+          (request: { specificBoardGameId: number }) =>
+            request.specificBoardGameId
+        );
+
+        setPendingRequests(pendingRequestIds); // Update the state with the IDs of games with pending requests
+      } catch (err: any) {
+        console.error("Error fetching pending requests:", err.message);
+      }
+    };
+
+    fetchPendingRequests();
+  }, []);
 
   const handleBorrowRequest = async () => {
     if (!userData || !userData.id) {
@@ -108,7 +166,6 @@ useEffect(() => {
       status: "PENDING", // Default status
       requestStartDate: formattedStartDate,
       requestEndDate: formattedEndDate,
-      //personId: 4752,
       personId: userData?.id || 0, // Dynamically get personId from AuthContext, default to 0 if null
       specificBoardGameId: selectedGame.id, // Extract the ID from the selected game
     };
@@ -134,12 +191,17 @@ useEffect(() => {
       }
 
       toast.success("Borrow request submitted successfully!");
+
+      // Add the game ID to the pendingRequests state
+      setPendingRequests((prev) => [...prev, selectedGame.id]);
+
       setIsDialogOpen(false); // Close the dialog
     } catch (err: any) {
       console.error("Error:", err); // Log the error for debugging
       toast.error("An error occurred while submitting the borrow request.");
     }
   };
+
   if (loading) {
     return (
       <p className="text-center text-gray-500">Loading specific games...</p>
@@ -152,57 +214,89 @@ useEffect(() => {
 
   return (
     <div className="p-4">
-    <h1 className="text-2xl font-bold mb-6">Specific Games for "{title}"</h1>
-    <div className="grid md:grid-cols-3 gap-6">
-      {specificGames.map((game) => (
-        <Card
-          key={game.id}
-          className="flex flex-col items-stretch p-4 hover:shadow-lg transition-shadow"
-        >
-          {/* Image Section */}
-          <div className="aspect-w-1 aspect-h-1">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/ChessSet.jpg/800px-ChessSet.jpg"
-              alt={game.boardGameTitle}
-              className="rounded-lg object-cover w-full h-40"
-            />
-          </div>
-  
-          {/* Details Section */}
-          <CardContent className="flex flex-col flex-grow justify-between space-y-4">
-            <div>
-              <CardTitle className="text-xl font-bold text-left">
-                {game.boardGameTitle}
-              </CardTitle>
-              <CardDescription className="text-gray-700">
-                {game.description}
-              </CardDescription>
+      <h1 className="text-2xl font-bold mt-6 mb-6 ml-4">
+        Specific Games for "{title}"
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ml-4 mr-4">
+        {specificGames.map((game) => (
+          <Card
+            key={game.id}
+            className="flex flex-col items-stretch p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200"
+          >
+            {/* Image Section */}
+            <div className="aspect-w-1 aspect-h-1">
+              <img
+                src={gameImages[Number(pictureId)]}
+                alt={game.boardGameTitle}
+                className="rounded-lg object-cover w-full h-40"
+              />
             </div>
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">
-                <strong>Status:</strong>{" "}
-                {game.status.charAt(0).toUpperCase() + game.status.slice(1).toLowerCase()}
-              </p>
-            </div>
-          </CardContent>
-  
-          {/* Borrow Button (Full Width of Grid Item) */}
-          <div className="w-full mt-4">
-            <Button
-              className="bg-green-500 hover:bg-green-600 text-white w-full"
-              onClick={() => {
-                setSelectedGame(game);
-                setIsDialogOpen(true);
-              }}
-            >
-              Borrow
-            </Button>
-          </div>
-        </Card>
-      ))}
-    </div>
 
-  
+            {/* Details Section */}
+            <CardContent className="flex flex-col flex-grow justify-between space-y-4">
+              <div>
+                <CardTitle className="text-xl font-bold text-left">
+                  {game.boardGameTitle}
+                </CardTitle>
+                <CardDescription className="mt-2 text-gray-700">
+                  {game.description}
+                </CardDescription>
+                <CardDescription className="mt-2 text-gray-600">
+                  <strong>Owner: </strong>
+                  {usernames[game.ownerId] || "Loading..."}
+                  <p className="text-sm mt-1 text-gray-600">
+                    <strong>Status:</strong>{" "}
+                    {game.status.charAt(0).toUpperCase() +
+                      game.status.slice(1).toLowerCase()}
+                  </p>
+                </CardDescription>
+              </div>
+            </CardContent>
+
+            {/* Borrow Button */}
+            <div className="w-full mt-4">
+              {game.status.toLowerCase() !== "available" ? (
+                <Button
+                  className="bg-gray-500 text-white w-full cursor-not-allowed"
+                  disabled
+                >
+                  Not Available
+                </Button>
+              ) : pendingRequests.includes(game.id) ? (
+                <Button
+                  className="bg-gray-500 text-white w-full cursor-not-allowed"
+                  disabled
+                >
+                  Pending
+                </Button>
+              ) : game.ownerId === userData?.id ? (
+                <div
+                  onClick={() =>
+                    toast.error("You cannot borrow your own game.")
+                  }
+                >
+                  <Button
+                    className="bg-gray-500 text-white w-full cursor-not-allowed"
+                    disabled
+                  >
+                    Borrow
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  className="bg-green-500 hover:bg-green-600 text-white w-full"
+                  onClick={() => {
+                    setSelectedGame(game);
+                    setIsDialogOpen(true);
+                  }}
+                >
+                  Borrow
+                </Button>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
 
       {/* Borrow Request Dialog */}
       {isDialogOpen && selectedGame && (

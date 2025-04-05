@@ -1,7 +1,11 @@
 package ca.mcgill.ecse321.boardroom.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class PersonUpdatePasswordDto {
+    @NotBlank(message="The old password cannot be blank")
     private String oldPassword;
+    @NotBlank(message="The new password cannot be blank")
     private String newPassword;
 
     // Constructor
@@ -11,7 +15,7 @@ public class PersonUpdatePasswordDto {
     }
 
     // Default constructor
-    public PersonUpdatePasswordDto() {}
+    private PersonUpdatePasswordDto() {}
 
     // Getters and Setters
     public String getOldPassword() {

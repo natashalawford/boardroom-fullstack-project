@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState  } from "react"
+import React, { createContext, useContext, useEffect, useState  } from "react"
 
 import { User } from "@/services/AccountDetailsService"
 
@@ -26,7 +26,23 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
     const setUserData = (user: User | null) => {
         setUser(user) 
+
+        // update local storage
+        if (user == null) {
+            localStorage.removeItem('userAuth');
+        } else {
+            localStorage.setItem('userAuth', JSON.stringify(user));
+        }
     }
+    
+    // check local storage on mount
+    useEffect(() => {
+        const storedInfo = localStorage.getItem('userAuth');
+
+        const storedUser = storedInfo ? JSON.parse(storedInfo) : null;
+
+        setUserData(storedUser);
+    },[])
 
     return (
        <AuthContext.Provider value={{ userData, setUserData }}>

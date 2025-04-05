@@ -301,7 +301,7 @@ public class PersonIntegrationTests {
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Password is required", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
+        assertEquals("The new password cannot be blank", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
     }
 
     @Test
@@ -317,7 +317,7 @@ public class PersonIntegrationTests {
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Password is required", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
+        assertEquals("The new password cannot be blank", response.getBody().getErrors().get(0).replace("[", "").replace("]", ""));
     }
 
     @Test

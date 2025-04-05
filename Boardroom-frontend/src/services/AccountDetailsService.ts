@@ -32,7 +32,7 @@ export interface ErrorMessage {
   errorMessage: string;
 }
 
-export interface SpecificBoardGameResponseDto {
+export interface SpecificBoardGame {
   id: number;
   description: string;
   picture: number;
@@ -293,7 +293,7 @@ export async function deleteSpecificBoardGame(id: number): Promise<void> {
 
 export async function getSpecificBoardGamesByOwner(
   ownerId: number
-): Promise<SpecificBoardGameResponseDto[]> {
+): Promise<SpecificBoardGame[]> {
   try {
     const response = await fetch(`http://localhost:8080/specificboardgame/owner/${ownerId}`);
 
@@ -370,6 +370,19 @@ export async function getEventsByParticipant(personId: number) {
     return await response.json(); // this will be a list of EventResponseDto
   } catch (error) {
     console.error("Error fetching participant events:", error);
+    throw error;
+  }
+}
+
+export async function getBoardGameByTitle(title: string) {
+  try {
+    const response = await fetch(`http://localhost:8080/boardgame/${encodeURIComponent(title)}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch board game by title");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching board game:", error);
     throw error;
   }
 }

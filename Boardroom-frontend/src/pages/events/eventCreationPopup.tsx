@@ -98,7 +98,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 marginTop: '5px',
                             }}
                         />
-                        {errors.title && toast.error(errors.title.message)}
+                        {errors.title && <p style={{ color: 'red', marginTop: '5px' }}>{errors.title.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label>Description:</label>
@@ -112,7 +112,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 marginTop: '5px',
                             }}
                         />
-                        {errors.description && toast.error(errors.description.message)}
+                        {errors.description && <p style={{ color: 'red', marginTop: '5px' }}>{errors.description.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label>Board Game Name:</label>
@@ -133,7 +133,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 </option>
                             ))}
                         </select>
-                        {errors.boardGameName && toast.error(errors.boardGameName.message)}
+                        {errors.boardGameName && <p style={{ color: 'red', marginTop: '5px' }}>{errors.boardGameName.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label>Start Date & Time:</label>
@@ -146,9 +146,10 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 borderRadius: '5px',
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
+                                colorScheme: 'light',
                             }}
                         />
-                        {errors.startDateTime && toast.error(errors.startDateTime.message)}
+                        {errors.startDateTime && <p style={{ color: 'red', marginTop: '5px' }}>{errors.startDateTime.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label>End Date & Time:</label>
@@ -161,9 +162,10 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 borderRadius: '5px',
                                 border: `1px solid ${INPUT_BORDER_COLOR}`,
                                 marginTop: '5px',
+                                colorScheme: 'light',
                             }}
                         />
-                        {errors.endDateTime && toast.error(errors.endDateTime.message)}
+                        {errors.endDateTime && <p style={{ color: 'red', marginTop: '5px' }}>{errors.endDateTime.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label>Max Participants:</label>
@@ -178,7 +180,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 marginTop: '5px',
                             }}
                         />
-                        {errors.maxParticipants && toast.error(errors.maxParticipants.message)}
+                        {errors.maxParticipants && <p style={{ color: 'red', marginTop: '5px' }}>{errors.maxParticipants.message}</p>}
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         <label>Location:</label>
@@ -193,7 +195,7 @@ const EventCreationPopup: React.FC<EventCreationPopupProps> = ({ onClose }) => {
                                 marginTop: '5px',
                             }}
                         />
-                        {errors.location && toast.error(errors.location.message)}
+                        {errors.location && <p style={{ color: 'red', marginTop: '5px' }}>{errors.location.message}</p>}
                     </div>
                     
                     <DialogFooter>

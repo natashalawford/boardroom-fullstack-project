@@ -230,7 +230,7 @@ function AccountDetails() {
                       variant="outline"
                       className="hover:bg-gray-700 hover:text-white w-30 "
                     >
-                      Update
+                      Update Name
                     </Button>
                   </div>
                 </form>

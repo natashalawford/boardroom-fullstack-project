@@ -374,6 +374,25 @@ export async function getEventsByParticipant(personId: number) {
   }
 }
 
+export async function unregisterFromEvent(personId: number, eventId: number): Promise<void> {
+  try {
+    const response = await fetch(`http://localhost:8080/registration/${personId}/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to unregister from event. Server said: ${errorText}`);
+    }
+  } catch (error) {
+    console.error("Error unregistering from event:", error);
+    throw error;
+  }
+}
+
 export async function getBoardGameByTitle(title: string) {
   try {
     const response = await fetch(`http://localhost:8080/boardgame/${encodeURIComponent(title)}`);

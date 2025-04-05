@@ -1,8 +1,10 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
-import { getEventsByParticipant } from "@/services/AccountDetailsService";
+import { getEventsByParticipant, unregisterFromEvent } from "@/services/AccountDetailsService";
+import { toast } from "sonner";
 
 type EventInfo = {
   id: number;
@@ -38,6 +40,19 @@ const ParticipantEventTable = () => {
     }
   }, [userData]);
 
+  const handleUnregister = async (eventId: number) => {
+    if (!userData?.id) return;
+
+    try {
+      await unregisterFromEvent(userData.id, eventId);
+      setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+      toast.success("Successfully unregistered from the event.");
+    } catch (error) {
+      console.error("Error unregistering from event:", error);
+      toast.error("Failed to unregister from the event.");
+    }
+  };
+
   return (
     <>
       <h2 className="text-lg font-semibold mb-2">My Registered Events</h2>
@@ -51,6 +66,7 @@ const ParticipantEventTable = () => {
                 <th className="px-6 py-2">Start</th>
                 <th className="px-6 py-2">End</th>
                 <th className="px-6 py-2">Location</th>
+                <th className="px-6 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -61,6 +77,14 @@ const ParticipantEventTable = () => {
                   <td className="px-6 py-2 border-t border-gray-200">{formatDateTime(event.startDateTime)}</td>
                   <td className="px-6 py-2 border-t border-gray-200">{formatDateTime(event.endDateTime)}</td>
                   <td className="px-6 py-2 border-t border-gray-200">{event.location}</td>
+                  <td className="px-6 py-2 border-t border-gray-200">
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleUnregister(event.id)}
+                    >
+                      Unregister
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>

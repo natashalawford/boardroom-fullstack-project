@@ -110,13 +110,12 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             <Button
               variant="destructive"
               onClick={() => {
-                logout(setUserData);
+                await logout(setUserData);
                 setSuccessMessage("Logged out successfully!");
                 setTimeout(() => {
-                  onClose();
                   resetForm();
+                  onClose();
                   navigate("/"); // redirect to home page
-                  window.location.reload(); // refresh the page content
                 }, 1000);
               }}
             >

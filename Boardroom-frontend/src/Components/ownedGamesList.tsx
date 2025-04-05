@@ -11,6 +11,20 @@ import {
 } from "../services/AccountDetailsService";
 import { useAuth } from "@/auth/UserAuth"; 
 
+import image1 from '../assets/games/image1.jpg'
+import image2 from '../assets/games/image2.jpg'
+import image3 from '../assets/games/image3.jpg'
+import image4 from '../assets/games/image4.jpg'
+import image5 from '../assets/games/image5.jpg'
+
+const gameImages: { [key: number]: string } = {
+  1: image1,
+  2: image2,
+  3: image3,
+  4: image4,
+  5: image5
+}
+
 interface OwnedGame {
   id: number;
   description: string;
@@ -58,7 +72,7 @@ const OwnedGamesList: React.FC<OwnedGamesListProps> = ({
                 key={game.id}
                 className="relative w-64 h-64 bg-cover bg-center rounded-lg overflow-hidden cursor-pointer flex-shrink-0 group"
                 style={{
-                  backgroundImage: `url(${monopoly})`,
+                  backgroundImage: `url(${gameImages[Number(game.picture)] || gameImages[Math.floor(Math.random() * 5) + 1]})`,
                 }}
               >
                 <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-center p-2 text-sm">

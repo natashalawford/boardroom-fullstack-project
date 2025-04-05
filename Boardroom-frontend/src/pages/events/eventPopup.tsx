@@ -8,22 +8,22 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { fetchHostName, fetchRegistrationsForEvent } from '../../services/eventService'; // Use eventService
-import { registerForEvent } from '../../services/eventService';
+import { fetchHostName, fetchRegistrationsForEvent, registerForEvent } from '../../services/eventService';
+import { toast } from "sonner";
 
-import image1 from '../../assets/games/image1.jpg'
-import image2 from '../../assets/games/image2.jpg'
-import image3 from '../../assets/games/image3.jpg'
-import image4 from '../../assets/games/image4.jpg'
-import image5 from '../../assets/games/image5.jpg'
+import image1 from '../../assets/games/image1.jpg';
+import image2 from '../../assets/games/image2.jpg';
+import image3 from '../../assets/games/image3.jpg';
+import image4 from '../../assets/games/image4.jpg';
+import image5 from '../../assets/games/image5.jpg';
 
 const gameImages: { [key: number]: string } = {
     1: image1,
     2: image2,
     3: image3,
     4: image4,
-    5: image5
-  }
+    5: image5,
+};
 
 interface EventPopupProps {
     event: {
@@ -43,7 +43,6 @@ interface EventPopupProps {
 
 const EventPopup: React.FC<EventPopupProps> = ({ event, pictureIndex, onClose }) => {
     const { userData } = useAuth();
-    const [message, setMessage] = useState<string | null>(null); // For success/error messages
     const [hostName, setHostName] = useState<string | null>(null); // For host name
     const [spotsLeft, setSpotsLeft] = useState<number | null>(null); // For spots left
 
@@ -73,23 +72,21 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, pictureIndex, onClose })
     };
 
     const handleRegister = async () => {
-        setMessage(null); // Clear previous messages
-
         if (!userData || !userData.id) {
-            setMessage('Error: You must be logged in to register for an event.');
+            toast.error('Error: You must be logged in to register for an event.');
             return;
         }
 
-        if(userData.id === event.hostId) {
-            setMessage('Error: You cannot register for your own event.');
+        if (userData.id === event.hostId) {
+            toast.error('Error: You cannot register for your own event.');
             return;
         }
 
         try {
             await registerForEvent(userData.id, event.id); // Use the service function
-            setMessage('Successfully registered for the event!');
+            toast.success('Successfully registered for the event!');
         } catch (error: any) {
-            setMessage(`Error: ${error.message}`);
+            toast.error(`Error: ${error.message}`);
         }
     };
 
@@ -112,9 +109,9 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, pictureIndex, onClose })
                     </div> 
                     <div className='w-40 h-25 flex-shrink-0'>
                         <img
-                        alt='Board Game'
-                        src={gameImages[pictureIndex]}
-                        className='w-full h-full object-cover rounded-lg shadow-md'
+                            alt='Board Game'
+                            src={gameImages[pictureIndex]}
+                            className='w-full h-full object-cover rounded-lg shadow-md'
                         />
                     </div>
                 </div>
@@ -126,19 +123,6 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, pictureIndex, onClose })
                         Register for Event
                     </Button>
                 </DialogFooter>
-                {message && (
-                    <div
-                        style={{
-                            marginTop: '20px',
-                            padding: '10px',
-                            backgroundColor: message.startsWith('Error') ? 'red' : 'green',
-                            color: '#fff',
-                            borderRadius: '5px',
-                        }}
-                    >
-                        {message}
-                    </div>
-                )}
             </DialogContent>
         </Dialog>
     );

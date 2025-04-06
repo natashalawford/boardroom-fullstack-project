@@ -21,21 +21,20 @@ export interface PersonResponseDto {
 const BASE_URL = 'http://localhost:8080/people'
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(url, options)
+  const response = await fetch(url, options);
   if (!response.ok) {
-    let errorMsg = `Error ${response.status}: ${response.statusText}`
+    let errorMsg = `Error ${response.status}: ${response.statusText}`;
     try {
-      const errorData = await response.json()
-      if (errorData.message) {
-        errorMsg = errorData.message
-      }
+      const errorData = await response.json();
+      //take first error message produced by the backend, otherwise, default
+      errorMsg = errorData.errors?.[0] || errorData.message || errorMsg;
     } catch (err) {
+      console.error('Failed to parse error response:', err);
     }
-    throw new Error(errorMsg)
+    throw new Error(errorMsg);
   }
-  return (await response.json()) as T
+  return (await response.json()) as T;
 }
-
 /** Log in an existing user */
 export async function loginUser(
   email: string,

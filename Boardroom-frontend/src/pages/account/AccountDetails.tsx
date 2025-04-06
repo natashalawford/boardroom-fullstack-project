@@ -227,7 +227,6 @@ function AccountDetails() {
                   <div className="flex justify-end mb-5">
                     <Button
                       type="submit"
-                      variant="outline"
                       className="hover:bg-gray-700 hover:text-white w-30 "
                     >
                       Update Name
@@ -239,7 +238,6 @@ function AccountDetails() {
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild className="flex shrink self-center">
                   <Button
-                    variant="outline"
                     className="hover:bg-gray-700 hover:text-white w-50"
                   >
                     Update Password
@@ -296,7 +294,6 @@ function AccountDetails() {
                       <div className="flex justify-end">
                         <Button
                           className="hover:bg-gray-700 hover:text-white"
-                          variant="outline"
                           type="submit"
                         >
                           Save
@@ -356,7 +353,6 @@ function AccountDetails() {
                   <div className="flex justify-end">
                     <Button
                       className="hover:bg-gray-700 hover:text-white"
-                      variant="outline"
                       type="submit"
                     >
                       Save

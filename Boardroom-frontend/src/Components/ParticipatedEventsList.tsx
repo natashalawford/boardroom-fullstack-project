@@ -56,7 +56,7 @@ const ParticipantEventTable = () => {
   return (
     <>
       <h2 className="text-lg font-semibold mb-2">My Registered Events</h2>
-      <Card className="p-0 w-full max-w-5xl h-96 flex flex-col">
+      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col border rounded-lg p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200 bg-white outline outline-1 outline-gray-300">
         <ScrollArea className="h-full w-full">
           <table className="w-full text-sm text-left border-separate border-spacing-y-2">
             <thead className="text-xs uppercase text-muted-foreground">
@@ -81,6 +81,7 @@ const ParticipantEventTable = () => {
                     <Button
                       variant="destructive"
                       onClick={() => handleUnregister(event.id)}
+                      className="bg-red-500 text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:bg-red-600 hover:scale-105"
                     >
                       Unregister
                     </Button>

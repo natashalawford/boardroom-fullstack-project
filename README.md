@@ -127,3 +127,6 @@ https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Repor
 
 ## Link to the Deliverable 2 Wiki:
 https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-2
+
+## Link to the Deliverable 3 Wiki:
+https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-3

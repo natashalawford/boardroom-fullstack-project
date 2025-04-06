@@ -64,6 +64,19 @@ The **BoardRoom** provides the following features:
 | Jason Rustom    | Senior Developer         | 2          | Development & Testing: Board Game & Toggle Account + Code Review | 22                  |
 | Nathan Reid     | Developer                | 2          | Development & Testing: Borrow Request Class + Code Review        | 21                  |
 
+### Deliverable 3
+(All members contributed equally)
+
+| Team Member     | Role                     | Deliverable| Description of Work                                              | Time Spent (hours)  |
+|-----------------|--------------------------|------------|------------------------------------------------------------------|---------------------|
+| Gracie Diabo    | Developer                | 2          | Development & Testing: Log In & Homepage, Update Header and Homepage, UI Design + Report            | 25                  |
+| Janelle Tam     | Project Manager          | 2          | Development & Testing: New Review, Create Game Popup, Add Game Forms, View Games  | 26                  |
+| Natasha Lawford | Developer                | 2          | Development & Testing: Event Creation, Event Registration, Unregister Event, UI Design + Report               | 25                  |
+| Alison Quach    | Developer                | 2          | Development & Testing: Header, Event Creation, Event Creation form, Display Events + Report           | 25                  |
+| Malak Oualid    | Senior Developer         | 2          | Development & Testing: View Games, Create Game Popup, Borrow Request Catalogue, Borrow Form    | 26                  |
+| Jason Rustom    | Senior Developer         | 2          | Development & Testing: Local Storage, Account Details Update Login, Update Owned Games, Toggle Account, + Code Review | 25                  |
+| Nathan Reid     | Developer                | 2          | Development & Testing: Account Details: Borrow Requests, Lending History, Event History, Owned Games + Report        | 25                  |
+
 ## Testing Summary
 We created a persistence test for each model class in the application, such that the test would perform read and write access for the objects, attributes, and references.
 

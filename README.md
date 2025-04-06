@@ -86,6 +86,8 @@ Service Tests: These tests focus on validating the business logic of the service
 
 Integration Tests: These tests verify the interaction between different components, including the persistence layer and external dependencies. They ensure that database operations, API interactions, and service-layer logic work together as expected in a real-world scenario.
 
+UI Testing: We assigned three UI testers to cover the UI functionality and confirm that interactions with the backend are consistent through several test procedures including logging in, creating events, sending borrow requests, ... 
+
 ## Testing Configuration
 Please follow these instructions to ensure the project tests runs on your local host.
 1. Update your Java version to version 23 (will need to update [path variables](https://www.happycoders.eu/java/how-to-switch-multiple-java-versions-windows/]))
@@ -107,6 +109,18 @@ Please follow these instructions to ensure the project RESTful endpoints documen
 1. Run `./gradlew bootRun`
 2. Open `http://localhost:8080/swagger-ui.html` on your browser
 
+## Documentation for Backend Local Host Setup
+From the root directory of the project in the terminal run: 
+1. cd Boardroom-backend
+2. Run './gradlew bootrun'
+The backend is hosted locally at 'http://localhost:8080'
+
+## Documentation for Frontend Local Host Setup
+From the root directory of the project in the terminal run: 
+1. cd Boardroom-frontend
+2. npm install 
+3. npm run dev
+The frontend is locally hosted at 'http://localhost:5173'
 
 ## Link to the Deliverable 1 Wiki:
 https://github.com/McGill-ECSE321-Winter2025/project-group-17/wiki/Project-Report-%E2%80%90-Deliverable-1 

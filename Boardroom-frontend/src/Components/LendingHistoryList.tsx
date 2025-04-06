@@ -39,7 +39,7 @@ const LendingHistoryList = () => {
   return (
     <>
       <h2 className="text-lg font-semibold mb-2">Lending History</h2>
-      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col">
+      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col border rounded-lg p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200 bg-white outline outline-1 outline-gray-300">
         <ScrollArea className="h-full w-full">
           <table className="w-full text-sm text-left border-separate border-spacing-y-2">
             <thead className="text-xs uppercase text-muted-foreground">

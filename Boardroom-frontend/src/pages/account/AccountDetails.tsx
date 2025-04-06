@@ -228,7 +228,7 @@ function AccountDetails() {
                     <Button
                       type="submit"
                       variant="outline"
-                      className="hover:bg-gray-700 hover:text-white w-30 "
+                      className="bg-black hover:bg-neutral-800 text-white hover:text-white"
                     >
                       Update Name
                     </Button>
@@ -240,7 +240,7 @@ function AccountDetails() {
                 <DialogTrigger asChild className="flex shrink self-center">
                   <Button
                     variant="outline"
-                    className="hover:bg-gray-700 hover:text-white w-50"
+                    className="bg-black hover:bg-neutral-800 text-white hover:text-white"
                   >
                     Update Password
                   </Button>
@@ -295,7 +295,7 @@ function AccountDetails() {
                       />
                       <div className="flex justify-end">
                         <Button
-                          className="hover:bg-gray-700 hover:text-white"
+                          className="bg-black hover:bg-neutral-800 text-white hover:text-white"
                           variant="outline"
                           type="submit"
                         >

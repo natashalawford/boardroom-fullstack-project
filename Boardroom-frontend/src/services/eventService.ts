@@ -52,3 +52,18 @@ export const createEvent = async (eventData: any): Promise<void> => {
     }
 };
 
+export const registerForEvent = async (userId: number, eventId: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/registration/${userId}/${eventId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.errors?.[0] || 'Failed to register for the event';
+        throw new Error(errorMessage);
+    }
+};
+

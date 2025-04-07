@@ -1,7 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { getBorrowRequestsByPersonAndStatus } from "@/services/AccountDetailsService";
+import { getBorrowRequestsByOwnerAndStatus } from "@/services/AccountDetailsService";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/auth/UserAuth";
 
@@ -19,17 +18,28 @@ const LendingHistoryList = () => {
   const [requests, setRequests] = useState<BorrowRequest[]>([]);
 
   useEffect(() => {
-    if (userData?.id) {
-      getBorrowRequestsByPersonAndStatus(userData.id, "RETURNED")
-        .then(setRequests)
-        .catch(console.error);
-    }
+    let intervalId: NodeJS.Timeout;
+
+    const fetchRequests = () => {
+      if (userData?.id) {
+        getBorrowRequestsByOwnerAndStatus(userData.id, "ACCEPTED")
+          .then(setRequests)
+          .catch(console.error);
+      }
+    };
+
+    fetchRequests(); // Initial fetch
+
+    // Set up interval to refresh every 10 seconds
+    intervalId = setInterval(fetchRequests, 5000);
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [userData]);
 
   return (
     <>
       <h2 className="text-lg font-semibold mb-2">Lending History</h2>
-      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col">
+      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col border rounded-lg p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200 bg-white outline outline-1 outline-gray-300">
         <ScrollArea className="h-full w-full">
           <table className="w-full text-sm text-left border-separate border-spacing-y-2">
             <thead className="text-xs uppercase text-muted-foreground">

@@ -128,5 +128,23 @@ public class BorrowController {
         }
         return borrowRequestDtos;
     }
+
+    @PostMapping("/pending/owner/{ownerId}")
+    @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:5173")
+    public List<BorrowRequestResponseAccountDto> viewBorrowRequestsByOwnerAndStatus(
+            @PathVariable int ownerId,
+            @RequestBody RequestStatus status) {
+
+        List<BorrowRequest> borrowRequests = borrowService.viewBorrowRequestsByOwnerAndStatus(ownerId, status);
+        List<BorrowRequestResponseAccountDto> borrowRequestDtos = new ArrayList<>();
+
+        for (BorrowRequest borrowRequest : borrowRequests) {
+            borrowRequestDtos.add(new BorrowRequestResponseAccountDto(borrowRequest));
+        }
+
+        return borrowRequestDtos;
+    }
+
     
 }

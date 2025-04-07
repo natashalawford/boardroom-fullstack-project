@@ -32,7 +32,7 @@ export interface ErrorMessage {
   errorMessage: string;
 }
 
-export interface SpecificBoardGameResponseDto {
+export interface SpecificBoardGame {
   id: number;
   description: string;
   picture: number;
@@ -226,6 +226,22 @@ export async function getBorrowRequestsByPersonAndStatus(personId: number, statu
     return await response.json();
   }
 
+  export async function getBorrowRequestsByOwnerAndStatus(ownerId: number, status: string) {
+    const response = await fetch(`http://localhost:8080/borrowRequests/pending/owner/${ownerId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(status),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Failed to fetch borrow requests for owner');
+    }
+  
+    return await response.json();
+  }
+
   export async function updateBorrowRequestStatus(id: number, status: string) {
     const response = await fetch(`http://localhost:8080/borrowRequests/${id}`, {
       method: "PUT",
@@ -277,7 +293,7 @@ export async function deleteSpecificBoardGame(id: number): Promise<void> {
 
 export async function getSpecificBoardGamesByOwner(
   ownerId: number
-): Promise<SpecificBoardGameResponseDto[]> {
+): Promise<SpecificBoardGame[]> {
   try {
     const response = await fetch(`http://localhost:8080/specificboardgame/owner/${ownerId}`);
 
@@ -341,3 +357,52 @@ export const updateSpecificGame = async (
 
 
 }
+
+export async function getEventsByParticipant(personId: number) {
+  try {
+    const response = await fetch(`http://localhost:8080/registration/person/${personId}/events`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch events. Server said: ${errorText}`);
+    }
+
+    return await response.json(); // this will be a list of EventResponseDto
+  } catch (error) {
+    console.error("Error fetching participant events:", error);
+    throw error;
+  }
+}
+
+export async function unregisterFromEvent(personId: number, eventId: number): Promise<void> {
+  try {
+    const response = await fetch(`http://localhost:8080/registration/${personId}/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to unregister from event. Server said: ${errorText}`);
+    }
+  } catch (error) {
+    console.error("Error unregistering from event:", error);
+    throw error;
+  }
+}
+
+export async function getBoardGameByTitle(title: string) {
+  try {
+    const response = await fetch(`http://localhost:8080/boardgame/${encodeURIComponent(title)}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch board game by title");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching board game:", error);
+    throw error;
+  }
+}
+

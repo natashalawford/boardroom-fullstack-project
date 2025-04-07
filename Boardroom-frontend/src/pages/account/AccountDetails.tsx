@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BorrowRequestList from "@/components/BorrowRequestList";
 import LendingHistoryList from "@/components/LendingHistoryList";
+import ParticipatedEventsList from "@/components/ParticipatedEventsList";
+
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import {
@@ -225,10 +227,9 @@ function AccountDetails() {
                   <div className="flex justify-end mb-5">
                     <Button
                       type="submit"
-                      variant="outline"
                       className="hover:bg-gray-700 hover:text-white w-30 "
                     >
-                      Update
+                      Update Name
                     </Button>
                   </div>
                 </form>
@@ -237,7 +238,6 @@ function AccountDetails() {
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild className="flex shrink self-center">
                   <Button
-                    variant="outline"
                     className="hover:bg-gray-700 hover:text-white w-50"
                   >
                     Update Password
@@ -294,7 +294,6 @@ function AccountDetails() {
                       <div className="flex justify-end">
                         <Button
                           className="hover:bg-gray-700 hover:text-white"
-                          variant="outline"
                           type="submit"
                         >
                           Save
@@ -354,7 +353,6 @@ function AccountDetails() {
                   <div className="flex justify-end">
                     <Button
                       className="hover:bg-gray-700 hover:text-white"
-                      variant="outline"
                       type="submit"
                     >
                       Save
@@ -378,6 +376,9 @@ function AccountDetails() {
               </div>
             </>
           )}
+          <div className="flex flex-col justify-between items-left ml-15 mr-10 mb-10">
+                <ParticipatedEventsList />
+          </div>
         </>
       ) : (
         <>

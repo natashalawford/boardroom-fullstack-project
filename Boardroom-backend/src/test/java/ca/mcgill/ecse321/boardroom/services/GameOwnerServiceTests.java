@@ -28,6 +28,7 @@ import ca.mcgill.ecse321.boardroom.model.Person;
 import ca.mcgill.ecse321.boardroom.model.SpecificBoardGame;
 import ca.mcgill.ecse321.boardroom.model.enums.GameStatus;
 import ca.mcgill.ecse321.boardroom.repositories.BoardGameRepository;
+import ca.mcgill.ecse321.boardroom.repositories.BorrowRequestRepository;
 import ca.mcgill.ecse321.boardroom.repositories.SpecificBoardGameRepository;
 
 @SpringBootTest
@@ -44,6 +45,9 @@ public class GameOwnerServiceTests {
 
     @Mock
     private BoardGameService boardGameService;
+
+    @Mock
+    private BorrowRequestRepository borrowRequestRepo;
 
     @InjectMocks
     private GameOwnerService gameOwnerService;
@@ -89,7 +93,7 @@ public class GameOwnerServiceTests {
         //Arrange
         BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
 
-        when(boardGameRepo.existsByTitle(anyString())).thenReturn(false);
+        when(boardGameRepo.existsByTitleIgnoreCase(anyString())).thenReturn(false);
         when(boardGameRepo.save(any(BoardGame.class))).thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
         //Act
@@ -103,7 +107,7 @@ public class GameOwnerServiceTests {
         assertEquals(VALID_PLAYERS_NEEDED, createdBoardGame.getPlayersNeeded());
         assertEquals(VALID_PICTURE, createdBoardGame.getPicture());
 
-        verify(boardGameRepo, times(1)).existsByTitle(anyString());
+        verify(boardGameRepo, times(1)).existsByTitleIgnoreCase(anyString());
         verify(boardGameRepo, times(1)).save(any(BoardGame.class)); 
     }
 
@@ -112,7 +116,7 @@ public class GameOwnerServiceTests {
         //Arrange
         BoardGameCreationDto boardGameToCreate = new BoardGameCreationDto(VALID_TITLE, VALID_DESCRIPTION, VALID_PLAYERS_NEEDED, VALID_PICTURE);
 
-        when(boardGameRepo.existsByTitle(anyString())).thenReturn(true);
+        when(boardGameRepo.existsByTitleIgnoreCase(anyString())).thenReturn(true);
         
         //Act + Assert
         BoardroomException e = assertThrows(BoardroomException.class, () -> gameOwnerService.createBoardGame(boardGameToCreate));
@@ -211,6 +215,7 @@ public class GameOwnerServiceTests {
         gameOwnerService.deleteSpecificBoardGame(VALID_SPECIFIC_ID);
 
         //Assert
+        verify(borrowRequestRepo, times(1)).deleteAllBySpecificBoardGame(any(SpecificBoardGame.class));
         verify(specificBoardGameRepo, times(1)).delete(any(SpecificBoardGame.class));
     }
 }

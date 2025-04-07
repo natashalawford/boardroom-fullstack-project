@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBorrowRequestsByPersonAndStatus, updateBorrowRequestStatus } from "../services/AccountDetailsService";
+import { getBorrowRequestsByOwnerAndStatus, updateBorrowRequestStatus } from "../services/AccountDetailsService";
 import { useAuth } from "@/auth/UserAuth";
 
 type BorrowRequest = {
@@ -20,7 +20,7 @@ const BorrowRequestList = () => {
 
   useEffect(() => {
     if (userData?.id) {
-      getBorrowRequestsByPersonAndStatus(userData.id, "PENDING")
+      getBorrowRequestsByOwnerAndStatus(userData.id, "PENDING")
         .then(setRequests)
         .catch(console.error);
     }
@@ -30,7 +30,7 @@ const BorrowRequestList = () => {
     if (!userData?.id) return;
 
     updateBorrowRequestStatus(id, status)
-      .then(() => getBorrowRequestsByPersonAndStatus(userData.id, "PENDING"))
+      .then(() => getBorrowRequestsByOwnerAndStatus(userData.id, "PENDING"))
       .then(setRequests)
       .catch(console.error);
   };
@@ -38,7 +38,7 @@ const BorrowRequestList = () => {
   return (
     <>
       <h2 className="text-lg font-semibold mb-2">Borrow Requests</h2>
-      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col">
+      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col border rounded-lg p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200 bg-white outline outline-1 outline-gray-300">
         <ScrollArea className="h-full">
           <table className="w-full text-sm text-left border-separate border-spacing-y-2">
             <thead className="text-xs uppercase text-muted-foreground">

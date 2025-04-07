@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { loginUser, createUser, logout } from "@/services/loginService";
 import { useAuth } from "@/auth/UserAuth";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface LoginPopupProps {
   isOpen: boolean;
@@ -64,7 +65,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       if (isLoginMode) {
         // LOGIN
         const userResponse = await loginUser(email, password);
-        setSuccessMessage(`Welcome back, ${userResponse.name}!`);
+        toast.success(`Welcome back, ${userResponse.name}!`);
         setUserData({
           id: userResponse.id,
           name: userResponse.name,
@@ -79,7 +80,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           password,
           owner: isOwner,
         });
-        setSuccessMessage(`Account created for ${newUser.name}!`);
+        toast.success(`Account created for ${newUser.name}!`);
         setUserData({
           id: newUser.id,
           name: newUser.name,
@@ -87,14 +88,13 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           owner: newUser.owner ? "true" : "false",
         });
       }
-      // Show success message for 2s, then close the popup
-      setTimeout(() => {
-        onClose();
-        resetForm();
-      }, 2000);
+      // Close the popup and reset the form
+      onClose();
+      resetForm();
+
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.message || "Something went wrong.");
+      toast.error(err.message || "Something went wrong.");
     }
   };
 
@@ -110,14 +110,13 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             <Button
               variant="destructive"
               onClick={() => {
-                logout(setUserData);
-                setSuccessMessage("Logged out successfully!");
+                onClose();
+
                 setTimeout(() => {
-                  onClose();
-                  resetForm();
+                  logout(setUserData);
+                  toast.success("Logged out successfully!");
                   navigate("/"); // redirect to home page
-                  window.location.reload(); // refresh the page content
-                }, 1000);
+                }, 100);
               }}
             >
               Logout

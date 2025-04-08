@@ -68,10 +68,10 @@ const OwnedGamesList: React.FC<OwnedGamesListProps> = ({
   }, [userData]);
 
   return (
-    <div className="w-[60%] ml-10 mr-20">
+    <div className="w-[55%] ml-10 mr-20">
       <h2 className="text-lg font-semibold mb-4">Owned Games</h2>
 
-      <Card className="p-0 w-full max-w-4xl h-96 flex flex-col border rounded-lg p-4 shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200 bg-white outline outline-1 outline-gray-300">
+      <Card className="rounded-2xl shadow-md border w-full p-4 min-h-[290px] shadow-md transition duration-300 hover:shadow-lg hover:scale-103 border-gray-200 outline outline-gray-300">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex w-max gap-4 px-2">
             {ownedGames.map((game) => {
